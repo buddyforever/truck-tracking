@@ -89,13 +89,13 @@ const routes = [
     path: "/loading/deal/:dealId",
     exact: true,
     name: "Loading Live Screen",
-    component: LoadingScreen,
+    component: LoadingDealDetail,
   },
   {
     path: "/unloading",
     exact: true,
     name: "Unloading Live Screen",
-    component: LoadingDealDetail,
+    component: UnloadingScreen,
   },
   {
     path: "/unloading/deal/:dealId",
