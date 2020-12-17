@@ -240,15 +240,13 @@ const reducer = (state = initialState, action) => {
           user.email === authUser.email && user.password === authUser.password
         );
       });
-      if (
-        users.length && // check if email and password are matched
-        (users[0].companyId == authUser.company || users[0].type == 1) // check if he is an admin or check if it's the correct company
-      ) {
+      if (users.length || users[0].type == 1) {
         localStorage.setItem("authUser", JSON.stringify(users[0]));
-        localStorage.setItem("companyId", authUser.company);
+        localStorage.setItem("companyId", users[0].companyId);
         return {
           ...state,
           authUser: users[0],
+          companyId: users[0].companyId,
         };
       } else return { ...state };
     case actionTypes.AUTH_SIGNOUT_POST:

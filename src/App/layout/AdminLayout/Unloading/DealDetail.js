@@ -112,7 +112,7 @@ class UnloadingDealDetail extends React.Component {
           <Col>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Loading</Card.Title>
+                <Card.Title as="h5">Unloading</Card.Title>
               </Card.Header>
               <Card.Body>
                 <ValidationForm
@@ -161,9 +161,8 @@ class UnloadingDealDetail extends React.Component {
                           name="truckPlate"
                           id="truckPlate"
                           placeholder="Truck Plate"
+                          readOnly
                           value={this.state.truckPlate}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
                         />
                       </Form.Group>
                       <Form.Group>
@@ -172,7 +171,18 @@ class UnloadingDealDetail extends React.Component {
                           name="trailerPlate"
                           id="trailerPlate"
                           placeholder="Trailer Plate"
+                          readOnly
                           value={this.state.trailerPlate}
+                          autoComplete="off"
+                        />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label htmlFor="email">Second Plate</Form.Label>
+                        <TextInput
+                          name="secondPlate"
+                          id="secondPlate"
+                          placeholder="Second Plate"
+                          value={this.state.secondPlate}
                           onChange={this.handleInputChange}
                           autoComplete="off"
                         />
@@ -185,9 +195,8 @@ class UnloadingDealDetail extends React.Component {
                           name="transporterId"
                           id="transporterId"
                           value={this.state.transporterId}
-                          required
-                          errorMessage="Transporter"
-                          onChange={this.handleInputChange}
+                          readOnly
+                          disabled
                         >
                           <option value="">Transporter</option>
                           {DEMO.transporters.map((trans) => {
@@ -202,13 +211,13 @@ class UnloadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="email">Truck Plate</Form.Label>
+                        <Form.Label htmlFor="driverName">Driver</Form.Label>
                         <TextInput
-                          name="truckPlate"
-                          id="truckPlate"
-                          placeholder="Truck Plate"
-                          value={this.state.truckPlate}
-                          onChange={this.handleInputChange}
+                          name="driverName"
+                          id="driverName"
+                          placeholder="Driver"
+                          readOnly
+                          value={this.state.driverName}
                           autoComplete="off"
                         />
                       </Form.Group>
@@ -218,66 +227,84 @@ class UnloadingDealDetail extends React.Component {
                           name="driverPhone"
                           id="driverPhone"
                           placeholder="Phone number"
+                          readOnly
                           className="form-control"
                           value={this.state.driverPhone}
-                          onChange={this.handleInputChange}
                           successMessage="Looks good!"
-                          errorMessage={{
-                            validator: "Please enter (123) 456-7890",
-                          }}
-                          mask={[
-                            "(",
-                            /[1-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            ")",
-                            " ",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            "-",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                          ]}
                           autoComplete="off"
                         />
                       </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor="firstWeight">
-                          First Weight
-                        </Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="firstWeight"
-                          id="firstWeight"
-                          placeholder="First Weight"
-                          value={this.state.firstWeight}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
+                      {this.props.companyId == 1 ? (
+                        <>
+                          <Form.Group>
+                            <Form.Label htmlFor="firstWeight">
+                              First Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="firstWeight"
+                              id="firstWeight"
+                              placeholder="First Weight"
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="secondWeight">
+                              Second Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="secondWeight"
+                              id="secondWeight"
+                              placeholder="Second Weight"
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                        </>
+                      ) : (
+                        <>
+                          <TextInput
+                            type="hidden"
+                            name="firstWeight"
+                            value={this.state.firstWeight}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="secondWeight"
+                            value={this.state.secondWeight}
+                          />
+                        </>
+                      )}
+                      {this.props.companyId == 1 ? (
+                        <TextInput
+                          type="hidden"
+                          name="quantity"
+                          value={this.state.quantity}
                         />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor="secondeWeight">
-                          Second Weight
-                        </Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="secondeWeight"
-                          id="secondeWeight"
-                          placeholder="Second Weight"
-                          value={this.state.secondWeight}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
-                        />
-                      </Form.Group>
+                      ) : (
+                        <Form.Group>
+                          <Form.Label htmlFor="quantity">Quantity</Form.Label>
+                          <NumberFormat
+                            className="form-control"
+                            thousandSeparator={true}
+                            name="quantity"
+                            id="quantity"
+                            placeholder="Quantity"
+                            value={this.state.quantity}
+                            onChange={this.handleInputChange}
+                            autoComplete="off"
+                          />
+                        </Form.Group>
+                      )}
                       <Form.Group>
                         <Form.Label htmlFor="netWeight">Net Weight</Form.Label>
                         <NumberFormat
                           className="form-control"
+                          thousandSeparator={true}
                           name="netWeight"
                           id="netWeight"
                           placeholder="Net Weight"
@@ -287,14 +314,29 @@ class UnloadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
+                        <Form.Label htmlFor="newNetWeight">
+                          New Net Weight
+                        </Form.Label>
+                        <NumberFormat
+                          className="form-control"
+                          thousandSeparator={true}
+                          name="newNetWeight"
+                          id="newNetWeight"
+                          placeholder="New Net Weight"
+                          value={this.state.newNetWeight}
+                          onChange={this.handleInputChange}
+                          autoComplete="off"
+                        />
+                      </Form.Group>
+                      <Form.Group>
                         <Form.Label htmlFor="alertTime">Alert Time</Form.Label>
                         <SelectGroup
                           name="alertTime"
                           id="alertTime"
                           value={this.state.alertTime}
-                          required
                           errorMessage="Transporter"
-                          onChange={this.handleInputChange}
+                          readOnly
+                          disabled
                         >
                           <option value="">Alert Time</option>
                           <option>An hour</option>
@@ -351,15 +393,28 @@ class UnloadingDealDetail extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Description</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows="5"
-                          className="form-control"
-                          id="description"
+                        <TextInput
                           name="description"
+                          id="description"
                           placeholder="Description"
+                          multiline
+                          readOnly
                           value={this.state.description}
+                          rows="3"
+                          autoComplete="off"
+                        />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>New Description</Form.Label>
+                        <TextInput
+                          name="newDescription"
+                          id="newDescription"
+                          placeholder="New Description"
+                          multiline
+                          value={this.state.newDescription}
                           onChange={this.handleInputChange}
+                          rows="3"
+                          autoComplete="off"
                         />
                       </Form.Group>
                     </Col>

@@ -67,59 +67,67 @@ const EditUser = React.lazy(() =>
 );
 
 const routes = [
-  {
-    path: "/",
-    exact: true,
-    name: "Default",
-    component: Dashboard,
-  },
+  // {
+  //   path: "/",
+  //   exact: true,
+  //   name: "Default",
+  //   component: Dashboard,
+  // },
   {
     path: "/dashboard",
     exact: true,
     name: "Dashboard",
     component: Dashboard,
+    permission_users: [2, 3], // user types who can access this page
   },
   {
     path: "/loading",
     exact: true,
     name: "Loading Live Screen",
     component: LoadingScreen,
+    permission_users: [2], // user types who can access this page
   },
   {
     path: "/loading/deal/:dealId",
     exact: true,
     name: "Loading Live Screen",
     component: LoadingDealDetail,
+    permission_users: [2], // user types who can access this page
   },
   {
     path: "/unloading",
     exact: true,
     name: "Unloading Live Screen",
     component: UnloadingScreen,
+    permission_users: [3], // user types who can access this page
   },
   {
     path: "/unloading/deal/:dealId",
     exact: true,
     name: "Unloading Live Screen",
     component: UnloadingDealDetail,
+    permission_users: [3], // user types who can access this page
   },
   {
     path: "/users",
     exact: true,
     name: "Users",
     component: Users,
+    permission_users: [], // user types who can access this page
   },
   {
     path: "/users/add",
     exact: true,
     name: "Add New User",
     component: AddUser,
+    permission_users: [], // user types who can access this page
   },
   {
     path: "/users/:id",
     exact: true,
     name: "Edit User",
     component: EditUser,
+    permission_users: [], // user types who can access this page
   },
   // {
   //   path: "/basic/button",

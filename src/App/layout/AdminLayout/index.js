@@ -56,15 +56,21 @@ class AdminLayout extends Component {
     document.addEventListener("MSFullscreenChange", this.fullScreenExitHandler);
 
     const menu = routes.map((route, index) => {
-      return route.component ? (
-        <Route
-          key={index}
-          path={route.path}
-          exact={route.exact}
-          name={route.name}
-          render={(props) => <route.component {...props} />}
-        />
-      ) : null;
+      if (
+        route.permission_users.includes(parseInt(this.props.authUser.type)) ||
+        this.props.authUser.type == 1
+      ) {
+        // filter accessable routes from routes.js
+        return route.component ? (
+          <Route
+            key={index}
+            path={route.path}
+            exact={route.exact}
+            name={route.name}
+            render={(props) => <route.component {...props} />}
+          />
+        ) : null;
+      }
     });
 
     return (
@@ -79,7 +85,7 @@ class AdminLayout extends Component {
             <div className="pcoded-wrapper">
               <div className="pcoded-content">
                 <div className="pcoded-inner-content">
-                  <Breadcrumb />
+                  {/* <Breadcrumb /> */}
                   <div className="main-body">
                     <div className="page-wrapper">
                       <Suspense fallback={<Loader />}>
@@ -104,6 +110,7 @@ const mapStateToProps = (state) => {
     collapseMenu: state.collapseMenu,
     configBlock: state.configBlock,
     layout: state.layout,
+    authUser: state.authUser,
   };
 };
 

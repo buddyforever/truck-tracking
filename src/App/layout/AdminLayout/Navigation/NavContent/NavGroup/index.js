@@ -11,7 +11,7 @@ const navGroup = (props) => {
       item = groups[item];
       if (
         props.authUser.type === "1" ||
-        item.visible.includes(props.authUser.type)
+        item.visible.includes(parseInt(props.authUser.type))
       ) {
         switch (item.type) {
           case "collapse":

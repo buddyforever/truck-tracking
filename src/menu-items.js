@@ -11,7 +11,7 @@ export default {
           title: "Dashboard",
           type: "item",
           url: "/dashboard",
-          visible: ["2", "3"],
+          visible: [2, 3],
           icon: "feather icon-home",
         },
         {
@@ -19,7 +19,7 @@ export default {
           title: "Loading Screen",
           type: "item",
           url: "/loading",
-          visible: ["2"],
+          visible: [2],
           icon: "feather icon-upload-cloud",
         },
         {
@@ -27,7 +27,7 @@ export default {
           title: "Unloading Screen",
           type: "item",
           url: "/unloading",
-          visible: ["3"],
+          visible: [3],
           icon: "feather icon-download-cloud",
         },
         {

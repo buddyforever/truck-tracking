@@ -14,12 +14,15 @@ import NVD3Chart from "react-nvd3";
 import Aux from "../../../../hoc/_Aux";
 
 class Unloading extends Component {
+  onDealClick = (dealId) => {
+    this.props.history.push("/unloading/deal/" + dealId);
+  };
   render() {
     let onroute_deals = this.props.deals.filter((deal) => {
-      return deal.status === "2";
+      return deal.status == 2;
     });
     let arrived_deals = this.props.deals.filter((deal) => {
-      return deal.status === "3" || deal.status === "4";
+      return deal.status == 3 || deal.status == 4;
     });
 
     const datum = [
@@ -32,7 +35,7 @@ class Unloading extends Component {
           <Col md={6} xl={8}>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Loading Live Screen</Card.Title>
+                <Card.Title as="h5">Unloading Live Screen</Card.Title>
               </Card.Header>
               <Card.Body className="border-bottom">
                 <h5>On Route</h5>
@@ -44,11 +47,12 @@ class Unloading extends Component {
                         <OverlayTrigger
                           overlay={<Tooltip>{deal.driverName}</Tooltip>}
                         >
-                          <Link to="#">
-                            <Button variant="danger">
-                              <i className="fa fa-truck f-36 mr-0" />
-                            </Button>
-                          </Link>
+                          <Button
+                            variant="danger"
+                            onClick={() => this.onDealClick(deal.id)}
+                          >
+                            <i className="fa fa-truck f-36 mr-0" />
+                          </Button>
                         </OverlayTrigger>
                       </Col>
                     );
@@ -65,11 +69,9 @@ class Unloading extends Component {
                         <OverlayTrigger
                           overlay={<Tooltip>{deal.driverName}</Tooltip>}
                         >
-                          <Link to="#">
-                            <Button variant="success">
-                              <i className="fa fa-truck f-36 mr-0" />
-                            </Button>
-                          </Link>
+                          <Button variant="success">
+                            <i className="fa fa-truck f-36 mr-0" />
+                          </Button>
                         </OverlayTrigger>
                       </Col>
                     );

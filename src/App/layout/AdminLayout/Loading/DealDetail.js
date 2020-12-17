@@ -106,6 +106,7 @@ class LoadingDealDetail extends React.Component {
   };
 
   render() {
+    console.log("company id" + this.props.companyId);
     return (
       <Aux>
         <Row>
@@ -177,6 +178,11 @@ class LoadingDealDetail extends React.Component {
                           autoComplete="off"
                         />
                       </Form.Group>
+                      <TextInput
+                        type="hidden"
+                        name="secondPlate"
+                        value={this.state.secondPlate}
+                      />
                       <Form.Group>
                         <Form.Label htmlFor="transporterId">
                           Transporter
@@ -185,7 +191,6 @@ class LoadingDealDetail extends React.Component {
                           name="transporterId"
                           id="transporterId"
                           value={this.state.transporterId}
-                          required
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
                         >
@@ -244,36 +249,74 @@ class LoadingDealDetail extends React.Component {
                           autoComplete="off"
                         />
                       </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor="firstWeight">
-                          First Weight
-                        </Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="firstWeight"
-                          id="firstWeight"
-                          placeholder="First Weight"
-                          value={this.state.firstWeight}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
+                      {this.props.companyId == 1 ? (
+                        <>
+                          <Form.Group>
+                            <Form.Label htmlFor="firstWeight">
+                              First Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="firstWeight"
+                              id="firstWeight"
+                              placeholder="First Weight"
+                              value={this.state.firstWeight}
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="secondWeight">
+                              Second Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="secondWeight"
+                              id="secondWeight"
+                              placeholder="Second Weight"
+                              value={this.state.secondWeight}
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                        </>
+                      ) : (
+                        <>
+                          <TextInput
+                            type="hidden"
+                            name="firstWeight"
+                            value={this.state.firstWeight}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="secondWeight"
+                            value={this.state.secondWeight}
+                          />
+                        </>
+                      )}
+                      {this.props.companyId == 1 ? (
+                        <TextInput
+                          type="hidden"
+                          name="quantity"
+                          value={this.state.quantity}
                         />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor="secondWeight">
-                          Second Weight
-                        </Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="secondWeight"
-                          id="secondWeight"
-                          placeholder="Second Weight"
-                          value={this.state.secondWeight}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
-                        />
-                      </Form.Group>
+                      ) : (
+                        <Form.Group>
+                          <Form.Label htmlFor="quantity">Quantity</Form.Label>
+                          <NumberFormat
+                            className="form-control"
+                            thousandSeparator={true}
+                            name="quantity"
+                            id="quantity"
+                            placeholder="Quantity"
+                            value={this.state.quantity}
+                            onChange={this.handleInputChange}
+                            autoComplete="off"
+                          />
+                        </Form.Group>
+                      )}
                       <Form.Group>
                         <Form.Label htmlFor="netWeight">Net Weight</Form.Label>
                         <NumberFormat
@@ -287,13 +330,17 @@ class LoadingDealDetail extends React.Component {
                           autoComplete="off"
                         />
                       </Form.Group>
+                      <TextInput
+                        type="hidden"
+                        name="newNetWeight"
+                        value={this.state.newNetWeight}
+                      />
                       <Form.Group>
                         <Form.Label htmlFor="alertTime">Alert Time</Form.Label>
                         <SelectGroup
                           name="alertTime"
                           id="alertTime"
                           value={this.state.alertTime}
-                          required
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
                         >
@@ -352,17 +399,22 @@ class LoadingDealDetail extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Description</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows="5"
-                          className="form-control"
-                          id="description"
+                        <TextInput
                           name="description"
+                          id="description"
                           placeholder="Description"
+                          multiline
                           value={this.state.description}
                           onChange={this.handleInputChange}
+                          rows="5"
+                          autoComplete="off"
                         />
                       </Form.Group>
+                      <TextInput
+                        type="hidden"
+                        name="newDescription"
+                        value={this.state.newDescription}
+                      />
                     </Col>
 
                     <Form.Group as={Col} sm={12} className="mt-3">

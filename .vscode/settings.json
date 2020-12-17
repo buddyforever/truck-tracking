@@ -1,0 +1,8 @@
+{
+  "html-to-css-autocompletion.triggerCharacters": false,
+  "html-to-css-autocompletion.autocompletionFilesScope": "linked-files",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

@@ -111,9 +111,7 @@ class Users extends React.Component {
         {
           data: "type",
           render: (data, type, row) => {
-            return DEMO.companies.filter((comp) => {
-              return comp.id == data;
-            })[0].companyName;
+            return data == 2 ? "Loading" : "Unloading";
           },
         },
       ],

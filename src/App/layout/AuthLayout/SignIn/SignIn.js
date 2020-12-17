@@ -10,15 +10,8 @@ import DEMO from "../../../../store/constant";
 
 class SignIn extends React.Component {
   state = {
-    company: "",
     email: "",
     password: "",
-  };
-  onCompanyChange = (e) => {
-    console.log(e.target.value);
-    this.setState({
-      company: e.target.value,
-    });
   };
   onEmailChange = (e) => {
     this.setState({
@@ -51,25 +44,6 @@ class SignIn extends React.Component {
                   <i className="feather icon-unlock auth-icon" />
                 </div>
                 <h3 className="mb-4">Login</h3>
-                <div className="input-group mb-3">
-                  <select
-                    className="form-control"
-                    value={this.state.company}
-                    onChange={this.onCompanyChange}
-                    required
-                  >
-                    <option value="" disabled>
-                      Select company
-                    </option>
-                    {DEMO.companies.map((comp) => {
-                      return (
-                        <option value={comp.id} key={comp.id}>
-                          {comp.companyName}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
                 <div className="input-group mb-3">
                   <input
                     type="email"

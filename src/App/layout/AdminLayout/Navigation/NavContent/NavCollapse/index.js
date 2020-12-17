@@ -31,7 +31,7 @@ class NavCollapse extends Component {
         item = collapses[item];
         if (
           this.props.authUser.type === "1" ||
-          item.visible.includes(this.props.authUser.type)
+          item.visible.includes(parseInt(this.props.authUser.type))
         ) {
           // check if nav item is visible for user
           switch (item.type) {

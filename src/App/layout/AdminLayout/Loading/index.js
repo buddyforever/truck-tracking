@@ -18,11 +18,12 @@ class Loading extends Component {
     this.props.history.push("/loading/deal/" + dealId);
   };
   render() {
+    console.log(this.props.deals);
     let loading_deals = this.props.deals.filter((deal) => {
-      return deal.status === "1";
+      return deal.status == 1;
     });
     let onroute_deals = this.props.deals.filter((deal) => {
-      return deal.status === "2";
+      return deal.status == 2;
     });
 
     const datum = [
