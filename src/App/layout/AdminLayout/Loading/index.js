@@ -6,8 +6,6 @@ import {
   ButtonToolbar,
   ToggleButtonGroup,
   ToggleButton,
-  OverlayTrigger,
-  Tooltip,
 } from "react-bootstrap";
 import Select from "react-select";
 import { withRouter, Link } from "react-router-dom";
@@ -100,10 +98,10 @@ class Loading extends Component {
 
     return (
       <Aux>
-        {this.props.authUser.type == 1 ? (
-          <Row className="mb-4">
-            <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
-              <div className="d-flex align-items-center">
+        <Row className="mb-4">
+          <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
+            <div className="d-flex align-items-center justify-content-end">
+              {this.props.authUser.type == 1 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
@@ -112,39 +110,43 @@ class Loading extends Component {
                   name="company"
                   options={companyOptions}
                 />
-                <ButtonToolbar>
-                  <ToggleButtonGroup
-                    type="radio"
-                    name="viewMode"
-                    value={this.state.viewmode}
-                    onChange={this.onViewModeChange}
+              ) : (
+                <></>
+              )}
+              <ButtonToolbar>
+                <ToggleButtonGroup
+                  type="radio"
+                  name="viewMode"
+                  value={this.state.viewmode}
+                  onChange={this.onViewModeChange}
+                >
+                  <ToggleButton
+                    className="btn-icon shadow-1"
+                    variant={
+                      this.state.viewMode == "grid"
+                        ? "outline-primary active"
+                        : "outline-primary"
+                    }
+                    value={"grid"}
                   >
-                    <ToggleButton
-                      className="btn-icon shadow-1"
-                      variant={
-                        this.state.viewMode == "grid" ? "primary" : "default"
-                      }
-                      value={"grid"}
-                    >
-                      <i className="fa fa-th f-14 m-r-0" />
-                    </ToggleButton>
-                    <ToggleButton
-                      className="btn-icon shadow-1"
-                      variant={
-                        this.state.viewMode == "table" ? "primary" : "default"
-                      }
-                      value={"table"}
-                    >
-                      <i className="fa fa-list f-14 m-r-0" />
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </ButtonToolbar>
-              </div>
-            </Col>
-          </Row>
-        ) : (
-          <></>
-        )}
+                    <i className="fa fa-th f-14 m-r-0" />
+                  </ToggleButton>
+                  <ToggleButton
+                    className="btn-icon shadow-1"
+                    variant={
+                      this.state.viewMode == "table"
+                        ? "outline-primary active"
+                        : "outline-primary"
+                    }
+                    value={"table"}
+                  >
+                    <i className="fa fa-list f-14 m-r-0" />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </ButtonToolbar>
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col md={8} xl={9}>
             {this.state.viewMode == "grid" ? (

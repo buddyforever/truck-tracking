@@ -12,6 +12,7 @@ const navLogo = (props) => {
   let company = DEMO.companies.filter((comp) => {
     return comp.id == props.companyId;
   });
+  let companyName = company.length > 0 ? company[0].companyName : "Admin";
   return (
     <Aux>
       <div className="navbar-brand header-logo">
@@ -19,7 +20,7 @@ const navLogo = (props) => {
           <div className="b-bg">
             <i className="feather icon-trending-up" />
           </div>
-          <span className="b-title">{}</span>
+          <span className="b-title">{companyName}</span>
         </a>
         <a
           href={DEMO.BLANK_LINK}

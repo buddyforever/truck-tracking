@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter, Link } from "react-router-dom";
 import { Row, Col, Card, Table, Dropdown, Button } from "react-bootstrap";
+import Select from "react-select";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import Swal from "sweetalert2";
@@ -23,6 +24,7 @@ let datatable;
 class Users extends React.Component {
   state = {
     fullCard: false,
+    current: this.props.companyId > 0 ? this.props.companyId : 1,
   };
 
   componentDidMount() {
@@ -31,7 +33,7 @@ class Users extends React.Component {
 
   componentDidUpdate() {
     let companyUsers = this.props.users.filter((u) => {
-      return u.companyId == this.props.companyId;
+      return u.companyId == this.state.current;
     });
     datatable.clear();
     datatable.rows.add(companyUsers);
@@ -74,6 +76,11 @@ class Users extends React.Component {
       </Dropdown>
     </div>
   );
+
+  onCompanyChange = (option) => {
+    console.log(option);
+    this.setState({ current: option.value });
+  };
 
   initTable = () => {
     let tableResponsive = "#users-table";
@@ -197,8 +204,34 @@ class Users extends React.Component {
         height: this.props.windowHeight,
       };
     }
+    let companyOptions = [];
+    DEMO.companies.map((comp) => {
+      companyOptions.push({
+        value: comp.id,
+        label: comp.companyName,
+      });
+    });
+
     return (
       <Aux>
+        <Row className="mb-4">
+          <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
+            <div className="d-flex align-items-center justify-content-end">
+              {this.props.authUser.type == 1 ? (
+                <Select
+                  className="basic-single w-100 m-r-10"
+                  classNamePrefix="select"
+                  defaultValue={companyOptions[0]}
+                  onChange={this.onCompanyChange}
+                  name="company"
+                  options={companyOptions}
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <Card className={cardClass.join(" ")} style={fullScreenStyle}>

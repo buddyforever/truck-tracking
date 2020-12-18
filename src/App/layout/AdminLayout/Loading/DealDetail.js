@@ -317,23 +317,10 @@ class LoadingDealDetail extends React.Component {
                           />
                         </Form.Group>
                       )}
-                      <Form.Group>
-                        <Form.Label htmlFor="netWeight">Net Weight</Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="netWeight"
-                          id="netWeight"
-                          placeholder="Net Weight"
-                          value={this.state.netWeight}
-                          readOnly
-                          autoComplete="off"
-                        />
-                      </Form.Group>
                       <TextInput
                         type="hidden"
-                        name="newNetWeight"
-                        value={this.state.newNetWeight}
+                        name="newQuantity"
+                        value={this.state.newQuantity}
                       />
                       <Form.Group>
                         <Form.Label htmlFor="alertTime">Alert Time</Form.Label>
