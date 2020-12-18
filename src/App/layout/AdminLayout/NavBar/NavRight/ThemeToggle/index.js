@@ -24,7 +24,7 @@ class ThemeToggle extends Component {
     return (
       <Aux>
         <div id="theme-toggle">
-          <div className="switch switch-info d-inline m-r-10">
+          <div className="switch switch-info d-inline">
             <input
               type="checkbox"
               id="unchecked-info"
@@ -33,7 +33,11 @@ class ThemeToggle extends Component {
             />
             <label htmlFor="unchecked-info" className="cr" />
           </div>
-          <label>Dark mode</label>
+          <label
+            className={this.props.windowWidth <= 575 ? "d-none" : "m-l-10"}
+          >
+            Dark Mode
+          </label>
         </div>
       </Aux>
     );

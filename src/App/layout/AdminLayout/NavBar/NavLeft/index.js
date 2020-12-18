@@ -4,11 +4,9 @@ import { Dropdown } from "react-bootstrap";
 import windowSize from "react-window-size";
 
 import NavSearch from "./NavSearch";
-import ThemeToggle from "./ThemeToggle";
 import Aux from "../../../../../hoc/_Aux";
 import DEMO from "../../../../../store/constant";
 import * as actionTypes from "../../../../../store/actions";
-
 class NavLeft extends Component {
   render() {
     let iconFullScreen = ["feather"];
@@ -36,9 +34,6 @@ class NavLeft extends Component {
             >
               <i className={iconFullScreen.join(" ")} />
             </a>
-          </li>
-          <li className="nav-item">
-            <ThemeToggle />
           </li>
           <li className={navItemClass.join(" ")}>
             <Dropdown alignRight={dropdownRightAlign}>

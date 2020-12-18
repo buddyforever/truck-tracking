@@ -4,6 +4,7 @@ import { Dropdown } from "react-bootstrap";
 import { connect } from "react-redux";
 
 import ChatList from "./ChatList";
+import ThemeToggle from "../NavRight/ThemeToggle";
 import Aux from "../../../../../hoc/_Aux";
 import DEMO from "../../../../../store/constant";
 import * as actionTypes from "../../../../../store/actions";
@@ -115,7 +116,11 @@ class NavRight extends Component {
               </Dropdown.Menu>
             </Dropdown>
           </li>
-          <li className={this.props.rtlLayout ? "m-r-15" : "m-l-15"}>
+
+          <li>
+            <ThemeToggle />
+          </li>
+          {/* <li className={this.props.rtlLayout ? "m-r-15" : "m-l-15"}>
             <a
               href={DEMO.BLANK_LINK}
               className="displayChatbox"
@@ -125,15 +130,16 @@ class NavRight extends Component {
             >
               <i className="icon feather icon-mail" />
             </a>
-          </li>
+          </li> */}
           <li>
             <Dropdown alignRight={!this.props.rtlLayout} className="drp-user">
               <Dropdown.Toggle variant={"link"} id="dropdown-basic">
-                <span>
-                  {this.props.authUser.firstname +
-                    " " +
-                    this.props.authUser.lastname}
-                </span>
+                <img
+                  src={Avatar1}
+                  className="img-radius"
+                  alt="User Profile"
+                  width={40}
+                />
               </Dropdown.Toggle>
               <Dropdown.Menu alignRight className="profile-notification">
                 <div className="pro-head">

@@ -9,7 +9,9 @@ const navLogo = (props) => {
   if (props.collapseMenu) {
     toggleClass = [...toggleClass, "on"];
   }
-
+  let company = DEMO.companies.filter((comp) => {
+    return comp.id == props.companyId;
+  });
   return (
     <Aux>
       <div className="navbar-brand header-logo">
@@ -17,13 +19,7 @@ const navLogo = (props) => {
           <div className="b-bg">
             <i className="feather icon-trending-up" />
           </div>
-          <span className="b-title">
-            {
-              DEMO.companies.filter((comp) => {
-                return comp.id == props.companyId;
-              })[0].companyName
-            }
-          </span>
+          <span className="b-title">{}</span>
         </a>
         <a
           href={DEMO.BLANK_LINK}

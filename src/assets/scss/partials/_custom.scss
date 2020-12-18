@@ -1,9 +1,10 @@
 /**  =====================
       Custom css start
 ========================== **/
-
-.pcoded-navbar {
-  ~ .navbar-default {
-    background: #3f4d67;
-  }
+.w-80 {
+  width: 80px !important;
+  height: 80px !important;
+}
+.btn-circle {
+  border-radius: 50% !important;
 }

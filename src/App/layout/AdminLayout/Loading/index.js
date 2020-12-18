@@ -3,99 +3,173 @@ import {
   Card,
   Row,
   Col,
+  ButtonToolbar,
+  ToggleButtonGroup,
+  ToggleButton,
   OverlayTrigger,
-  Button,
   Tooltip,
 } from "react-bootstrap";
+import Select from "react-select";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
-import NVD3Chart from "react-nvd3";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 import Aux from "../../../../hoc/_Aux";
+import DEMO from "../../../../store/constant";
+
+import GridView from "./GridView";
+import TableView from "./TableView";
 
 class Loading extends Component {
+  state = {
+    viewMode: "grid",
+    current: this.props.companyId > 0 ? this.props.companyId : 1,
+  };
+  onCompanyChange = (option) => {
+    console.log(option);
+    this.setState({ current: option.value });
+  };
+
+  onViewModeChange = (mode) => {
+    this.setState({ viewMode: mode });
+  };
+
   onDealClick = (dealId) => {
     this.props.history.push("/loading/deal/" + dealId);
   };
+
   render() {
-    console.log(this.props.deals);
-    let loading_deals = this.props.deals.filter((deal) => {
-      return deal.status == 1;
-    });
-    let onroute_deals = this.props.deals.filter((deal) => {
-      return deal.status == 2;
+    console.log(this.props.companyId);
+    let companyOptions = [];
+    DEMO.companies.map((comp) => {
+      companyOptions.push({
+        value: comp.id,
+        label: comp.companyName,
+      });
     });
 
-    const datum = [
-      { key: "Truck loaded", y: loading_deals.length, color: "#f4c22b" },
-      { key: "On route", y: onroute_deals.length, color: "#f44236" },
-    ];
+    let loading_deals = this.props.deals.filter((deal) => {
+      return deal.companyId == this.state.current && deal.status == 1;
+    });
+    let onroute_deals = this.props.deals.filter((deal) => {
+      return deal.companyId == this.state.current && deal.status == 2;
+    });
+
+    let options = {
+      chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: "pie",
+      },
+      colors: ["#f44236", "#f4c22b"],
+      title: null,
+      tooltip: {
+        pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: "pointer",
+          dataLabels: {
+            enabled: false,
+          },
+          showInLegend: true,
+        },
+      },
+      series: [
+        {
+          name: "Trucks",
+          colorByPoint: true,
+          size: "90%",
+          innerSize: "60%",
+          data: [
+            {
+              name: "Truck loaded",
+              y: loading_deals.length,
+            },
+            {
+              name: "On route",
+              y: onroute_deals.length,
+            },
+          ],
+        },
+      ],
+    };
+
     return (
       <Aux>
+        {this.props.authUser.type == 1 ? (
+          <Row className="mb-4">
+            <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
+              <div className="d-flex align-items-center">
+                <Select
+                  className="basic-single w-100 m-r-10"
+                  classNamePrefix="select"
+                  defaultValue={companyOptions[0]}
+                  onChange={this.onCompanyChange}
+                  name="company"
+                  options={companyOptions}
+                />
+                <ButtonToolbar>
+                  <ToggleButtonGroup
+                    type="radio"
+                    name="viewMode"
+                    value={this.state.viewmode}
+                    onChange={this.onViewModeChange}
+                  >
+                    <ToggleButton
+                      className="btn-icon shadow-1"
+                      variant={
+                        this.state.viewMode == "grid" ? "primary" : "default"
+                      }
+                      value={"grid"}
+                    >
+                      <i className="fa fa-th f-14 m-r-0" />
+                    </ToggleButton>
+                    <ToggleButton
+                      className="btn-icon shadow-1"
+                      variant={
+                        this.state.viewMode == "table" ? "primary" : "default"
+                      }
+                      value={"table"}
+                    >
+                      <i className="fa fa-list f-14 m-r-0" />
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </ButtonToolbar>
+              </div>
+            </Col>
+          </Row>
+        ) : (
+          <></>
+        )}
         <Row>
-          <Col md={6} xl={8}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">Loading Live Screen</Card.Title>
-              </Card.Header>
-              <Card.Body className="border-bottom">
-                <h5>Pending</h5>
-                <br />
-                <Row>
-                  {loading_deals.map((deal) => {
-                    return (
-                      <Col md={6} xl={3} key={deal.id}>
-                        <OverlayTrigger
-                          overlay={<Tooltip>{deal.driverName}</Tooltip>}
-                        >
-                          <Button
-                            variant="warning"
-                            onClick={() => this.onDealClick(deal.id)}
-                          >
-                            <i className="fa fa-truck f-36 mr-0" />
-                          </Button>
-                        </OverlayTrigger>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </Card.Body>
-              <Card.Body>
-                <h5>On Route</h5>
-                <br />
-                <Row>
-                  {onroute_deals.map((deal) => {
-                    return (
-                      <Col md={6} xl={3} key={deal.id}>
-                        <OverlayTrigger
-                          overlay={<Tooltip>{deal.driverName}</Tooltip>}
-                        >
-                          <Button variant="danger">
-                            <i className="fa fa-truck f-36 mr-0" />
-                          </Button>
-                        </OverlayTrigger>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </Card.Body>
-            </Card>
+          <Col md={8} xl={9}>
+            {this.state.viewMode == "grid" ? (
+              <GridView
+                loading_deals={loading_deals}
+                onroute_deals={onroute_deals}
+                onDealClick={this.onDealClick}
+              />
+            ) : this.state.viewMode == "table" ? (
+              <TableView
+                loading_deals={loading_deals}
+                onroute_deals={onroute_deals}
+                onDealClick={this.onDealClick}
+              />
+            ) : (
+              <></>
+            )}
           </Col>
-          <Col md={6} xl={4}>
+          <Col md={4} xl={3}>
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Truck loaded vs On route</Card.Title>
               </Card.Header>
               <Card.Body>
-                <NVD3Chart
-                  height={300}
-                  type="pieChart"
-                  datum={datum}
-                  x="key"
-                  y="y"
-                  donut
-                  labelType="percent"
-                />
+                <HighchartsReact highcharts={Highcharts} options={options} />
               </Card.Body>
             </Card>
           </Col>
@@ -108,6 +182,8 @@ class Loading extends Component {
 const mapStateToProps = (state) => {
   return {
     deals: state.deals,
+    authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 
