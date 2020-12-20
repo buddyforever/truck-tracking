@@ -41,7 +41,6 @@ class Loading extends Component {
   };
 
   render() {
-    console.log(this.props.companyId);
     let companyOptions = [];
     DEMO.companies.map((comp) => {
       companyOptions.push({
