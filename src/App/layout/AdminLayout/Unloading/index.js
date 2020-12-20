@@ -14,6 +14,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import Aux from "../../../../hoc/_Aux";
+import * as actionTypes from "../../../../store/actions";
 import DEMO from "../../../../store/constant";
 
 import GridView from "./GridView";
@@ -37,8 +38,12 @@ class Unloading extends Component {
     this.props.history.push("/unloading/deal/" + dealId);
   };
 
+  onTruckArrived = (dealId) => {
+    console.log(dealId);
+    this.props.onTruckArrived(dealId);
+  };
+
   render() {
-    console.log(this.props.companyId);
     let companyOptions = [];
     DEMO.companies.map((comp) => {
       companyOptions.push({
@@ -156,12 +161,14 @@ class Unloading extends Component {
               <GridView
                 onroute_deals={onroute_deals}
                 pending_deals={pending_deals}
+                onTruckArrived={this.onTruckArrived}
                 onDealClick={this.onDealClick}
               />
             ) : this.state.viewMode == "table" ? (
               <TableView
                 onroute_deals={onroute_deals}
                 pending_deals={pending_deals}
+                onTruckArrived={this.onTruckArrived}
                 onDealClick={this.onDealClick}
               />
             ) : (
@@ -193,7 +200,14 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    onTruckArrived: (dealId) =>
+      dispatch({
+        type: actionTypes.DEAL_STATUS_UPDATE,
+        dealId: dealId,
+        status: 3,
+      }),
+  };
 };
 
 export default withRouter(

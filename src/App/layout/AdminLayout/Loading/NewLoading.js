@@ -1,13 +1,18 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import {
   ValidationForm,
   BaseFormControl,
   TextInput,
   SelectGroup,
+  FileInput,
+  Checkbox,
+  Radio,
 } from "react-bootstrap4-form-validation";
+import PNotify from "pnotify/dist/es/PNotify";
 import MaskedInput from "react-text-mask";
+import validator from "validator";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
@@ -63,7 +68,7 @@ class LoadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "",
+    startedDateTime: "2020-12-15 13:11:23",
     alertTime: "",
     finishedDateTime: "",
     borderNumber: "",
@@ -79,9 +84,8 @@ class LoadingDealDetail extends React.Component {
       let deals = DEMO.deals.filter((d) => {
         return d.id == dealId;
       });
-      console.log(deals);
       this.setState({
-        ...deals[0],
+        ...deals,
       });
     }
   }
@@ -102,21 +106,14 @@ class LoadingDealDetail extends React.Component {
   };
 
   render() {
+    console.log("company id" + this.props.companyId);
     return (
       <Aux>
         <Row>
           <Col>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">
-                  {this.state.status == 1
-                    ? "Loading"
-                    : this.state.status == 2
-                    ? "On route"
-                    : this.state.status == 3
-                    ? "Unloading"
-                    : ""}
-                </Card.Title>
+                <Card.Title as="h5">Loading</Card.Title>
               </Card.Header>
               <Card.Body>
                 <ValidationForm
@@ -150,36 +147,20 @@ class LoadingDealDetail extends React.Component {
                         <Form.Label htmlFor="startedDateTime">
                           Entry Date and Time
                         </Form.Label>
-                        {this.state.startedDateTime ? (
-                          <TextInput
-                            name="startedDateTime"
-                            id="startedDateTime"
-                            placeholder="Entry Date and Time"
-                            readOnly={this.state.startedDateTime ? true : false}
-                            value={this.state.startedDateTime}
-                            autoComplete="off"
-                          />
-                        ) : (
-                          <InputMask
-                            className="form-control"
-                            mask="9999-99-99 99:99:99"
-                            placeholder="yyyy/mm/dd hh:mm:ss"
-                          />
-                        )}
+                        <TextInput
+                          name="startedDateTime"
+                          id="startedDateTime"
+                          placeholder="Entry Date and Time"
+                          readOnly
+                          value={this.state.startedDateTime}
+                          autoComplete="off"
+                        />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="truckPlate">
-                          Truck Plate
-                        </Form.Label>
+                        <Form.Label htmlFor="email">Truck Plate</Form.Label>
                         <TextInput
                           name="truckPlate"
                           id="truckPlate"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           placeholder="Truck Plate"
                           value={this.state.truckPlate}
                           onChange={this.handleInputChange}
@@ -187,18 +168,10 @@ class LoadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="trailerPlate">
-                          Trailer Plate
-                        </Form.Label>
+                        <Form.Label htmlFor="email">Trailer Plate</Form.Label>
                         <TextInput
                           name="trailerPlate"
                           id="trailerPlate"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           placeholder="Trailer Plate"
                           value={this.state.trailerPlate}
                           onChange={this.handleInputChange}
@@ -217,12 +190,6 @@ class LoadingDealDetail extends React.Component {
                         <SelectGroup
                           name="transporterId"
                           id="transporterId"
-                          disabled={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           value={this.state.transporterId}
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
@@ -240,18 +207,12 @@ class LoadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="driverName">Driver</Form.Label>
+                        <Form.Label htmlFor="email">Truck Plate</Form.Label>
                         <TextInput
-                          name="driverName"
-                          id="driverName"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
-                          placeholder="Driver Name"
-                          value={this.state.driverName}
+                          name="truckPlate"
+                          id="truckPlate"
+                          placeholder="Truck Plate"
+                          value={this.state.truckPlate}
                           onChange={this.handleInputChange}
                           autoComplete="off"
                         />
@@ -261,12 +222,6 @@ class LoadingDealDetail extends React.Component {
                         <MaskWithValidation
                           name="driverPhone"
                           id="driverPhone"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           placeholder="Phone number"
                           className="form-control"
                           value={this.state.driverPhone}
@@ -304,12 +259,6 @@ class LoadingDealDetail extends React.Component {
                               className="form-control"
                               thousandSeparator={true}
                               name="firstWeight"
-                              readOnly={
-                                this.state.status == 1 &&
-                                this.props.authUser.type == 2
-                                  ? false
-                                  : true
-                              }
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
@@ -325,12 +274,6 @@ class LoadingDealDetail extends React.Component {
                               className="form-control"
                               thousandSeparator={true}
                               name="secondWeight"
-                              readOnly={
-                                this.state.status == 1 &&
-                                this.props.authUser.type == 2
-                                  ? false
-                                  : true
-                              }
                               id="secondWeight"
                               placeholder="Second Weight"
                               value={this.state.secondWeight}
@@ -366,12 +309,6 @@ class LoadingDealDetail extends React.Component {
                             className="form-control"
                             thousandSeparator={true}
                             name="quantity"
-                            readOnly={
-                              this.state.status == 1 &&
-                              this.props.authUser.type == 2
-                                ? false
-                                : true
-                            }
                             id="quantity"
                             placeholder="Quantity"
                             value={this.state.quantity}
@@ -393,42 +330,32 @@ class LoadingDealDetail extends React.Component {
                           value={this.state.alertTime}
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
-                          disabled={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                         >
                           <option value="">Alert Time</option>
                           <option>An hour</option>
                           <option>2 hours</option>
-                          <option>4 hours</option>
+                          <option>4 hours/</option>
                           <option>8 hours</option>
                           <option>16 hours</option>
                         </SelectGroup>
                       </Form.Group>
                     </Col>
                     <Col md="4">
-                      {this.state.finishedDateTime ? (
-                        <Form.Group>
-                          <Form.Label htmlFor="alertTime">
-                            Exit Date and Time
-                          </Form.Label>
-                          <InputMask
-                            className="form-control"
-                            mask="9999-99-99 99:99:99"
-                            placeholder="YYYY-MM-DD hh:mm:ss"
-                            id="finishedDateTime"
-                            name="finishedDateTime"
-                            value={this.state.finishedDateTime}
-                            onChange={this.handleInputChange}
-                            autoComplete="off"
-                          />
-                        </Form.Group>
-                      ) : (
-                        <></>
-                      )}
+                      <Form.Group>
+                        <Form.Label htmlFor="alertTime">
+                          Exit Date and Time
+                        </Form.Label>
+                        <InputMask
+                          className="form-control"
+                          mask="9999-99-99 99:99:99"
+                          placeholder="YYYY-MM-DD hh:mm:ss"
+                          id="finishedDateTime"
+                          name="finishedDateTime"
+                          value={this.state.finishedDateTime}
+                          onChange={this.handleInputChange}
+                          autoComplete="off"
+                        />
+                      </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="borderNumber">
                           No de Bordereau
@@ -436,12 +363,6 @@ class LoadingDealDetail extends React.Component {
                         <NumberFormat
                           className="form-control"
                           placeholder="No de Bordereau"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           id="borderNumber"
                           name="borderNumber"
                           value={this.state.borderNumber}
@@ -456,12 +377,6 @@ class LoadingDealDetail extends React.Component {
                         <NumberFormat
                           className="form-control"
                           placeholder="Ben de Livraison"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           id="receiptNumber"
                           name="receiptNumber"
                           value={this.state.receiptNumber}
@@ -474,12 +389,6 @@ class LoadingDealDetail extends React.Component {
                         <TextInput
                           name="description"
                           id="description"
-                          readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
-                              ? false
-                              : true
-                          }
                           placeholder="Description"
                           multiline
                           value={this.state.description}
@@ -494,26 +403,14 @@ class LoadingDealDetail extends React.Component {
                         value={this.state.newDescription}
                       />
                     </Col>
+
                     <Form.Group as={Col} sm={12} className="mt-3">
-                      {this.state.id > 0 ? (
-                        this.state.status == 1 &&
-                        this.props.authUser.type == 2 ? (
-                          <>
-                            <Button type="submit" variant="primary">
-                              Save
-                            </Button>
-                            <Button type="submit" variant="danger">
-                              Submit & Close
-                            </Button>
-                          </>
-                        ) : (
-                          <></>
-                        )
-                      ) : (
-                        <Button type="submit" variant="primary">
-                          Create
-                        </Button>
-                      )}
+                      <Button type="submit" variant="primary">
+                        Save
+                      </Button>
+                      <Button type="submit" variant="danger">
+                        Submit & Close
+                      </Button>
                     </Form.Group>
                   </Form.Row>
                 </ValidationForm>

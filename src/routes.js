@@ -44,6 +44,10 @@ const LoadingScreen = React.lazy(() =>
   import("./App/layout/AdminLayout/Loading")
 );
 
+const NewLoading = React.lazy(() =>
+  import("./App/layout/AdminLayout/Loading/DealDetail")
+);
+
 const UnloadingScreen = React.lazy(() =>
   import("./App/layout/AdminLayout/Unloading")
 );
@@ -66,6 +70,8 @@ const EditUser = React.lazy(() =>
   import("./App/layout/AdminLayout/Users/EditUser")
 );
 
+const Report = React.lazy(() => import("./App/layout/AdminLayout/Report"));
+
 const routes = [
   // {
   //   path: "/",
@@ -85,6 +91,13 @@ const routes = [
     exact: true,
     name: "Loading Live Screen",
     component: LoadingScreen,
+    permission_users: [2], // user types who can access this page
+  },
+  {
+    path: "/loading/deal/add",
+    exact: true,
+    name: "Add New Loading",
+    component: NewLoading,
     permission_users: [2], // user types who can access this page
   },
   {
@@ -127,6 +140,13 @@ const routes = [
     exact: true,
     name: "Edit User",
     component: EditUser,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/report",
+    exact: true,
+    name: "Report",
+    component: Report,
     permission_users: [], // user types who can access this page
   },
   // {

@@ -46,6 +46,14 @@ export default {
           visible: [],
           icon: "feather icon-users",
         },
+        {
+          id: "report",
+          title: "Report",
+          type: "item",
+          url: "/report",
+          visible: [],
+          icon: "feather icon-activity",
+        },
       ],
     },
     // {

@@ -60,7 +60,7 @@ class TableView extends Component {
                   variant="outline-success"
                   onClick={() => this.onDealClick(rowData.id)}
                 >
-                  <i className="fa fa-eye f-14" />
+                  <i className="fa fa-edit f-14" />
                 </Button>
               </div>,
               td

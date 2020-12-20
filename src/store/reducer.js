@@ -19,6 +19,7 @@ const reducer = (state = initialState, action) => {
   let user = null;
   let users = [];
   let authUser = [];
+  let deals = [];
 
   switch (action.type) {
     case actionTypes.COLLAPSE_MENU:
@@ -289,6 +290,19 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         users: users,
+      };
+    case actionTypes.DEAL_STATUS_UPDATE:
+      let dealId = action.dealId;
+      let dealStatus = action.status;
+      deals = state.deals.map((deal) => {
+        if (deal.id == dealId) {
+          deal.status = dealStatus;
+        }
+        return deal;
+      });
+      return {
+        ...state,
+        deals: deals,
       };
     default:
       return state;

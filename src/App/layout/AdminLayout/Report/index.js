@@ -10,20 +10,13 @@ import AmChartStatistics1 from "../../../../Demo/Widget/Chart/AmChartStatistics1
 
 import avatar1 from "../../../../assets/images/user/avatar-1.jpg";
 
-class Dashboard extends React.Component {
+class Report extends React.Component {
   render() {
     return (
       <Aux>
         <Row>
           <Col>
-            <h1 className="mb-4 text-center">
-              Welcome{" "}
-              <span className="text-c-blue">
-                {this.props.authUser.firstname +
-                  " " +
-                  this.props.authUser.lastname}
-              </span>
-            </h1>
+            <h1 className="mb-4 text-center">Summary</h1>
           </Col>
         </Row>
         <Row>
@@ -165,5 +158,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(Dashboard)
+  )(Report)
 );

@@ -1,18 +1,13 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import {
   ValidationForm,
   BaseFormControl,
   TextInput,
   SelectGroup,
-  FileInput,
-  Checkbox,
-  Radio,
 } from "react-bootstrap4-form-validation";
-import PNotify from "pnotify/dist/es/PNotify";
 import MaskedInput from "react-text-mask";
-import validator from "validator";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
@@ -68,7 +63,7 @@ class UnloadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "2020-12-15 13:11:23",
+    startedDateTime: "",
     alertTime: "",
     finishedDateTime: "",
     borderNumber: "",
@@ -85,7 +80,7 @@ class UnloadingDealDetail extends React.Component {
         return d.id == dealId;
       });
       this.setState({
-        ...deals,
+        ...deals[0],
       });
     }
   }
@@ -112,7 +107,15 @@ class UnloadingDealDetail extends React.Component {
           <Col>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Unloading</Card.Title>
+                <Card.Title as="h5">
+                  {this.state.status == 1
+                    ? "Loading"
+                    : this.state.status == 2
+                    ? "On route"
+                    : this.state.status == 3
+                    ? "Unloading"
+                    : ""}
+                </Card.Title>
               </Card.Header>
               <Card.Body>
                 <ValidationForm

@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import { Card, Row, Col, Button, Table } from "react-bootstrap";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 import Aux from "../../../../hoc/_Aux";
 
@@ -13,15 +15,47 @@ global.jQuery = $;
 
 $.DataTable = require("datatables.net-responsive-bs");
 
+let datatable1;
+let datatable2;
 class TableView extends Component {
   componentDidMount() {
     this.initTable();
   }
+
+  componentDidUpdate() {
+    datatable1.clear();
+    datatable1.rows.add(this.props.onroute_deals);
+    datatable1.draw();
+
+    datatable2.clear();
+    datatable2.rows.add(this.props.pending_deals);
+    datatable2.draw();
+  }
+
   onDealClick = (dealId) => {
     this.props.onDealClick(dealId);
   };
+
+  onArrivedPopupShow = (dealId) => {
+    const MySwal = withReactContent(Swal);
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "If this truck is arrived, just click 'OK' button.",
+      type: "warning",
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((isArrived) => {
+      if (isArrived.value) {
+        this.props.onTruckArrived(dealId);
+        //this.props.onRemoveUser(userId);
+        //eturn MySwal.fire("", "The user has been deleted!", "success");
+      } else {
+        //return MySwal.fire("", "This user is safe!", "error");
+      }
+    });
+  };
   initTable = () => {
-    $("#onroute-deals-table").DataTable({
+    datatable1 = $("#onroute-deals-table").DataTable({
       data: this.props.onroute_deals,
       order: [[1, "asc"]],
       columns: [
@@ -58,9 +92,9 @@ class TableView extends Component {
                 <Button
                   className="shadow-1 btn-rounded btn-icon btn-sm"
                   variant="outline-success"
-                  onClick={() => this.onDealClick(rowData.id)}
+                  onClick={() => this.onArrivedPopupShow(rowData.id)}
                 >
-                  <i className="fa fa-eye f-14" />
+                  <i className="fa fa-edit f-14" />
                 </Button>
               </div>,
               td
@@ -97,7 +131,7 @@ class TableView extends Component {
         },
       },
     });
-    $("#pending-deals-table").DataTable({
+    datatable2 = $("#pending-deals-table").DataTable({
       data: this.props.pending_deals,
       order: [[1, "asc"]],
       columns: [
@@ -138,7 +172,7 @@ class TableView extends Component {
                   variant="outline-success"
                   onClick={() => this.onDealClick(rowData.id)}
                 >
-                  <i className="fa fa-eye f-14" />
+                  <i className="fa fa-edit f-14" />
                 </Button>
               </div>,
               td

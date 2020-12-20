@@ -36,6 +36,9 @@ class Loading extends Component {
   onDealClick = (dealId) => {
     this.props.history.push("/loading/deal/" + dealId);
   };
+  onNewLoadingClick = () => {
+    this.props.history.push("/loading/deal/add");
+  };
 
   render() {
     console.log(this.props.companyId);
@@ -154,6 +157,7 @@ class Loading extends Component {
                 loading_deals={loading_deals}
                 onroute_deals={onroute_deals}
                 onDealClick={this.onDealClick}
+                onNewLoadingClick={this.onNewLoadingClick}
               />
             ) : this.state.viewMode == "table" ? (
               <TableView
