@@ -25,7 +25,6 @@ class Loading extends Component {
     current: this.props.companyId > 0 ? this.props.companyId : 1,
   };
   onCompanyChange = (option) => {
-    console.log(option);
     this.setState({ current: option.value });
   };
 
