@@ -47,6 +47,7 @@ class Loading extends Component {
         label: comp.companyName,
       });
     });
+    console.log(companyOptions);
 
     let loading_deals = this.props.deals.filter((deal) => {
       return deal.companyId == this.state.current && deal.status == 1;
