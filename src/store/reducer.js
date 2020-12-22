@@ -10,7 +10,7 @@ const initialState = {
   isFullScreen: false, // static can't change
   authUser: JSON.parse(localStorage.getItem("authUser")),
   companyId: localStorage.getItem("companyId"),
-  deals: [],
+  deals: DEMO.deals,
   users: [],
   companies: [],
 };
@@ -238,7 +238,6 @@ const reducer = (state = initialState, action) => {
       };
     case actionTypes.AUTH_USER_SET:
       authUser = action.authUser;
-      console.log(authUser);
       localStorage.setItem("authUser", JSON.stringify(authUser));
       localStorage.setItem("companyId", authUser.companyId);
       return {
@@ -265,15 +264,8 @@ const reducer = (state = initialState, action) => {
         ...state,
         users: users,
       };
-    case actionTypes.DEAL_STATUS_UPDATE:
-      let dealId = action.dealId;
-      let dealStatus = action.status;
-      deals = state.deals.map((deal) => {
-        if (deal.id == dealId) {
-          deal.status = dealStatus;
-        }
-        return deal;
-      });
+    case actionTypes.DEALS_SET:
+      deals = action.deals;
       return {
         ...state,
         deals: deals,

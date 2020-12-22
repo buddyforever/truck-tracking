@@ -23,7 +23,7 @@ import TableView from "./TableView";
 class Unloading extends Component {
   state = {
     viewMode: "grid",
-    current: this.props.companyId > 0 ? this.props.companyId : 1,
+    current: this.props.companyId,
   };
   onCompanyChange = (option) => {
     console.log(option);
@@ -44,8 +44,8 @@ class Unloading extends Component {
   };
 
   render() {
-    let companyOptions = [];
-    DEMO.companies.map((comp) => {
+    let companyOptions = [{ value: 0, label: "All" }];
+    this.props.companies.map((comp) => {
       companyOptions.push({
         value: comp.id,
         label: comp.companyName,
@@ -53,12 +53,15 @@ class Unloading extends Component {
     });
 
     let onroute_deals = this.props.deals.filter((deal) => {
-      return deal.companyId == this.state.current && deal.status == 2;
+      return (
+        (deal.companyId == this.state.current || this.state.current == 0) &&
+        deal.status == 2
+      );
     });
     let pending_deals = this.props.deals.filter((deal) => {
       return (
-        deal.companyId == this.state.current &&
-        (deal.status == 3 || deal.status == 4)
+        (deal.companyId == this.state.current || this.state.current == 0) &&
+        deal.status == 3
       );
     });
 
@@ -193,20 +196,18 @@ class Unloading extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     deals: state.deals,
     authUser: state.authUser,
     companyId: state.companyId,
+    companies: state.companies,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onTruckArrived: (dealId) =>
-      dispatch({
-        type: actionTypes.DEAL_STATUS_UPDATE,
-        dealId: dealId,
-        status: 3,
-      }),
+    setCompanies: (companies) =>
+      dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
   };
 };
 

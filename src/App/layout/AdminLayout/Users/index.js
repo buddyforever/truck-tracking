@@ -25,20 +25,28 @@ let datatable;
 class Users extends React.Component {
   state = {
     fullCard: false,
-    current: this.props.companyId > 0 ? this.props.companyId : 1,
+    current: this.props.companyId,
   };
 
   async componentDidMount() {
     const response = await axios.get(this.props.apiDomain + `/users/get`);
     if (response.data.status == 200) {
+      console.log(response.data.result);
       this.props.setUsers(response.data.result);
       this.initTable();
+    }
+
+    const companies_response = await axios.get(
+      this.props.apiDomain + `/companies/get`
+    );
+    if (companies_response.data.status == 200) {
+      this.props.setCompanies(companies_response.data.result);
     }
   }
 
   componentDidUpdate() {
     let companyUsers = this.props.users.filter((u) => {
-      return u.companyId == this.state.current;
+      return u.companyId == this.state.current || this.state.current == 0;
     });
     if (datatable) {
       datatable.clear();
@@ -94,7 +102,9 @@ class Users extends React.Component {
 
     datatable = $(tableResponsive).DataTable({
       data: this.props.users.filter((user) => {
-        return user.companyId == this.props.companyId;
+        return (
+          user.companyId == this.props.companyId || this.state.current == 0
+        );
       }),
       order: [[0, "asc"]],
       columns: [
@@ -123,6 +133,12 @@ class Users extends React.Component {
           },
         },
         {
+          data: "companyName",
+          render: function(data, type, row) {
+            return data;
+          },
+        },
+        {
           data: "type",
           render: (data, type, row) => {
             return data == 2 ? "Loading" : "Unloading";
@@ -131,7 +147,7 @@ class Users extends React.Component {
       ],
       columnDefs: [
         {
-          targets: [5],
+          targets: [6],
           data: null,
           createdCell: (td, cellData, rowData) => {
             ReactDOM.render(
@@ -216,8 +232,8 @@ class Users extends React.Component {
         height: this.props.windowHeight,
       };
     }
-    let companyOptions = [];
-    DEMO.companies.map((comp) => {
+    let companyOptions = [{ value: 0, label: "All" }];
+    this.props.companies.map((comp) => {
       companyOptions.push({
         value: comp.id,
         label: comp.companyName,
@@ -268,6 +284,7 @@ class Users extends React.Component {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Email</th>
+                      <th>Company</th>
                       <th>Role</th>
                       <th className="text-center">Action</th>
                     </tr>
@@ -278,6 +295,7 @@ class Users extends React.Component {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Email</th>
+                      <th>Company</th>
                       <th>Role</th>
                       <th className="text-center">Action</th>
                     </tr>
@@ -298,6 +316,7 @@ const mapStateToProps = (state) => {
     authUser: state.authUser,
     companyId: state.companyId,
     users: state.users,
+    companies: state.companies,
   };
 };
 
@@ -305,6 +324,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setUsers: (users) =>
       dispatch({ type: actionTypes.USERS_SET, users: users }),
+    setCompanies: (companies) =>
+      dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
   };
 };
 

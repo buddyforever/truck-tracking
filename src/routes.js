@@ -45,7 +45,7 @@ const LoadingScreen = React.lazy(() =>
 );
 
 const NewLoading = React.lazy(() =>
-  import("./App/layout/AdminLayout/Loading/DealDetail")
+  import("./App/layout/AdminLayout/Loading/NewLoading")
 );
 
 const UnloadingScreen = React.lazy(() =>

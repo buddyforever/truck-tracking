@@ -28,9 +28,6 @@ export const CHANGE_PRE_LAYOUT = "CHANGE_PRE_LAYOUT";
 export const AUTH_USER_SET = "AUTH_USER_SET";
 export const AUTH_SIGNOUT_POST = "AUTH_SIGNOUT_POST";
 
-export const USERS_GET = "USERS_GET";
 export const USERS_SET = "USERS_SET";
-
 export const COMPANIES_SET = "COMPANIES_SET";
-
-export const DEAL_STATUS_UPDATE = "DEAL_STATUS_UPDATE";
+export const DEALS_SET = "DEALS_SET";

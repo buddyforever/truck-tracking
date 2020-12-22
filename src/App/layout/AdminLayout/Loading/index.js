@@ -10,11 +10,13 @@ import {
 import Select from "react-select";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
+import * as actionTypes from "../../../../store/actions";
 
 import GridView from "./GridView";
 import TableView from "./TableView";
@@ -22,8 +24,14 @@ import TableView from "./TableView";
 class Loading extends Component {
   state = {
     viewMode: "grid",
-    current: this.props.companyId > 0 ? this.props.companyId : 1,
+    current: this.props.companyId,
   };
+  async componentDidMount() {
+    const response = await axios.get(this.props.apiDomain + "/companies/get");
+    if (response.data.status == 200) {
+      this.props.setCompanies(response.data.result);
+    }
+  }
   onCompanyChange = (option) => {
     this.setState({ current: option.value });
   };
@@ -40,20 +48,25 @@ class Loading extends Component {
   };
 
   render() {
-    let companyOptions = [];
-    DEMO.companies.map((comp) => {
+    let companyOptions = [{ value: 0, label: "All" }];
+    this.props.companies.map((comp) => {
       companyOptions.push({
         value: comp.id,
         label: comp.companyName,
       });
     });
-    console.log(companyOptions);
 
     let loading_deals = this.props.deals.filter((deal) => {
-      return deal.companyId == this.state.current && deal.status == 1;
+      return (
+        (deal.companyId == this.state.current || this.state.current == 0) &&
+        deal.status == 1
+      );
     });
     let onroute_deals = this.props.deals.filter((deal) => {
-      return deal.companyId == this.state.current && deal.status == 2;
+      return (
+        (deal.companyId == this.state.current || this.state.current == 0) &&
+        deal.status == 2
+      );
     });
 
     let options = {
@@ -97,7 +110,6 @@ class Loading extends Component {
         },
       ],
     };
-
     return (
       <Aux>
         <Row className="mb-4">
@@ -186,14 +198,19 @@ class Loading extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     deals: state.deals,
     authUser: state.authUser,
     companyId: state.companyId,
+    companies: state.companies,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setCompanies: (companies) =>
+      dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+  };
 };
 
 export default withRouter(

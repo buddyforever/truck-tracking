@@ -1,22 +1,20 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import { withRouter, Link } from "react-router-dom";
+import axios from "axios";
 import {
   ValidationForm,
   BaseFormControl,
   TextInput,
   SelectGroup,
-  FileInput,
-  Checkbox,
-  Radio,
 } from "react-bootstrap4-form-validation";
-import PNotify from "pnotify/dist/es/PNotify";
 import MaskedInput from "react-text-mask";
 import validator from "validator";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
 import NumberFormat from "react-number-format";
+import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
@@ -68,7 +66,7 @@ class LoadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "2020-12-15 13:11:23",
+    startedDateTime: "",
     alertTime: "",
     finishedDateTime: "",
     borderNumber: "",
@@ -96,9 +94,24 @@ class LoadingDealDetail extends React.Component {
     });
   };
 
-  handleSubmit = (e, formData, inputs) => {
+  handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
     console.log(formData);
+    // const response = await axios.post(
+    //   this.props.apiDomain + "/deals/add",
+    //   formData
+    // );
+    // if (response.data.status == 200) {
+    //   PNotify.success({
+    //     title: "Success",
+    //     text: "The new truck is ready to load.",
+    //   });
+    //   this.props.setDeals(response.data.result);
+    //   let props = this.props;
+    //   setTimeout(function() {
+    //     props.history.push("/loading");
+    //   }, 2000);
+    // }
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -120,7 +133,11 @@ class LoadingDealDetail extends React.Component {
                   onSubmit={this.handleSubmit}
                   onErrorSubmit={this.handleErrorSubmit}
                 >
-                  <TextInput type="hidden" name="id" value={this.state.id} />
+                  <TextInput
+                    type="hidden"
+                    name="companyId"
+                    value={this.props.companyId}
+                  />
                   <TextInput
                     type="hidden"
                     name="userId"
@@ -147,13 +164,10 @@ class LoadingDealDetail extends React.Component {
                         <Form.Label htmlFor="startedDateTime">
                           Entry Date and Time
                         </Form.Label>
-                        <TextInput
-                          name="startedDateTime"
-                          id="startedDateTime"
-                          placeholder="Entry Date and Time"
-                          readOnly
-                          value={this.state.startedDateTime}
-                          autoComplete="off"
+                        <InputMask
+                          className="form-control"
+                          mask="9999-99-99 99:99:99"
+                          placeholder="yyyy/mm/dd hh:mm:ss"
                         />
                       </Form.Group>
                       <Form.Group>
@@ -207,12 +221,12 @@ class LoadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="email">Truck Plate</Form.Label>
+                        <Form.Label htmlFor="driverName">Driver</Form.Label>
                         <TextInput
-                          name="truckPlate"
-                          id="truckPlate"
-                          placeholder="Truck Plate"
-                          value={this.state.truckPlate}
+                          name="driverName"
+                          id="driverName"
+                          placeholder="Driver"
+                          value={this.state.driverName}
                           onChange={this.handleInputChange}
                           autoComplete="off"
                         />
@@ -342,21 +356,6 @@ class LoadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="alertTime">
-                          Exit Date and Time
-                        </Form.Label>
-                        <InputMask
-                          className="form-control"
-                          mask="9999-99-99 99:99:99"
-                          placeholder="YYYY-MM-DD hh:mm:ss"
-                          id="finishedDateTime"
-                          name="finishedDateTime"
-                          value={this.state.finishedDateTime}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
-                        />
-                      </Form.Group>
-                      <Form.Group>
                         <Form.Label htmlFor="borderNumber">
                           No de Bordereau
                         </Form.Label>
@@ -425,6 +424,7 @@ class LoadingDealDetail extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
   };
@@ -432,11 +432,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSubmitUser: (user) =>
-      dispatch({
-        type: actionTypes.USER_SUBMIT_POST,
-        user: user,
-      }),
+    setDeals: (deals) =>
+      dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
   };
 };
 
