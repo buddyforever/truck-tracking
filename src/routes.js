@@ -63,7 +63,7 @@ const UnloadingDealDetail = React.lazy(() =>
 const Users = React.lazy(() => import("./App/layout/AdminLayout/Users"));
 
 const AddUser = React.lazy(() =>
-  import("./App/layout/AdminLayout/Users/EditUser")
+  import("./App/layout/AdminLayout/Users/AddUser")
 );
 
 const EditUser = React.lazy(() =>

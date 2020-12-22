@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter, Link } from "react-router-dom";
+import axios from "axios";
 import { Row, Col, Card, Table, Dropdown, Button } from "react-bootstrap";
 import Select from "react-select";
 import windowSize from "react-window-size";
@@ -27,17 +28,23 @@ class Users extends React.Component {
     current: this.props.companyId > 0 ? this.props.companyId : 1,
   };
 
-  componentDidMount() {
-    this.initTable();
+  async componentDidMount() {
+    const response = await axios.get(this.props.apiDomain + `/users/get`);
+    if (response.data.status == 200) {
+      this.props.setUsers(response.data.result);
+      this.initTable();
+    }
   }
 
   componentDidUpdate() {
     let companyUsers = this.props.users.filter((u) => {
       return u.companyId == this.state.current;
     });
-    datatable.clear();
-    datatable.rows.add(companyUsers);
-    datatable.draw();
+    if (datatable) {
+      datatable.clear();
+      datatable.rows.add(companyUsers);
+      datatable.draw();
+    }
   }
 
   cardHeaderRight = (
@@ -176,13 +183,18 @@ class Users extends React.Component {
       type: "warning",
       showCloseButton: true,
       showCancelButton: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete.value) {
-        this.props.onRemoveUser(userId);
-        PNotify.success({
-          title: "Success",
-          text: "The user has been deleted.",
-        });
+        const response = await axios.post(
+          this.props.apiDomain + "/users/delete/" + userId
+        );
+        if (response.data.status == 200) {
+          this.props.setUsers(response.data.result);
+          PNotify.success({
+            title: "Success",
+            text: "The user has been deleted.",
+          });
+        }
         //eturn MySwal.fire("", "The user has been deleted!", "success");
       } else {
         //return MySwal.fire("", "This user is safe!", "error");
@@ -282,6 +294,7 @@ class Users extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
     users: state.users,
@@ -290,11 +303,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onRemoveUser: (userId) =>
-      dispatch({
-        type: actionTypes.USER_REMOVE_POST,
-        userId: userId,
-      }),
+    setUsers: (users) =>
+      dispatch({ type: actionTypes.USERS_SET, users: users }),
   };
 };
 

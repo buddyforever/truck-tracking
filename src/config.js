@@ -1,5 +1,6 @@
 export default {
   defaultPath: "/dashboard",
+  apiDomain: "http://localhost:8080/api",
   basename: "", // only at build time to set, like /datta-able
   layout: "vertical", // vertical, horizontal
   preLayout: "", // null, layout-2, layout-2-2, layout-3, layout-4, layout-4-2, layout-6, layout-8

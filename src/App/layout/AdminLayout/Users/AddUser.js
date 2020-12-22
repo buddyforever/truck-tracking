@@ -26,7 +26,6 @@ class MaskWithValidation extends BaseFormControl {
     super(props);
     this.inputRef = React.createRef();
   }
-
   getInputRef() {
     return this.inputRef.current.inputElement;
   }
@@ -51,9 +50,8 @@ class MaskWithValidation extends BaseFormControl {
   }
 }
 
-class EditUser extends React.Component {
+class AddUser extends React.Component {
   state = {
-    id: 0,
     firstname: "",
     lastname: "",
     email: "",
@@ -66,21 +64,9 @@ class EditUser extends React.Component {
   };
 
   async componentDidMount() {
-    const { id } = this.props.match.params;
-    if (id > 0) {
-      const response = await axios.get(this.props.apiDomain + "/users/" + id);
-      if (response.data.status == 200) {
-        console.log(response.data.result);
-        this.setState({
-          ...response.data.result[0],
-        });
-      }
-      const company_response = await axios.get(
-        this.props.apiDomain + "/companies/get"
-      );
-      const companies = company_response.data.result;
-      this.props.setCompanies(companies);
-    }
+    const response = await axios.get(this.props.apiDomain + "/companies/get");
+    const companies = response.data.result;
+    this.props.setCompanies(companies);
   }
 
   handleCheckboxChange = (e, value) => {
@@ -97,15 +83,15 @@ class EditUser extends React.Component {
   handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
     const response = await axios.post(
-      this.props.apiDomain + "/users/update",
+      this.props.apiDomain + "/users/add",
       formData
     );
     if (response.data.status == 200) {
-      this.props.setUsers(response.data.result);
       PNotify.success({
         title: "Success",
-        text: "The user detail has been updated.",
+        text: "The new user has been added.",
       });
+      this.props.setUsers(response.data.result);
       let props = this.props;
       setTimeout(function() {
         props.history.push("/users");
@@ -129,16 +115,13 @@ class EditUser extends React.Component {
           <Col>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">
-                  {this.state.id > 0 ? "Edit" : "Add New"} User
-                </Card.Title>
+                <Card.Title as="h5">Add New User</Card.Title>
               </Card.Header>
               <Card.Body>
                 <ValidationForm
                   onSubmit={this.handleSubmit}
                   onErrorSubmit={this.handleErrorSubmit}
                 >
-                  <TextInput type="hidden" name="id" value={this.state.id} />
                   <Form.Row>
                     <Form.Group as={Col} md="6">
                       <Form.Label htmlFor="firstName">First name</Form.Label>
@@ -340,10 +323,10 @@ class EditUser extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
     companies: state.companies,
+    apiDomain: state.apiDomain,
   };
 };
 
@@ -360,5 +343,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(windowSize(EditUser))
+  )(windowSize(AddUser))
 );

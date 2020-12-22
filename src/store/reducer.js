@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as actionTypes from "./actions";
 import config from "./../config";
 import DEMO from "../store/constant";
@@ -9,8 +10,9 @@ const initialState = {
   isFullScreen: false, // static can't change
   authUser: JSON.parse(localStorage.getItem("authUser")),
   companyId: localStorage.getItem("companyId"),
-  deals: DEMO.deals,
-  users: DEMO.users,
+  deals: [],
+  users: [],
+  companies: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -20,6 +22,7 @@ const reducer = (state = initialState, action) => {
   let users = [];
   let authUser = [];
   let deals = [];
+  let companies = [];
 
   switch (action.type) {
     case actionTypes.COLLAPSE_MENU:
@@ -257,36 +260,14 @@ const reducer = (state = initialState, action) => {
         ...state,
         authUser: null,
       };
-    case actionTypes.USER_REMOVE_POST:
-      let userId = action.userId;
-      users = state.users;
-      users = users.filter((u) => {
-        return u.id != userId;
-      });
+    case actionTypes.COMPANIES_SET:
+      companies = action.companies;
       return {
         ...state,
-        users: users,
+        companies: companies,
       };
-    case actionTypes.USER_SUBMIT_POST:
-      user = action.user;
-      user.companyId = state.companyId;
-      delete user["confirmPassword"];
-
-      if (user.id != 0) {
-        //edit a user
-        users = state.users.map((u) => {
-          if (u.id == user.id) {
-            u = user;
-          }
-          return u;
-        });
-      } else {
-        //add a new user
-        user.id = state.users.length + 1;
-        users = state.users;
-        users.push(user);
-      }
-      console.log(users);
+    case actionTypes.USERS_SET:
+      users = action.users;
       return {
         ...state,
         users: users,

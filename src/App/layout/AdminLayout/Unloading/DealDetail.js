@@ -449,13 +449,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    onSubmitUser: (user) =>
-      dispatch({
-        type: actionTypes.USER_SUBMIT_POST,
-        user: user,
-      }),
-  };
+  return {};
 };
 
 export default withRouter(
