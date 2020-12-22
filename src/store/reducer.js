@@ -236,23 +236,16 @@ const reducer = (state = initialState, action) => {
         navListTitleHide: initialState.navListTitleHide,
         layout6Background: initialState.layout6Background,
       };
-    case actionTypes.AUTH_SIGNIN_POST:
+    case actionTypes.AUTH_USER_SET:
       authUser = action.authUser;
-      users = state.users;
-      users = users.filter(function(user) {
-        return (
-          user.email === authUser.email && user.password === authUser.password
-        );
-      });
-      if (users.length || users[0].type == 1) {
-        localStorage.setItem("authUser", JSON.stringify(users[0]));
-        localStorage.setItem("companyId", users[0].companyId);
-        return {
-          ...state,
-          authUser: users[0],
-          companyId: users[0].companyId,
-        };
-      } else return { ...state };
+      console.log(authUser);
+      localStorage.setItem("authUser", JSON.stringify(authUser));
+      localStorage.setItem("companyId", authUser.companyId);
+      return {
+        ...state,
+        authUser: authUser,
+        companyId: authUser.companyId,
+      };
     case actionTypes.AUTH_SIGNOUT_POST:
       localStorage.removeItem("authUser");
       localStorage.removeItem("companyId");

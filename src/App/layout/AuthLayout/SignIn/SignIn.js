@@ -7,11 +7,13 @@ import Aux from "../../../../hoc/_Aux";
 import Breadcrumb from "../../AdminLayout/Breadcrumb";
 import * as actionTypes from "../../../../store/actions";
 import DEMO from "../../../../store/constant";
+import axios from "axios";
 
 class SignIn extends React.Component {
   state = {
     email: "",
     password: "",
+    msg: "",
   };
   onEmailChange = (e) => {
     this.setState({
@@ -23,8 +25,18 @@ class SignIn extends React.Component {
       password: e.target.value,
     });
   };
-  onSignInPost = () => {
-    this.props.onSignInPost(this.state);
+  onSignInPost = async () => {
+    const response = await axios.post(this.props.apiDomain + "/auth/signin", {
+      email: this.state.email,
+      password: this.state.password,
+    });
+    if (response.data.status == 200) {
+      this.props.setAuthUser(response.data.result[0]);
+    } else {
+      this.setState({
+        msg: "Email or password is incorrect. Please try again!",
+      });
+    }
   };
   render() {
     return !this.props.authUser ? (
@@ -44,6 +56,10 @@ class SignIn extends React.Component {
                   <i className="feather icon-unlock auth-icon" />
                 </div>
                 <h3 className="mb-4">Login</h3>
+                <div className="input-group mb-3">
+                  <p className="text-c-red">{this.state.msg}</p>
+                </div>
+
                 <div className="input-group mb-3">
                   <input
                     type="email"
@@ -103,15 +119,16 @@ class SignIn extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSignInPost: (authUser) =>
+    setAuthUser: (authUser) =>
       dispatch({
-        type: actionTypes.AUTH_SIGNIN_POST,
+        type: actionTypes.AUTH_USER_SET,
         authUser: authUser,
       }),
   };

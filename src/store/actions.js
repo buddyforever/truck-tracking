@@ -25,7 +25,7 @@ export const NAV_COLLAPSE_LEAVE = "NAV_COLLAPSE_LEAVE";
 export const CONFIG_BLOCK = "CONFIG_BLOCK";
 export const CHANGE_PRE_LAYOUT = "CHANGE_PRE_LAYOUT";
 
-export const AUTH_SIGNIN_POST = "AUTH_SIGNIN_POST";
+export const AUTH_USER_SET = "AUTH_USER_SET";
 export const AUTH_SIGNOUT_POST = "AUTH_SIGNOUT_POST";
 
 export const USERS_GET = "USERS_GET";

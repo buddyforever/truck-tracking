@@ -10,7 +10,7 @@ const navGroup = (props) => {
     navItems = Object.keys(groups).map((item) => {
       item = groups[item];
       if (
-        props.authUser.type === "1" ||
+        props.authUser.type == 1 ||
         item.visible.includes(parseInt(props.authUser.type))
       ) {
         switch (item.type) {
