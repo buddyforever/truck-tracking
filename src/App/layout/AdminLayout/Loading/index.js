@@ -24,7 +24,6 @@ import TableView from "./TableView";
 class Loading extends Component {
   state = {
     viewMode: "grid",
-    current: this.props.companyId,
   };
   async componentDidMount() {
     const response = await axios.get(this.props.apiDomain + "/companies/get");
@@ -33,7 +32,7 @@ class Loading extends Component {
     }
   }
   onCompanyChange = (option) => {
-    this.setState({ current: option.value });
+    this.props.onCompanyChange(option.value);
   };
 
   onViewModeChange = (mode) => {
@@ -55,16 +54,19 @@ class Loading extends Component {
         label: comp.companyName,
       });
     });
+    let currentCompanyOption = companyOptions.filter(
+      (comp) => comp.value == this.props.companyId
+    );
 
     let loading_deals = this.props.deals.filter((deal) => {
       return (
-        (deal.companyId == this.state.current || this.state.current == 0) &&
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
         deal.status == 1
       );
     });
     let onroute_deals = this.props.deals.filter((deal) => {
       return (
-        (deal.companyId == this.state.current || this.state.current == 0) &&
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
         deal.status == 2
       );
     });
@@ -119,7 +121,11 @@ class Loading extends Component {
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
-                  defaultValue={companyOptions[0]}
+                  value={
+                    this.props.companyId != 0
+                      ? currentCompanyOption[0]
+                      : companyOptions[0]
+                  }
                   onChange={this.onCompanyChange}
                   name="company"
                   options={companyOptions}
@@ -210,6 +216,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setCompanies: (companies) =>
       dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    onCompanyChange: (companyId) =>
+      dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };
 };
 

@@ -258,6 +258,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         companies: companies,
       };
+    case actionTypes.COMPANY_CHANGE:
+      localStorage.setItem("companyId", action.companyId);
+      return {
+        ...state,
+        companyId: action.companyId,
+      };
     case actionTypes.USERS_SET:
       users = action.users;
       return {

@@ -46,7 +46,7 @@ class Users extends React.Component {
 
   componentDidUpdate() {
     let companyUsers = this.props.users.filter((u) => {
-      return u.companyId == this.state.current || this.state.current == 0;
+      return u.companyId == this.props.companyId || this.props.companyId == 0;
     });
     if (datatable) {
       datatable.clear();
@@ -93,8 +93,7 @@ class Users extends React.Component {
   );
 
   onCompanyChange = (option) => {
-    console.log(option);
-    this.setState({ current: option.value });
+    this.props.onCompanyChange(option.value);
   };
 
   initTable = () => {
@@ -103,7 +102,7 @@ class Users extends React.Component {
     datatable = $(tableResponsive).DataTable({
       data: this.props.users.filter((user) => {
         return (
-          user.companyId == this.props.companyId || this.state.current == 0
+          user.companyId == this.props.companyId || this.props.companyId == 0
         );
       }),
       order: [[0, "asc"]],
@@ -239,6 +238,9 @@ class Users extends React.Component {
         label: comp.companyName,
       });
     });
+    let currentCompanyOption = companyOptions.filter(
+      (comp) => comp.value == this.props.companyId
+    );
 
     return (
       <Aux>
@@ -249,7 +251,11 @@ class Users extends React.Component {
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
-                  defaultValue={companyOptions[0]}
+                  value={
+                    this.props.companyId != 0
+                      ? currentCompanyOption[0]
+                      : companyOptions[0]
+                  }
                   onChange={this.onCompanyChange}
                   name="company"
                   options={companyOptions}
@@ -326,6 +332,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({ type: actionTypes.USERS_SET, users: users }),
     setCompanies: (companies) =>
       dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    onCompanyChange: (companyId) =>
+      dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };
 };
 

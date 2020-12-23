@@ -30,4 +30,5 @@ export const AUTH_SIGNOUT_POST = "AUTH_SIGNOUT_POST";
 
 export const USERS_SET = "USERS_SET";
 export const COMPANIES_SET = "COMPANIES_SET";
+export const COMPANY_CHANGE = "COMPANY_CHANGE";
 export const DEALS_SET = "DEALS_SET";

@@ -23,11 +23,9 @@ import TableView from "./TableView";
 class Unloading extends Component {
   state = {
     viewMode: "grid",
-    current: this.props.companyId,
   };
   onCompanyChange = (option) => {
-    console.log(option);
-    this.setState({ current: option.value });
+    this.props.onCompanyChange(option.value);
   };
 
   onViewModeChange = (mode) => {
@@ -51,16 +49,19 @@ class Unloading extends Component {
         label: comp.companyName,
       });
     });
+    let currentCompanyOption = companyOptions.filter(
+      (comp) => comp.value == this.props.companyId
+    );
 
     let onroute_deals = this.props.deals.filter((deal) => {
       return (
-        (deal.companyId == this.state.current || this.state.current == 0) &&
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
         deal.status == 2
       );
     });
     let pending_deals = this.props.deals.filter((deal) => {
       return (
-        (deal.companyId == this.state.current || this.state.current == 0) &&
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
         deal.status == 3
       );
     });
@@ -116,7 +117,11 @@ class Unloading extends Component {
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
-                  defaultValue={companyOptions[0]}
+                  value={
+                    this.props.companyId != 0
+                      ? currentCompanyOption[0]
+                      : companyOptions[0]
+                  }
                   onChange={this.onCompanyChange}
                   name="company"
                   options={companyOptions}
@@ -208,6 +213,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setCompanies: (companies) =>
       dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    onCompanyChange: (companyId) =>
+      dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };
 };
 
