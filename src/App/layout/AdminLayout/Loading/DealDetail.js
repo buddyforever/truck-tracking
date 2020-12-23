@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
+import axios from "axios";
 import {
   ValidationForm,
   BaseFormControl,
@@ -12,6 +13,7 @@ import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
 import NumberFormat from "react-number-format";
+import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
@@ -50,6 +52,8 @@ class MaskWithValidation extends BaseFormControl {
 class LoadingDealDetail extends React.Component {
   state = {
     id: 0,
+    userId: 0,
+    companyId: 0,
     driverName: "",
     driverPhone: "",
     truckPlate: "",
@@ -63,26 +67,27 @@ class LoadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "",
-    alertTime: "",
-    finishedDateTime: "",
-    borderNumber: "",
-    receiptNumber: "",
+    startDateTime: "",
+    alertTime: 0,
+    finishDateTime: "",
+    borderNumber: 0,
+    receiptNumber: 0,
     description: "",
     newDescription: "",
-    status: 0,
+    statue: 0,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dealId } = this.props.match.params;
     if (dealId > 0) {
-      let deals = DEMO.deals.filter((d) => {
-        return d.id == dealId;
-      });
-      console.log(deals);
-      this.setState({
-        ...deals[0],
-      });
+      const response = await axios.get(
+        this.props.apiDomain + "/deals/get/" + dealId
+      );
+      if (response.data.status == 200) {
+        this.setState({
+          ...response.data.result[0],
+        });
+      }
     }
   }
 
@@ -92,9 +97,41 @@ class LoadingDealDetail extends React.Component {
     });
   };
 
+  onSaveForm = () => {
+    this.setState({ status: 1 }, async function() {
+      const response = await axios.post(
+        this.props.apiDomain + "/deals/update",
+        this.state
+      );
+      if (response.data.status == 200) {
+        PNotify.success({
+          title: "Success",
+          text: "The loading detail has been updated.",
+        });
+        this.props.setDeals(response.data.result);
+      }
+    });
+  };
+
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
-    console.log(formData);
+    this.setState({ status: 2 }, async function() {
+      const response = await axios.post(
+        this.props.apiDomain + "/deals/update",
+        this.state
+      );
+      if (response.data.status == 200) {
+        PNotify.success({
+          title: "Success",
+          text: "Loading has been finished.",
+        });
+        this.props.setDeals(response.data.result);
+        let props = this.props;
+        setTimeout(function() {
+          props.history.push("/loading");
+        }, 2000);
+      }
+    });
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -147,16 +184,16 @@ class LoadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startedDateTime">
+                        <Form.Label htmlFor="startDateTime">
                           Entry Date and Time
                         </Form.Label>
-                        {this.state.startedDateTime ? (
+                        {this.state.startDateTime ? (
                           <TextInput
-                            name="startedDateTime"
-                            id="startedDateTime"
+                            name="startDateTime"
+                            id="startDateTime"
                             placeholder="Entry Date and Time"
-                            readOnly={this.state.startedDateTime ? true : false}
-                            value={this.state.startedDateTime}
+                            readOnly={this.state.startDateTime ? true : false}
+                            value={this.state.startDateTime}
                             autoComplete="off"
                           />
                         ) : (
@@ -313,7 +350,13 @@ class LoadingDealDetail extends React.Component {
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
-                              onChange={this.handleInputChange}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  netWeight:
+                                    this.state.secondWeight - e.target.value,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -334,6 +377,28 @@ class LoadingDealDetail extends React.Component {
                               id="secondWeight"
                               placeholder="Second Weight"
                               value={this.state.secondWeight}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  netWeight:
+                                    e.target.value - this.state.firstWeight,
+                                });
+                              }}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="netWeight">
+                              Net Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="netWeight"
+                              readOnly
+                              id="netWeight"
+                              placeholder="Net Weight"
+                              value={this.state.netWeight}
                               onChange={this.handleInputChange}
                               autoComplete="off"
                             />
@@ -391,7 +456,6 @@ class LoadingDealDetail extends React.Component {
                           name="alertTime"
                           id="alertTime"
                           value={this.state.alertTime}
-                          errorMessage="Transporter"
                           onChange={this.handleInputChange}
                           disabled={
                             this.state.status == 1 &&
@@ -400,17 +464,17 @@ class LoadingDealDetail extends React.Component {
                               : true
                           }
                         >
-                          <option value="">Alert Time</option>
-                          <option>An hour</option>
-                          <option>2 hours</option>
-                          <option>4 hours</option>
-                          <option>8 hours</option>
-                          <option>16 hours</option>
+                          <option>Alert Time</option>
+                          <option value="60">An hour</option>
+                          <option value="120">2 hours</option>
+                          <option value="240">4 hours</option>
+                          <option value="480">8 hours</option>
+                          <option value="960">16 hours</option>
                         </SelectGroup>
                       </Form.Group>
                     </Col>
                     <Col md="4">
-                      {this.state.finishedDateTime ? (
+                      {this.state.finishDateTime ? (
                         <Form.Group>
                           <Form.Label htmlFor="alertTime">
                             Exit Date and Time
@@ -418,10 +482,14 @@ class LoadingDealDetail extends React.Component {
                           <InputMask
                             className="form-control"
                             mask="9999-99-99 99:99:99"
-                            placeholder="YYYY-MM-DD hh:mm:ss"
-                            id="finishedDateTime"
-                            name="finishedDateTime"
-                            value={this.state.finishedDateTime}
+                            placeholder="yyyy-mm-dd hh:mm:ss"
+                            readOnly={
+                              this.state.status == 2 ||
+                              this.state.finishDate != ""
+                            }
+                            id="finishDateTime"
+                            name="finishDateTime"
+                            value={this.state.finishDateTime}
                             onChange={this.handleInputChange}
                             autoComplete="off"
                           />
@@ -499,7 +567,11 @@ class LoadingDealDetail extends React.Component {
                         this.state.status == 1 &&
                         this.props.authUser.type == 2 ? (
                           <>
-                            <Button type="submit" variant="primary">
+                            <Button
+                              type="button"
+                              variant="primary"
+                              onClick={this.onSaveForm}
+                            >
                               Save
                             </Button>
                             <Button type="submit" variant="danger">
@@ -528,13 +600,17 @@ class LoadingDealDetail extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setDeals: (deals) =>
+      dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
+  };
 };
 
 export default withRouter(

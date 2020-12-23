@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
+import axios from "axios";
 import {
   ValidationForm,
   BaseFormControl,
@@ -12,6 +13,7 @@ import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
 import NumberFormat from "react-number-format";
+import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
@@ -50,6 +52,8 @@ class MaskWithValidation extends BaseFormControl {
 class UnloadingDealDetail extends React.Component {
   state = {
     id: 0,
+    userId: 0,
+    companyId: 0,
     driverName: "",
     driverPhone: "",
     truckPlate: "",
@@ -63,25 +67,30 @@ class UnloadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "",
-    alertTime: "",
-    finishedDateTime: "",
-    borderNumber: "",
-    receiptNumber: "",
+    startDateTime: "",
+    alertTime: 0,
+    finishDateTime: "",
+    borderNumber: 0,
+    receiptNumber: 0,
     description: "",
     newDescription: "",
     status: 0,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dealId } = this.props.match.params;
     if (dealId > 0) {
-      let deals = DEMO.deals.filter((d) => {
-        return d.id == dealId;
-      });
-      this.setState({
-        ...deals[0],
-      });
+      const response = await axios.get(
+        this.props.apiDomain + "/deals/get/" + dealId
+      );
+      if (response.data.status == 200) {
+        console.log(response.data.result);
+        this.setState({
+          ...response.data.result[0],
+          firstWeight: response.data.result[0].secondWeight,
+          secondWeight: response.data.result[0].firstWeight,
+        });
+      }
     }
   }
 
@@ -91,9 +100,41 @@ class UnloadingDealDetail extends React.Component {
     });
   };
 
+  onSaveForm = () => {
+    this.setState({ status: 3 }, async function() {
+      const response = await axios.post(
+        this.props.apiDomain + "/deals/update",
+        this.state
+      );
+      if (response.data.status == 200) {
+        PNotify.success({
+          title: "Success",
+          text: "The loading detail has been updated.",
+        });
+        this.props.setDeals(response.data.result);
+      }
+    });
+  };
+
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
-    console.log(formData);
+    this.setState({ status: 4 }, async function() {
+      const response = await axios.post(
+        this.props.apiDomain + "/deals/update",
+        this.state
+      );
+      if (response.data.status == 200) {
+        PNotify.success({
+          title: "Success",
+          text: "Unloading has been finished.",
+        });
+        this.props.setDeals(response.data.result);
+        let props = this.props;
+        setTimeout(function() {
+          props.history.push("/unloading");
+        }, 2000);
+      }
+    });
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -146,15 +187,15 @@ class UnloadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startedDateTime">
+                        <Form.Label htmlFor="startDateTime">
                           Entry Date and Time
                         </Form.Label>
                         <TextInput
-                          name="startedDateTime"
-                          id="startedDateTime"
+                          name="startDateTime"
+                          id="startDateTime"
                           placeholder="Entry Date and Time"
                           readOnly
-                          value={this.state.startedDateTime}
+                          value={this.state.startDateTime}
                           autoComplete="off"
                         />
                       </Form.Group>
@@ -233,7 +274,27 @@ class UnloadingDealDetail extends React.Component {
                           readOnly
                           className="form-control"
                           value={this.state.driverPhone}
+                          onChange={this.handleInputChange}
                           successMessage="Looks good!"
+                          errorMessage={{
+                            validator: "Please enter (123) 456-7890",
+                          }}
+                          mask={[
+                            "(",
+                            /[1-9]/,
+                            /[0-9]/,
+                            /[0-9]/,
+                            ")",
+                            " ",
+                            /[0-9]/,
+                            /[0-9]/,
+                            /[0-9]/,
+                            "-",
+                            /[0-9]/,
+                            /[0-9]/,
+                            /[0-9]/,
+                            /[0-9]/,
+                          ]}
                           autoComplete="off"
                         />
                       </Form.Group>
@@ -249,6 +310,7 @@ class UnloadingDealDetail extends React.Component {
                               name="firstWeight"
                               id="firstWeight"
                               placeholder="First Weight"
+                              value={this.state.firstWeight}
                               onChange={this.handleInputChange}
                               autoComplete="off"
                             />
@@ -263,6 +325,7 @@ class UnloadingDealDetail extends React.Component {
                               name="secondWeight"
                               id="secondWeight"
                               placeholder="Second Weight"
+                              value={this.state.secondWeight}
                               onChange={this.handleInputChange}
                               autoComplete="off"
                             />
@@ -352,16 +415,16 @@ class UnloadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="alertTime">
+                        <Form.Label htmlFor="finishDateTime">
                           Exit Date and Time
                         </Form.Label>
                         <InputMask
                           className="form-control"
                           mask="9999-99-99 99:99:99"
-                          placeholder="YYYY-MM-DD hh:mm:ss"
-                          id="finishedDateTime"
-                          name="finishedDateTime"
-                          value={this.state.finishedDateTime}
+                          placeholder="yyyy-mm-dd hh:mm:ss"
+                          id="finishDateTime"
+                          name="finishDateTime"
+                          value={this.state.finishDateTime}
                           onChange={this.handleInputChange}
                           autoComplete="off"
                         />
@@ -423,7 +486,11 @@ class UnloadingDealDetail extends React.Component {
                     </Col>
 
                     <Form.Group as={Col} sm={12} className="mt-3">
-                      <Button type="submit" variant="primary">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={this.onSaveForm}
+                      >
                         Save
                       </Button>
                       <Button type="submit" variant="danger">
@@ -443,13 +510,17 @@ class UnloadingDealDetail extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setDeals: (deals) =>
+      dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
+  };
 };
 
 export default withRouter(

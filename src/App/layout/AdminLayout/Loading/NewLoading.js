@@ -67,9 +67,9 @@ class LoadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startedDateTime: "",
-    alertTime: "",
-    finishedDateTime: "",
+    startDateTime: "",
+    alertTime: 0,
+    finishDateTime: "",
     borderNumber: 0,
     receiptNumber: 0,
     description: "",
@@ -97,8 +97,6 @@ class LoadingDealDetail extends React.Component {
 
   handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
-    console.log(formData);
-    console.log(this.state);
     const response = await axios.post(
       this.props.apiDomain + "/deals/add",
       this.state
@@ -162,13 +160,13 @@ class LoadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startedDateTime">
+                        <Form.Label htmlFor="startDateTime">
                           Entry Date and Time
                         </Form.Label>
                         <InputMask
                           className="form-control"
                           mask="9999-99-99 99:99:99"
-                          placeholder="yyyy/mm/dd hh:mm:ss"
+                          placeholder="yyyy-mm-dd hh:mm:ss"
                         />
                       </Form.Group>
                       <Form.Group>
@@ -276,7 +274,13 @@ class LoadingDealDetail extends React.Component {
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
-                              onChange={this.handleInputChange}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  netWeight:
+                                    this.state.secondWeight - e.target.value,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -290,7 +294,13 @@ class LoadingDealDetail extends React.Component {
                               id="secondWeight"
                               placeholder="Second Weight"
                               value={this.state.secondWeight}
-                              onChange={this.handleInputChange}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  netWeight:
+                                    e.target.value - this.state.firstWeight,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -306,6 +316,11 @@ class LoadingDealDetail extends React.Component {
                             type="hidden"
                             name="secondWeight"
                             value={this.state.secondWeight}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="netWeight"
+                            value={this.state.netWeight}
                           />
                         </>
                       )}
@@ -330,6 +345,11 @@ class LoadingDealDetail extends React.Component {
                           />
                         </Form.Group>
                       )}
+                      <TextInput
+                        type="hidden"
+                        name="netWeight"
+                        value={this.state.netWeight}
+                      />
                       <TextInput
                         type="hidden"
                         name="newQuantity"

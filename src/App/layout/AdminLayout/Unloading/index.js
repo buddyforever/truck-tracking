@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import {
   Card,
   Row,
@@ -24,6 +25,21 @@ class Unloading extends Component {
   state = {
     viewMode: "grid",
   };
+
+  async componentDidMount() {
+    const response = await axios.get(this.props.apiDomain + "/companies/get");
+    if (response.data.status == 200) {
+      this.props.setCompanies(response.data.result);
+    }
+    const deals_response = await axios.get(
+      this.props.apiDomain + "/deals/get",
+      { companyId: this.props.companyId }
+    );
+    if (deals_response.data.status == 200) {
+      this.props.setCompanyDeals(deals_response.data.result);
+    }
+  }
+
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
   };
@@ -52,19 +68,6 @@ class Unloading extends Component {
     let currentCompanyOption = companyOptions.filter(
       (comp) => comp.value == this.props.companyId
     );
-
-    let onroute_deals = this.props.deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
-      );
-    });
-    let pending_deals = this.props.deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 3
-      );
-    });
 
     let options = {
       chart: {
@@ -97,11 +100,23 @@ class Unloading extends Component {
           data: [
             {
               name: "Truck on Road",
-              y: onroute_deals.length,
+              y: this.props.deals.filter((deal) => {
+                return (
+                  (deal.companyId == this.props.companyId ||
+                    this.props.companyId == 0) &&
+                  deal.status == 2
+                );
+              }).length,
             },
             {
               name: "Arrived",
-              y: pending_deals.length,
+              y: this.props.deals.filter((deal) => {
+                return (
+                  (deal.companyId == this.props.companyId ||
+                    this.props.companyId == 0) &&
+                  deal.status == 3
+                );
+              }).length,
             },
           ],
         },
@@ -167,15 +182,13 @@ class Unloading extends Component {
           <Col md={8} xl={9}>
             {this.state.viewMode == "grid" ? (
               <GridView
-                onroute_deals={onroute_deals}
-                pending_deals={pending_deals}
+                company_deals={this.props.deals}
                 onTruckArrived={this.onTruckArrived}
                 onDealClick={this.onDealClick}
               />
             ) : this.state.viewMode == "table" ? (
               <TableView
-                onroute_deals={onroute_deals}
-                pending_deals={pending_deals}
+                company_deals={this.props.deals}
                 onTruckArrived={this.onTruckArrived}
                 onDealClick={this.onDealClick}
               />
@@ -213,6 +226,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setCompanies: (companies) =>
       dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    setCompanyDeals: (deals) =>
+      dispatch({ type: actionTypes.COMPANY_DEALS_SET, deals: deals }),
     onCompanyChange: (companyId) =>
       dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };

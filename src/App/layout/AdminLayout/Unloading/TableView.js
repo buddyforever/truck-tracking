@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import axios from "axios";
 import { Card, Row, Col, Button, Table } from "react-bootstrap";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Swal from "sweetalert2";
+import PNotify from "pnotify/dist/es/PNotify";
 import withReactContent from "sweetalert2-react-content";
 
 import Aux from "../../../../hoc/_Aux";
+import * as actionTypes from "../../../../store/actions";
 
 import $ from "jquery";
 window.jQuery = $;
@@ -23,12 +26,25 @@ class TableView extends Component {
   }
 
   componentDidUpdate() {
+    let onroute_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 2
+      );
+    });
+    let pending_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 3
+      );
+    });
+
     datatable1.clear();
-    datatable1.rows.add(this.props.onroute_deals);
+    datatable1.rows.add(onroute_deals);
     datatable1.draw();
 
     datatable2.clear();
-    datatable2.rows.add(this.props.pending_deals);
+    datatable2.rows.add(pending_deals);
     datatable2.draw();
   }
 
@@ -36,27 +52,52 @@ class TableView extends Component {
     this.props.onDealClick(dealId);
   };
 
-  onArrivedPopupShow = (dealId) => {
-    const MySwal = withReactContent(Swal);
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "If this truck is arrived, just click 'OK' button.",
-      type: "warning",
-      showCloseButton: true,
-      showCancelButton: true,
-    }).then((isArrived) => {
-      if (isArrived.value) {
-        this.props.onTruckArrived(dealId);
-        //this.props.onRemoveUser(userId);
-        //eturn MySwal.fire("", "The user has been deleted!", "success");
-      } else {
-        //return MySwal.fire("", "This user is safe!", "error");
-      }
-    });
+  onArrivedPopupShow = async (dealId) => {
+    const response = await axios.get(
+      this.props.apiDomain + "/deals/get/" + dealId
+    );
+    if (response.data.status == 200) {
+      let deal = response.data.result[0];
+      const MySwal = withReactContent(Swal);
+      MySwal.fire({
+        title: "Are you sure?",
+        text: "If this truck is arrived, just click 'OK' button.",
+        type: "warning",
+        showCloseButton: true,
+        showCancelButton: true,
+      }).then(async (isArrived) => {
+        if (isArrived.value) {
+          deal.status = 3;
+          const res = await axios.post(
+            this.props.apiDomain + "/deals/update",
+            deal
+          );
+          if (res.data.status == 200) {
+            PNotify.success({
+              title: "Success",
+              text: "There's new truck arrived.",
+            });
+            this.props.setCompanyDeals(res.data.result);
+          }
+        }
+      });
+    }
   };
   initTable = () => {
+    let onroute_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 2
+      );
+    });
+    let pending_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 3
+      );
+    });
     datatable1 = $("#onroute-deals-table").DataTable({
-      data: this.props.onroute_deals,
+      data: onroute_deals,
       order: [[1, "asc"]],
       columns: [
         {
@@ -66,7 +107,7 @@ class TableView extends Component {
           },
         },
         {
-          data: "startedDateTime",
+          data: "startDateTime",
           render: function(data, type, row) {
             return data;
           },
@@ -132,7 +173,7 @@ class TableView extends Component {
       },
     });
     datatable2 = $("#pending-deals-table").DataTable({
-      data: this.props.pending_deals,
+      data: pending_deals,
       order: [[1, "asc"]],
       columns: [
         {
@@ -142,7 +183,7 @@ class TableView extends Component {
           },
         },
         {
-          data: "startedDateTime",
+          data: "startDateTime",
           render: function(data, type, row) {
             return data;
           },
@@ -273,12 +314,17 @@ class TableView extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
+    companyId: state.companyId,
     deals: state.deals,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setCompanyDeals: (deals) =>
+      dispatch({ type: actionTypes.COMPANY_DEALS_SET, deals: deals }),
+  };
 };
 
 export default withRouter(
