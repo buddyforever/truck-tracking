@@ -51,16 +51,20 @@ class GridView extends Component {
                 <Card.Title as="h5">Pending</Card.Title>
                 <div className="card-header-right">
                   <div className="d-flex align-items-center">
-                    <OverlayTrigger overlay={<Tooltip>New loading</Tooltip>}>
-                      <Button
-                        variant="outline-info"
-                        className="btn-rounded"
-                        size="sm"
-                        onClick={this.onNewLoadingClick}
-                      >
-                        New
-                      </Button>
-                    </OverlayTrigger>
+                    {this.props.authUser.type != 1 ? (
+                      <OverlayTrigger overlay={<Tooltip>New loading</Tooltip>}>
+                        <Button
+                          variant="outline-info"
+                          className="btn-rounded"
+                          size="sm"
+                          onClick={this.onNewLoadingClick}
+                        >
+                          New
+                        </Button>
+                      </OverlayTrigger>
+                    ) : (
+                      <></>
+                    )}
                     <Form.Control
                       placeholder="Search..."
                       value={this.state.searchKey1}
@@ -162,6 +166,7 @@ class GridView extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    authUser: state.authUser,
     deals: state.deals,
     companyId: state.companyId,
   };

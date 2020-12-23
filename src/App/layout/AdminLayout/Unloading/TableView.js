@@ -98,7 +98,7 @@ class TableView extends Component {
     });
     datatable1 = $("#onroute-deals-table").DataTable({
       data: onroute_deals,
-      order: [[1, "asc"]],
+      order: [[1, "desc"]],
       columns: [
         {
           data: "id",
@@ -174,7 +174,7 @@ class TableView extends Component {
     });
     datatable2 = $("#pending-deals-table").DataTable({
       data: pending_deals,
-      order: [[1, "asc"]],
+      order: [[1, "desc"]],
       columns: [
         {
           data: "id",

@@ -78,15 +78,21 @@ class LoadingDealDetail extends React.Component {
   };
 
   componentDidMount() {
-    const { dealId } = this.props.match.params;
-    if (dealId > 0) {
-      let deals = DEMO.deals.filter((d) => {
-        return d.id == dealId;
-      });
-      this.setState({
-        ...deals,
-      });
-    }
+    var dt = new Date();
+    var now =
+      dt.getFullYear() +
+      "-" +
+      (dt.getMonth() + 1) +
+      "-" +
+      dt.getDate() +
+      " " +
+      dt.getHours() +
+      ":" +
+      dt.getMinutes() +
+      ":" +
+      dt.getSeconds();
+    console.log(now);
+    this.setState({ startDateTime: now });
   }
 
   handleInputChange = (e) => {
@@ -167,6 +173,8 @@ class LoadingDealDetail extends React.Component {
                           className="form-control"
                           mask="9999-99-99 99:99:99"
                           placeholder="yyyy-mm-dd hh:mm:ss"
+                          value={this.state.startDateTime}
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Group>
