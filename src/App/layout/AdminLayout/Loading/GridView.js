@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Card,
   Row,
@@ -29,6 +30,18 @@ class GridView extends Component {
     this.setState({ searchKey2: e.target.value });
   };
   render() {
+    let loading_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 1
+      );
+    });
+    let onroute_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 2
+      );
+    });
     return (
       <Aux>
         <Row>
@@ -59,7 +72,7 @@ class GridView extends Component {
               </Card.Header>
               <Card.Body className="border-bottom">
                 <Row>
-                  {this.props.loading_deals
+                  {loading_deals
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey1) > -1 ||
@@ -105,7 +118,7 @@ class GridView extends Component {
               </Card.Header>
               <Card.Body>
                 <Row>
-                  {this.props.onroute_deals
+                  {onroute_deals
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey2) > -1 ||
@@ -150,6 +163,7 @@ class GridView extends Component {
 const mapStateToProps = (state) => {
   return {
     deals: state.deals,
+    companyId: state.companyId,
   };
 };
 
@@ -157,4 +171,7 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default GridView;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GridView);

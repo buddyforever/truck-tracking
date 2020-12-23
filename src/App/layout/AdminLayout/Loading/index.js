@@ -30,6 +30,13 @@ class Loading extends Component {
     if (response.data.status == 200) {
       this.props.setCompanies(response.data.result);
     }
+    const deals_response = await axios.get(
+      this.props.apiDomain + "/deals/get",
+      { companyId: this.props.companyId }
+    );
+    if (deals_response.data.status == 200) {
+      this.props.setCompanyDeals(deals_response.data.result);
+    }
   }
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
@@ -58,19 +65,6 @@ class Loading extends Component {
       (comp) => comp.value == this.props.companyId
     );
 
-    let loading_deals = this.props.deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 1
-      );
-    });
-    let onroute_deals = this.props.deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
-      );
-    });
-
     let options = {
       chart: {
         plotBackgroundColor: null,
@@ -78,7 +72,7 @@ class Loading extends Component {
         plotShadow: false,
         type: "pie",
       },
-      colors: ["#f44236", "#f4c22b"],
+      colors: ["#f4c22b", "#f44236"],
       title: null,
       tooltip: {
         pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
@@ -102,11 +96,23 @@ class Loading extends Component {
           data: [
             {
               name: "Truck loaded",
-              y: loading_deals.length,
+              y: this.props.deals.filter((deal) => {
+                return (
+                  (deal.companyId == this.props.companyId ||
+                    this.props.companyId == 0) &&
+                  deal.status == 1
+                );
+              }).length,
             },
             {
               name: "On route",
-              y: onroute_deals.length,
+              y: this.props.deals.filter((deal) => {
+                return (
+                  (deal.companyId == this.props.companyId ||
+                    this.props.companyId == 0) &&
+                  deal.status == 2
+                );
+              }).length,
             },
           ],
         },
@@ -171,16 +177,15 @@ class Loading extends Component {
           <Col md={8} xl={9}>
             {this.state.viewMode == "grid" ? (
               <GridView
-                loading_deals={loading_deals}
-                onroute_deals={onroute_deals}
+                company_deals={this.props.deals}
                 onDealClick={this.onDealClick}
                 onNewLoadingClick={this.onNewLoadingClick}
               />
             ) : this.state.viewMode == "table" ? (
               <TableView
-                loading_deals={loading_deals}
-                onroute_deals={onroute_deals}
+                company_deals={this.props.deals}
                 onDealClick={this.onDealClick}
+                onNewLoadingClick={this.onNewLoadingClick}
               />
             ) : (
               <></>
@@ -216,6 +221,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setCompanies: (companies) =>
       dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    setCompanyDeals: (deals) =>
+      dispatch({ type: actionTypes.COMPANY_DEALS_SET, deals: deals }),
     onCompanyChange: (companyId) =>
       dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };

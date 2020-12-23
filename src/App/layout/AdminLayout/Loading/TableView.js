@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Card, Row, Col, Button, Table } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Table,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 import { connect } from "react-redux";
 
 import Aux from "../../../../hoc/_Aux";
@@ -20,9 +27,24 @@ class TableView extends Component {
   onDealClick = (dealId) => {
     this.props.onDealClick(dealId);
   };
+  onNewLoadingClick = () => {
+    this.props.onNewLoadingClick();
+  };
   initTable = () => {
+    let loading_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 1
+      );
+    });
+    let onroute_deals = this.props.company_deals.filter((deal) => {
+      return (
+        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
+        deal.status == 2
+      );
+    });
     $("#pending-deals-table").DataTable({
-      data: this.props.loading_deals,
+      data: loading_deals,
       order: [[1, "asc"]],
       columns: [
         {
@@ -32,7 +54,7 @@ class TableView extends Component {
           },
         },
         {
-          data: "startedDateTime",
+          data: "startDateTime",
           render: function(data, type, row) {
             return data;
           },
@@ -98,7 +120,7 @@ class TableView extends Component {
       },
     });
     $("#onroute-deals-table").DataTable({
-      data: this.props.onroute_deals,
+      data: onroute_deals,
       order: [[1, "asc"]],
       columns: [
         {
@@ -108,7 +130,7 @@ class TableView extends Component {
           },
         },
         {
-          data: "startedDateTime",
+          data: "startDateTime",
           render: function(data, type, row) {
             return data;
           },
@@ -164,6 +186,20 @@ class TableView extends Component {
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Pending</Card.Title>
+                <div className="card-header-right">
+                  <div className="d-flex align-items-center">
+                    <OverlayTrigger overlay={<Tooltip>New loading</Tooltip>}>
+                      <Button
+                        variant="outline-info"
+                        className="btn-rounded"
+                        size="sm"
+                        onClick={this.onNewLoadingClick}
+                      >
+                        New
+                      </Button>
+                    </OverlayTrigger>
+                  </div>
+                </div>
               </Card.Header>
               <Card.Body className="border-bottom">
                 <Table
@@ -239,6 +275,7 @@ class TableView extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    companyId: state.companyId,
     deals: state.deals,
   };
 };
@@ -247,11 +284,7 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default withRouter(
-  withRouter(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(TableView)
-  )
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TableView);

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Card,
   Row,
@@ -155,6 +156,7 @@ class GridView extends Component {
 const mapStateToProps = (state) => {
   return {
     deals: state.deals,
+    companyId: state.companyId,
   };
 };
 
@@ -162,4 +164,7 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default GridView;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GridView);

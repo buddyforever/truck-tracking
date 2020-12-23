@@ -52,9 +52,10 @@ class MaskWithValidation extends BaseFormControl {
 
 class LoadingDealDetail extends React.Component {
   state = {
-    id: 0,
+    userId: this.props.authUser.id,
     driverName: "",
     driverPhone: "",
+    companyId: this.props.companyId,
     truckPlate: "",
     trailerPlate: "",
     secondPlate: "",
@@ -69,8 +70,8 @@ class LoadingDealDetail extends React.Component {
     startedDateTime: "",
     alertTime: "",
     finishedDateTime: "",
-    borderNumber: "",
-    receiptNumber: "",
+    borderNumber: 0,
+    receiptNumber: 0,
     description: "",
     newDescription: "",
     status: 0,
@@ -89,8 +90,6 @@ class LoadingDealDetail extends React.Component {
   }
 
   handleInputChange = (e) => {
-    console.log(e.target.name);
-    console.log(e.target.value);
     this.setState({
       [e.target.name]: e.target.value,
     });
@@ -99,21 +98,22 @@ class LoadingDealDetail extends React.Component {
   handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
     console.log(formData);
-    // const response = await axios.post(
-    //   this.props.apiDomain + "/deals/add",
-    //   formData
-    // );
-    // if (response.data.status == 200) {
-    //   PNotify.success({
-    //     title: "Success",
-    //     text: "The new truck is ready to load.",
-    //   });
-    //   this.props.setDeals(response.data.result);
-    //   let props = this.props;
-    //   setTimeout(function() {
-    //     props.history.push("/loading");
-    //   }, 2000);
-    // }
+    console.log(this.state);
+    const response = await axios.post(
+      this.props.apiDomain + "/deals/add",
+      this.state
+    );
+    if (response.data.status == 200) {
+      PNotify.success({
+        title: "Success",
+        text: "The new truck is ready to load.",
+      });
+      this.props.setDeals(response.data.result);
+      let props = this.props;
+      setTimeout(function() {
+        props.history.push("/loading");
+      }, 2000);
+    }
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -121,7 +121,6 @@ class LoadingDealDetail extends React.Component {
   };
 
   render() {
-    console.log("company id" + this.props.companyId);
     return (
       <Aux>
         <Row>
@@ -138,12 +137,12 @@ class LoadingDealDetail extends React.Component {
                   <TextInput
                     type="hidden"
                     name="companyId"
-                    value={this.props.companyId}
+                    value={this.state.companyId}
                   />
                   <TextInput
                     type="hidden"
                     name="userId"
-                    value={this.props.authUser.id}
+                    value={this.state.userId}
                   />
                   <Form.Row>
                     <Col md="4">
@@ -273,7 +272,6 @@ class LoadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="firstWeight"
                               id="firstWeight"
                               placeholder="First Weight"
@@ -288,7 +286,6 @@ class LoadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="secondWeight"
                               id="secondWeight"
                               placeholder="Second Weight"
@@ -347,12 +344,12 @@ class LoadingDealDetail extends React.Component {
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
                         >
-                          <option value="">Alert Time</option>
-                          <option>An hour</option>
-                          <option>2 hours</option>
-                          <option>4 hours/</option>
-                          <option>8 hours</option>
-                          <option>16 hours</option>
+                          <option value="0">Alert Time</option>
+                          <option value="60">An hour</option>
+                          <option value="120">2 hours</option>
+                          <option value="240">4 hours</option>
+                          <option value="480">8 hours</option>
+                          <option value="960">16 hours</option>
                         </SelectGroup>
                       </Form.Group>
                     </Col>
@@ -407,10 +404,7 @@ class LoadingDealDetail extends React.Component {
 
                     <Form.Group as={Col} sm={12} className="mt-3">
                       <Button type="submit" variant="primary">
-                        Save
-                      </Button>
-                      <Button type="submit" variant="danger">
-                        Submit & Close
+                        Start loading
                       </Button>
                     </Form.Group>
                   </Form.Row>

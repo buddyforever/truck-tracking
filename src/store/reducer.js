@@ -10,7 +10,7 @@ const initialState = {
   isFullScreen: false, // static can't change
   authUser: JSON.parse(localStorage.getItem("authUser")),
   companyId: localStorage.getItem("companyId"),
-  deals: DEMO.deals,
+  deals: [],
   users: [],
   companies: [],
 };
@@ -257,6 +257,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         companies: companies,
+      };
+    case actionTypes.COMPANY_DEALS_SET:
+      deals = action.deals;
+      return {
+        ...state,
+        deals: deals,
       };
     case actionTypes.COMPANY_CHANGE:
       localStorage.setItem("companyId", action.companyId);
