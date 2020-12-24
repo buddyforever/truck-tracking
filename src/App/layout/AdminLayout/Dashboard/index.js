@@ -6,6 +6,9 @@ import { Row, Col } from "react-bootstrap";
 import Select from "react-select";
 
 import LoginHistory from "./LoginHistory";
+import DailyDeliveryTime from "./DailyDeliveryTime.js";
+import DailyLoss from "./DailyLoss.js";
+import DailyTotal from "./DailyTotal";
 import CompanyYearlyNetLoss from "./CompanyYearlyNetLoss";
 import CompanyMonthlyTotalVsLoss from "./CompanyMonthlyTotalVsLoss";
 import SupplierLoss from "./SupplierLoss";
@@ -73,25 +76,42 @@ class Dashboard extends React.Component {
             </div>
           </Col>
         </Row>
+        {this.props.authUser.type == 1 ? (
+          <>
+            <Row>
+              <Col md={4} xl={4}>
+                <DailyDeliveryTime />
+              </Col>
+              <Col md={4} xl={4}>
+                <DailyLoss />
+              </Col>
+              <Col md={4} xl={4}>
+                <DailyTotal />
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6} xl={6}>
+                <CompanyYearlyNetLoss height="390px" />
+              </Col>
+              <Col md={6} xl={6}>
+                <CompanyMonthlyTotalVsLoss height="330px" />
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6} xl={6}>
+                <SupplierLoss height="225px" />
+              </Col>
+              <Col md={6} xl={6}>
+                <SupplierAvgDeliveryTime height="225px" />
+              </Col>
+            </Row>
+          </>
+        ) : (
+          <></>
+        )}
         <Row>
           <Col md={12} xl={12}>
             <LoginHistory />
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6} xl={6}>
-            <CompanyYearlyNetLoss height="390px" />
-          </Col>
-          <Col md={6} xl={6}>
-            <CompanyMonthlyTotalVsLoss height="330px" />
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6} xl={6}>
-            <SupplierLoss height="225px" />
-          </Col>
-          <Col md={6} xl={6}>
-            <SupplierAvgDeliveryTime height="225px" />
           </Col>
         </Row>
       </Aux>

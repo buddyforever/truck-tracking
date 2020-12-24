@@ -136,62 +136,58 @@ class SupplierAvgDeliveryTime extends React.Component {
     let dot_colors_class = ["theme-bg", "theme-bg2", "bg-c-blue", "bg-c-red"];
     return (
       <Aux>
-        <Row>
-          <Col md={12} xl={12}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">Supplier Average Delivery Time</Card.Title>
-                <div className="card-header-right" style={{ width: "100px" }}>
-                  <Select
-                    className="basic-single"
-                    classNamePrefix="select"
-                    defaultValue={unitOptions[0]}
-                    onChange={this.unitOptionChanged}
-                    name="color"
-                    options={unitOptions}
-                  />
-                </div>
-              </Card.Header>
-              <Card.Body className="pl-0 pr-0 pb-2">
-                <div
-                  id="supplier-avg-time"
-                  className="lineChart ChartShadow w-100"
-                  style={{ height: this.props.height }}
-                />
-              </Card.Body>
-              <Card.Body className="border-top">
-                <div className="row">
-                  {this.state.dataum.length > 0 ? (
-                    this.state.dataum.map((sup, index) => {
-                      return (
-                        <div className="col text-center" key={index}>
-                          <span
-                            className={`${
-                              dot_colors_class[index]
-                            } d-block rounded-circle mx-auto mb-2`}
-                            style={{ width: "10px", height: "10px" }}
-                          />
-                          <h6 className="mb-2">
-                            {sup.avgDeliveryTime +
-                              " " +
-                              (this.state.unit == "hour"
-                                ? "hr"
-                                : this.state.unit == "minute"
-                                ? "min"
-                                : "s")}
-                          </h6>
-                          <h6 className="mt-2 mb-0">{sup.supplier}</h6>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Supplier Average Delivery Time</Card.Title>
+            <div className="card-header-right" style={{ width: "100px" }}>
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                defaultValue={unitOptions[0]}
+                onChange={this.unitOptionChanged}
+                name="color"
+                options={unitOptions}
+              />
+            </div>
+          </Card.Header>
+          <Card.Body className="pl-0 pr-0 pb-2">
+            <div
+              id="supplier-avg-time"
+              className="lineChart ChartShadow w-100"
+              style={{ height: this.props.height }}
+            />
+          </Card.Body>
+          <Card.Body className="border-top">
+            <div className="row">
+              {this.state.dataum.length > 0 ? (
+                this.state.dataum.map((sup, index) => {
+                  return (
+                    <div className="col text-center" key={index}>
+                      <span
+                        className={`${
+                          dot_colors_class[index]
+                        } d-block rounded-circle mx-auto mb-2`}
+                        style={{ width: "10px", height: "10px" }}
+                      />
+                      <h6 className="mb-2">
+                        {sup.avgDeliveryTime +
+                          " " +
+                          (this.state.unit == "hour"
+                            ? "hr"
+                            : this.state.unit == "minute"
+                            ? "min"
+                            : "s")}
+                      </h6>
+                      <h6 className="mt-2 mb-0">{sup.supplier}</h6>
+                    </div>
+                  );
+                })
+              ) : (
+                <></>
+              )}
+            </div>
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }
