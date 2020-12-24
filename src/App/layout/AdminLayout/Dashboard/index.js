@@ -10,6 +10,7 @@ import DailyDeliveryTime from "./DailyDeliveryTime.js";
 import DailyLoss from "./DailyLoss.js";
 import DailyTotal from "./DailyTotal";
 import CompanyYearlyNetLoss from "./CompanyYearlyNetLoss";
+import TimeComparison from "./TimeComparison";
 import CompanyMonthlyTotalVsLoss from "./CompanyMonthlyTotalVsLoss";
 import SupplierLoss from "./SupplierLoss";
 import SupplierAvgDeliveryTime from "./SupplierAvgDeliveryTime";
@@ -91,9 +92,14 @@ class Dashboard extends React.Component {
             </Row>
             <Row>
               <Col md={6} xl={6}>
-                <CompanyYearlyNetLoss height="390px" />
+                <CompanyYearlyNetLoss height="320px" />
               </Col>
               <Col md={6} xl={6}>
+                <TimeComparison />
+              </Col>
+            </Row>
+            <Row>
+              <Col md={12} xl={12}>
                 <CompanyMonthlyTotalVsLoss height="330px" />
               </Col>
             </Row>
