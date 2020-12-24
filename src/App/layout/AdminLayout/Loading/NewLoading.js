@@ -79,19 +79,24 @@ class LoadingDealDetail extends React.Component {
 
   componentDidMount() {
     var dt = new Date();
+    var year = dt.getFullYear();
+    var month = dt.getMonth() + 1;
+    var date = dt.getDate();
+    var hour = dt.getHours();
+    var minute = dt.getMinutes();
+    var second = dt.getSeconds();
     var now =
-      dt.getFullYear() +
+      year +
       "-" +
-      (dt.getMonth() + 1) +
+      (month >= 10 ? month : "0" + month) +
       "-" +
-      dt.getDate() +
+      (date >= 10 ? date : "0" + date) +
       " " +
-      dt.getHours() +
+      (hour >= 10 ? hour : "0" + hour) +
       ":" +
-      dt.getMinutes() +
+      (minute >= 10 ? minute : "0" + minute) +
       ":" +
-      dt.getSeconds();
-    console.log(now);
+      (second >= 10 ? second : "0" + second);
     this.setState({ startDateTime: now });
   }
 

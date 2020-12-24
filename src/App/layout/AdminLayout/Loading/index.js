@@ -72,7 +72,7 @@ class Loading extends Component {
         plotShadow: false,
         type: "pie",
       },
-      colors: ["#f4c22b", "#f44236"],
+      colors: ["#04a9f5", "#f44236"],
       title: null,
       tooltip: {
         pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",

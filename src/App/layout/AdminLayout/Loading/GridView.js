@@ -11,6 +11,9 @@ import {
 } from "react-bootstrap";
 
 import Aux from "../../../../hoc/_Aux";
+import truck1 from "./../../../../assets/images/truck1.png";
+import truck2 from "./../../../../assets/images/truck2.jpg";
+import truck3 from "./../../../../assets/images/truck3.png";
 
 class GridView extends Component {
   state = {
@@ -28,6 +31,51 @@ class GridView extends Component {
   };
   onSearchKey2Change = (e) => {
     this.setState({ searchKey2: e.target.value });
+  };
+  getDealDetailPercent = (deal) => {
+    let confirmKeyArray = [];
+    if (deal.companyId == 1)
+      confirmKeyArray = [
+        "id",
+        "startDateTime",
+        "truckPlate",
+        "trailerPlate",
+        "TrasporterId",
+        "driverName",
+        "driverPhone",
+        "firstWeight",
+        "secondWeight",
+        "netWeight",
+        "alertTime",
+        "finishDateTime",
+        "borderNumber",
+        "receiptNumber",
+        "description",
+      ];
+    else if (deal.companyId == 2)
+      confirmKeyArray = [
+        "id",
+        "startDateTime",
+        "truckPlate",
+        "trailerPlate",
+        "TrasporterId",
+        "driverName",
+        "driverPhone",
+        "quantity",
+        "alertTime",
+        "finishDateTime",
+        "borderNumber",
+        "receiptNumber",
+        "description",
+      ];
+    let numFilled = 0;
+    let numTotal = confirmKeyArray.length;
+    Object.entries(deal).forEach(([key, value]) => {
+      if (confirmKeyArray.indexOf(key) > -1 && value) {
+        numFilled++;
+      }
+    });
+    return parseFloat(numFilled / numTotal).toFixed(1) * 100;
   };
   render() {
     let loading_deals = this.props.company_deals.filter((deal) => {
@@ -87,17 +135,38 @@ class GridView extends Component {
                       return (
                         <Col md={6} xl={3} key={deal.id}>
                           <OverlayTrigger
-                            overlay={<Tooltip>{deal.driverName}</Tooltip>}
+                            overlay={
+                              <Tooltip>
+                                {deal.driverName != ""
+                                  ? deal.driverName
+                                  : "Undefined"}
+                              </Tooltip>
+                            }
                           >
                             <div className="d-flex flex-column align-items-center">
-                              <Button
+                              <div
+                                data-label={`${this.getDealDetailPercent(
+                                  deal
+                                )}%`}
+                                className={`radial-bar radial-bar-${this.getDealDetailPercent(
+                                  deal
+                                )} radial-bar-lg radial-bar-primary m-r-5`}
+                                onClick={() => this.onDealClick(deal.id)}
+                              >
+                                <img src={truck1} alt="User-Avatar" />
+                              </div>
+                              {/* <Button
                                 variant="warning"
                                 onClick={() => this.onDealClick(deal.id)}
                                 className="btn-circle w-80 m-0"
                               >
                                 <i className="fa fa-truck f-36 mr-0" />
-                              </Button>
-                              <h5 className="m-t-10">{deal.truckPlate}</h5>
+                              </Button> */}
+                              <h5 className="m-t-10">
+                                {deal.truckPlate != ""
+                                  ? deal.truckPlate
+                                  : "Undefined"}
+                              </h5>
                             </div>
                           </OverlayTrigger>
                         </Col>
@@ -141,13 +210,24 @@ class GridView extends Component {
                             overlay={<Tooltip>{deal.driverName}</Tooltip>}
                           >
                             <div className="d-flex flex-column align-items-center">
-                              <Button
+                              {/* <Button
                                 variant="danger"
                                 className="btn-circle w-80"
                                 onClick={() => this.onDealClick(deal.id)}
                               >
                                 <i className="fa fa-truck f-36 mr-0" />
-                              </Button>
+                              </Button> */}
+                              <div
+                                data-label={
+                                  this.getDealDetailPercent(deal) + "%"
+                                }
+                                className={`radial-bar radial-bar-${this.getDealDetailPercent(
+                                  deal
+                                )} radial-bar-lg radial-bar-danger m-r-5`}
+                                onClick={() => this.onDealClick(deal.id)}
+                              >
+                                <img src={truck3} alt="User-Avatar" />
+                              </div>
                               <h5 className="m-t-10">{deal.truckPlate}</h5>
                             </div>
                           </OverlayTrigger>
