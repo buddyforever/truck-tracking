@@ -69,12 +69,11 @@ class GridView extends Component {
     let confirmKeyArray = [];
     if (deal.companyId == 1)
       confirmKeyArray = [
-        "id",
         "startDateTime",
         "truckPlate",
         "trailerPlate",
         "secondPlate",
-        "TrasporterId",
+        "transporterId",
         "driverName",
         "driverPhone",
         "firstWeight",
@@ -90,12 +89,11 @@ class GridView extends Component {
       ];
     else if (deal.companyId == 2)
       confirmKeyArray = [
-        "id",
         "startDateTime",
         "truckPlate",
         "trailerPlate",
         "secondPlate",
-        "TrasporterId",
+        "transporterId",
         "driverName",
         "driverPhone",
         "quantity",

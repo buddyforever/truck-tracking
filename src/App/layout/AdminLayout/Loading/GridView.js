@@ -36,40 +36,35 @@ class GridView extends Component {
     let confirmKeyArray = [];
     if (deal.companyId == 1)
       confirmKeyArray = [
-        "id",
-        "startDateTime",
         "truckPlate",
         "trailerPlate",
-        "TrasporterId",
+        "transporterId",
         "driverName",
         "driverPhone",
         "firstWeight",
         "secondWeight",
         "netWeight",
         "alertTime",
-        "finishDateTime",
         "borderNumber",
         "receiptNumber",
         "description",
       ];
     else if (deal.companyId == 2)
       confirmKeyArray = [
-        "id",
-        "startDateTime",
         "truckPlate",
         "trailerPlate",
-        "TrasporterId",
+        "transporterId",
         "driverName",
         "driverPhone",
         "quantity",
         "alertTime",
-        "finishDateTime",
         "borderNumber",
         "receiptNumber",
         "description",
       ];
     let numFilled = 0;
     let numTotal = confirmKeyArray.length;
+
     Object.entries(deal).forEach(([key, value]) => {
       if (confirmKeyArray.indexOf(key) > -1 && value) {
         numFilled++;
