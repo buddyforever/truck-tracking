@@ -50,7 +50,7 @@ class MaskWithValidation extends BaseFormControl {
   }
 }
 
-class LoadingDealDetail extends React.Component {
+class NewLoading extends React.Component {
   state = {
     userId: this.props.authUser.id,
     driverName: "",
@@ -470,5 +470,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(windowSize(LoadingDealDetail))
+  )(windowSize(NewLoading))
 );

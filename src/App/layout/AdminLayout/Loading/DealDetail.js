@@ -52,8 +52,8 @@ class MaskWithValidation extends BaseFormControl {
 class LoadingDealDetail extends React.Component {
   state = {
     id: 0,
-    userId: 0,
-    companyId: 0,
+    userId: this.props.authUser.id,
+    companyId: this.props.companyId,
     driverName: "",
     driverPhone: "",
     truckPlate: "",
@@ -75,6 +75,7 @@ class LoadingDealDetail extends React.Component {
     description: "",
     newDescription: "",
     statue: 0,
+    submitted: 0,
   };
 
   async componentDidMount() {
@@ -98,7 +99,7 @@ class LoadingDealDetail extends React.Component {
   };
 
   onSaveForm = () => {
-    this.setState({ status: 1 }, async function() {
+    this.setState({ status: 1, submitted: 0 }, async function() {
       const response = await axios.post(
         this.props.apiDomain + "/deals/update",
         this.state
@@ -115,7 +116,7 @@ class LoadingDealDetail extends React.Component {
 
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
-    this.setState({ status: 2 }, async function() {
+    this.setState({ status: 2, submitted: 1 }, async function() {
       const response = await axios.post(
         this.props.apiDomain + "/deals/update",
         this.state
@@ -164,7 +165,12 @@ class LoadingDealDetail extends React.Component {
                   <TextInput
                     type="hidden"
                     name="userId"
-                    value={this.props.authUser.id}
+                    value={this.state.userId}
+                  />
+                  <TextInput
+                    type="hidden"
+                    name="companyId"
+                    value={this.state.companyId}
                   />
                   <Form.Row>
                     <Col md="4">

@@ -166,7 +166,7 @@ class GridView extends Component {
                               </Tooltip>
                             }
                           >
-                            <div className="d-flex flex-column align-items-center">
+                            <div className="d-flex flex-column align-items-center m-b-20">
                               {/* <Button
                                 variant="danger"
                                 className="btn-circle w-80 m-0"
@@ -180,7 +180,7 @@ class GridView extends Component {
                                 )}%`}
                                 className={`radial-bar radial-bar-${this.getDealDetailPercent(
                                   deal
-                                )} radial-bar-lg radial-bar-danger m-r-5`}
+                                )} radial-bar-lg radial-bar-danger m-0`}
                                 onClick={() => this.onArrivedPopupShow(deal.id)}
                               >
                                 <img src={truck3} alt="User-Avatar" />
@@ -233,7 +233,7 @@ class GridView extends Component {
                           <OverlayTrigger
                             overlay={<Tooltip>{deal.driverName}</Tooltip>}
                           >
-                            <div className="d-flex flex-column align-items-center">
+                            <div className="d-flex flex-column align-items-center m-b-20">
                               {/* <Button
                                 variant="warning"
                                 className="btn-circle w-80"
@@ -248,7 +248,7 @@ class GridView extends Component {
                                 )}%`}
                                 className={`radial-bar radial-bar-${this.getDealDetailPercent(
                                   deal
-                                )} radial-bar-lg radial-bar-warning m-r-5`}
+                                )} radial-bar-lg radial-bar-warning m-0`}
                                 onClick={() => this.onDealClick(deal.id)}
                               >
                                 <img src={truck1} alt="User-Avatar" />
