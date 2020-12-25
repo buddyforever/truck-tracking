@@ -13,7 +13,7 @@ class SupplierDataHistory extends React.Component {
     return (
       <Aux>
         <Row>
-          <Col md={6} xl={6}>
+          <Col md={12} xl={12}>
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Supplier Data History</Card.Title>
@@ -23,7 +23,7 @@ class SupplierDataHistory extends React.Component {
               </Card.Body>
             </Card>
           </Col>
-          <Col md={6} xl={6}>
+          <Col md={12} xl={12}>
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Average of loss per x trips</Card.Title>

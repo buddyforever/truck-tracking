@@ -1,13 +1,56 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 import { Card } from "react-bootstrap";
 import ReactEcharts from "echarts-for-react";
 
 import Aux from "../../../../../hoc/_Aux";
 
 class AverageNetWeightLoss extends React.Component {
+  state = {
+    reportData: [],
+  };
+  async componentDidMount() {
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getMonthlyNetLoss/" + companyId
+    );
+    if (response.data.status == 200) {
+      this.setState({ reportData: response.data.result });
+    }
+  }
   getOption = () => {
+    let reportData = [];
+    let months = [
+      "January",
+      "Feburary",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "Octover",
+      "November",
+      "December",
+    ];
+    if (this.state.reportData.length > 0) {
+      for (let i = 1; i <= 12; i++) {
+        for (let j = 0; j < this.state.reportData.length; j++) {
+          if (i == this.state.reportData[j].month) {
+            reportData[i - 1] = {
+              value: this.state.reportData[j].netLoss,
+              name: months[i - 1],
+            };
+            break;
+          } else {
+            reportData[i - 1] = { value: 0, name: months[i - 1] };
+          }
+        }
+      }
+    }
     return {
       tooltip: {
         trigger: "item",
@@ -16,34 +59,21 @@ class AverageNetWeightLoss extends React.Component {
       legend: {
         orient: "vertical",
         x: "left",
-        data: [
-          "January",
-          "Feburary",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "Octover",
-          "November",
-          "December",
-        ],
+        data: months,
       },
       color: [
-        "#f4c22b",
+        "#04a9f5",
         "#A389D4",
         "#3ebfea",
         "#4AA44A",
         "#1de9b6",
         "#1dc4e9",
         "#899FD4",
-        "#f44236",
         "#88C832",
-        "#04a9f5",
         "#B3A800",
         "#9e9e9e",
+        "#f44236",
+        "#f4c22b",
       ],
       calculable: true,
       series: [
@@ -52,56 +82,7 @@ class AverageNetWeightLoss extends React.Component {
           type: "pie",
           radius: "55%",
           center: ["50%", "60%"],
-          data: [
-            {
-              value: 15,
-              name: "January",
-            },
-            {
-              value: 22,
-              name: "Feburary",
-            },
-            {
-              value: 36,
-              name: "March",
-            },
-            {
-              value: 5,
-              name: "April",
-            },
-            {
-              value: 8,
-              name: "May",
-            },
-            {
-              value: 11,
-              name: "June",
-            },
-            {
-              value: 27,
-              name: "July",
-            },
-            {
-              value: 42,
-              name: "August",
-            },
-            {
-              value: 33,
-              name: "September",
-            },
-            {
-              value: 11,
-              name: "October",
-            },
-            {
-              value: 17,
-              name: "November",
-            },
-            {
-              value: 22,
-              name: "December",
-            },
-          ],
+          data: reportData,
         },
       ],
     };
@@ -109,10 +90,17 @@ class AverageNetWeightLoss extends React.Component {
   render() {
     return (
       <Aux>
-        <ReactEcharts
-          option={this.getOption()}
-          style={{ height: "300px", width: "100%" }}
-        />
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Average net weight loss</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <ReactEcharts
+              option={this.getOption()}
+              style={{ height: "300px", width: "100%" }}
+            />
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }
@@ -120,7 +108,9 @@ class AverageNetWeightLoss extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 

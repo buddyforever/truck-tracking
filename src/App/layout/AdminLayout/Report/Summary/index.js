@@ -59,38 +59,15 @@ class Summary extends React.Component {
         </Row>
         <Row>
           <Col md={12} xl={12}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">
-                  Number of Trucks loaded/unloaded
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <TruckHistory title="Truck History" />
-              </Card.Body>
-            </Card>
+            <TruckHistory title="Truck History" />
           </Col>
         </Row>
         <Row>
           <Col md={6} xl={6}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">Average delivery time</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <AverageDeliveryTime title="Average delivery time" />
-              </Card.Body>
-            </Card>
+            <AverageDeliveryTime title="Average delivery time" />
           </Col>
           <Col md={6} xl={6}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">Average net weight loss</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <AverageNetWeightLoss title="Average net weight loss" />
-              </Card.Body>
-            </Card>
+            <AverageNetWeightLoss title="Average net weight loss" />
           </Col>
         </Row>
       </Aux>

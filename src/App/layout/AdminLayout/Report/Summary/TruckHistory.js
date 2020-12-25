@@ -86,29 +86,36 @@ class TruckHistory extends React.Component {
   render() {
     return (
       <Aux>
-        <Table
-          ref="tbl"
-          striped
-          hover
-          responsive
-          className="table table-condensed"
-          id="truck-history-table"
-        >
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Number of trucks loaded</th>
-              <th>Number of trucks unloaded</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>Date</th>
-              <th>Number of trucks loaded</th>
-              <th>Number of trucks unloaded</th>
-            </tr>
-          </tfoot>
-        </Table>
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Number of Trucks loaded/unloaded</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Table
+              ref="tbl"
+              striped
+              hover
+              responsive
+              className="table table-condensed"
+              id="truck-history-table"
+            >
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Number of trucks loaded</th>
+                  <th>Number of trucks unloaded</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>Date</th>
+                  <th>Number of trucks loaded</th>
+                  <th>Number of trucks unloaded</th>
+                </tr>
+              </tfoot>
+            </Table>
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }

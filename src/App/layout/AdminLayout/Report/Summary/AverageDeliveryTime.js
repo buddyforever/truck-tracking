@@ -1,15 +1,46 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Card } from "react-bootstrap";
+import axios from "axios";
 
+import { Card } from "react-bootstrap";
+import Select from "react-select";
 import { HorizontalBar } from "react-chartjs-2";
 
 import Aux from "../../../../../hoc/_Aux";
 
 class AverageDeliveryTime extends React.Component {
-  componentDidMount() {}
+  state = {
+    companyId: this.props.companyId,
+    reportData: [],
+    unit: "hour",
+  };
+  async componentDidMount() {
+    let companyId = this.state.companyId != 0 ? this.state.companyId : 1;
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getMonthlyDeliveryTime/" + companyId
+    );
+    if (response.data.status == 200) {
+      this.setState({ reportData: response.data.result });
+    }
+  }
+  unitOptionChanged = (option) => {
+    this.setState({ unit: option.value });
+  };
   render() {
+    let reportData = [];
+    if (this.state.reportData.length > 0) {
+      for (let i = 1; i <= 12; i++) {
+        for (let j = 0; j < this.state.reportData.length; j++) {
+          if (i == this.state.reportData[j].month) {
+            reportData[i - 1] =
+              this.state.reportData[j].avg_delievery_time /
+              (this.state.unit == "hour" ? 3600 : 1);
+            break;
+          } else reportData[i - 1] = 0;
+        }
+      }
+    }
     const data = (canvas) => {
       let bar = canvas.getContext("2d");
       let theme = bar.createLinearGradient(0, 300, 0, 0);
@@ -34,7 +65,7 @@ class AverageDeliveryTime extends React.Component {
         datasets: [
           {
             label: "Average delivery time",
-            data: [30, 52, 65, 65, 27, 44, 93, 11, 46, 72, 22, 74],
+            data: reportData,
             borderColor: theme,
             backgroundColor: theme,
             hoverBorderColor: theme,
@@ -43,14 +74,35 @@ class AverageDeliveryTime extends React.Component {
         ],
       };
     };
+    const unitOptions = [
+      { value: "hour", label: "Hour" },
+      { value: "second", label: "Second" },
+    ];
     return (
       <Aux>
-        <HorizontalBar
-          data={data}
-          options={{
-            barValueSpacing: 20,
-          }}
-        />
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Average delivery time</Card.Title>
+            <div className="card-header-right" style={{ width: "100px" }}>
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                defaultValue={unitOptions[0]}
+                onChange={this.unitOptionChanged}
+                name="color"
+                options={unitOptions}
+              />
+            </div>
+          </Card.Header>
+          <Card.Body>
+            <HorizontalBar
+              data={data}
+              options={{
+                barValueSpacing: 20,
+              }}
+            />
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }
@@ -58,7 +110,9 @@ class AverageDeliveryTime extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 

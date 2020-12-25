@@ -8,3 +8,12 @@
 .btn-circle {
   border-radius: 50% !important;
 }
+body {
+  ~ .datta-dark {
+    .select__control {
+      background: #282a2c;
+      color: #adb7be;
+      border-color: #1a1a1c;
+    }
+  }
+}
