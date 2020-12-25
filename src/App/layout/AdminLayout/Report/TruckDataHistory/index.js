@@ -1,9 +1,9 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Table, Card } from "react-bootstrap";
+import { Row, Col, Card, Table } from "react-bootstrap";
 
-import Aux from "../../../../hoc/_Aux";
+import Aux from "../../../../../hoc/_Aux";
 
 import $ from "jquery";
 window.jQuery = $;
@@ -87,37 +87,48 @@ class TruckDataHistory extends React.Component {
   render() {
     return (
       <Aux>
-        <Table
-          ref="tbl"
-          striped
-          hover
-          responsive
-          className="table table-condensed"
-          id="truck-data-history-table"
-        >
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Transporter</th>
-              <th>Driver</th>
-              <th>Net loss</th>
-              <th>Time to arrive</th>
-              <th>Time to load</th>
-              <th>Time to unload</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>Date</th>
-              <th>Transporter</th>
-              <th>Driver</th>
-              <th>Net loss</th>
-              <th>Time to arrive</th>
-              <th>Time to load</th>
-              <th>Time to unload</th>
-            </tr>
-          </tfoot>
-        </Table>
+        <Row>
+          <Col md={12} xl={12}>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h5">Truck Data History</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Table
+                  ref="tbl"
+                  striped
+                  hover
+                  responsive
+                  className="table table-condensed"
+                  id="truck-data-history-table"
+                >
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Transporter</th>
+                      <th>Driver</th>
+                      <th>Net loss</th>
+                      <th>Time to arrive</th>
+                      <th>Time to load</th>
+                      <th>Time to unload</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>Date</th>
+                      <th>Transporter</th>
+                      <th>Driver</th>
+                      <th>Net loss</th>
+                      <th>Time to arrive</th>
+                      <th>Time to load</th>
+                      <th>Time to unload</th>
+                    </tr>
+                  </tfoot>
+                </Table>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       </Aux>
     );
   }

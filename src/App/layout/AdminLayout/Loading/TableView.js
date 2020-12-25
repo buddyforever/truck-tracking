@@ -20,6 +20,29 @@ global.jQuery = $;
 
 $.DataTable = require("datatables.net-responsive-bs");
 
+const padLeft = function(num) {
+  return num >= 10 ? num : "0" + num;
+};
+
+const formatDateTime = function(timestamp) {
+  if (timestamp) {
+    var d = new Date(timestamp),
+      dformat =
+        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+          "-"
+        ) +
+        " " +
+        [
+          padLeft(d.getHours()),
+          padLeft(d.getMinutes()),
+          padLeft(d.getSeconds()),
+        ].join(":");
+  } else {
+    var dformat = "";
+  }
+  return dformat;
+};
+
 class TableView extends Component {
   componentDidMount() {
     this.initTable();
@@ -43,6 +66,8 @@ class TableView extends Component {
         deal.status == 2
       );
     });
+    console.log(loading_deals);
+    console.log(onroute_deals);
     $("#pending-deals-table").DataTable({
       data: loading_deals,
       order: [[1, "desc"]],
@@ -54,7 +79,13 @@ class TableView extends Component {
           },
         },
         {
-          data: "startDateTime",
+          data: "startLoadingAt",
+          render: function(data, type, row) {
+            return formatDateTime(data);
+          },
+        },
+        {
+          data: "transporter",
           render: function(data, type, row) {
             return data;
           },
@@ -72,7 +103,7 @@ class TableView extends Component {
           },
         },
         {
-          targets: [4],
+          targets: [5],
           data: null,
           createdCell: (td, cellData, rowData) => {
             ReactDOM.render(
@@ -130,7 +161,13 @@ class TableView extends Component {
           },
         },
         {
-          data: "startDateTime",
+          data: "finishLoadingAt",
+          render: function(data, type, row) {
+            return formatDateTime(data);
+          },
+        },
+        {
+          data: "transporter",
           render: function(data, type, row) {
             return data;
           },
@@ -150,7 +187,7 @@ class TableView extends Component {
       ],
       columnDefs: [
         {
-          targets: [4],
+          targets: [5],
           data: null,
           createdCell: (td, cellData, rowData) => {
             ReactDOM.render(
@@ -214,6 +251,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -223,6 +261,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -249,6 +288,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -258,6 +298,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>

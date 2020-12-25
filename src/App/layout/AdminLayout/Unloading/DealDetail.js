@@ -19,6 +19,28 @@ import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
+const padLeft = function(num) {
+  return num >= 10 ? num : "0" + num;
+};
+
+const formatDateTime = function(timestamp) {
+  if (timestamp) {
+    var d = new Date(timestamp),
+      dformat =
+        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+          "-"
+        ) +
+        " " +
+        [
+          padLeft(d.getHours()),
+          padLeft(d.getMinutes()),
+          padLeft(d.getSeconds()),
+        ].join(":");
+  } else {
+    var dformat = "";
+  }
+  return dformat;
+};
 class MaskWithValidation extends BaseFormControl {
   constructor(props) {
     super(props);
@@ -67,13 +89,15 @@ class UnloadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startDateTime: "",
     alertTime: 0,
-    finishDateTime: "",
     borderNumber: 0,
     receiptNumber: 0,
     description: "",
     newDescription: "",
+    startLoadingAt: "",
+    finishLoadingAt: "",
+    startUnloadingAt: "",
+    finishUnloadingAt: "",
     status: 0,
     submitted: 0,
   };
@@ -85,9 +109,20 @@ class UnloadingDealDetail extends React.Component {
         this.props.apiDomain + "/deals/get/" + dealId
       );
       if (response.data.status == 200) {
-        console.log(response.data.result);
         this.setState({
           ...response.data.result[0],
+          startLoadingAt: formatDateTime(
+            response.data.result[0].startLoadingAt
+          ),
+          finishLoadingAt: formatDateTime(
+            response.data.result[0].finishLoadingAt
+          ),
+          startUnloadingAt: formatDateTime(
+            response.data.result[0].startUnloadingAt
+          ),
+          finishUnloadingAt: formatDateTime(
+            response.data.result[0].finishUnloadingAt
+          ),
         });
       }
     }
@@ -118,7 +153,12 @@ class UnloadingDealDetail extends React.Component {
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
     this.setState(
-      { firstWeight: this.state.secondWeight, status: 4, submitted: 1 },
+      {
+        firstWeight: this.state.secondWeight,
+        finishUnloadingAt: formatDateTime(new Date()),
+        status: 4,
+        submitted: 1,
+      },
       async function() {
         const response = await axios.post(
           this.props.apiDomain + "/deals/update",
@@ -194,15 +234,15 @@ class UnloadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startDateTime">
+                        <Form.Label htmlFor="startUnloadingAt">
                           Entry Date and Time
                         </Form.Label>
                         <TextInput
-                          name="startDateTime"
-                          id="startDateTime"
+                          name="startUnloadingAt"
+                          id="startUnloadingAt"
                           placeholder="Entry Date and Time"
                           readOnly
-                          value={this.state.startDateTime}
+                          value={this.state.startUnloadingAt}
                           autoComplete="off"
                         />
                       </Form.Group>
@@ -433,17 +473,15 @@ class UnloadingDealDetail extends React.Component {
                     </Col>
                     <Col md="4">
                       <Form.Group>
-                        <Form.Label htmlFor="finishDateTime">
+                        <Form.Label htmlFor="finishUnloadingAt">
                           Exit Date and Time
                         </Form.Label>
-                        <InputMask
-                          className="form-control"
-                          mask="9999-99-99 99:99:99"
-                          placeholder="yyyy-mm-dd hh:mm:ss"
-                          id="finishDateTime"
-                          name="finishDateTime"
-                          value={this.state.finishDateTime}
-                          onChange={this.handleInputChange}
+                        <TextInput
+                          name="finishUnloadingAt"
+                          id="finishUnloadingAt"
+                          readOnly
+                          placeholder="Exit Date and Time"
+                          value={this.state.finishUnloadingAt}
                           autoComplete="off"
                         />
                       </Form.Group>

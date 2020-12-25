@@ -70,7 +70,15 @@ const EditUser = React.lazy(() =>
   import("./App/layout/AdminLayout/Users/EditUser")
 );
 
-const Report = React.lazy(() => import("./App/layout/AdminLayout/Report"));
+const SummaryReport = React.lazy(() =>
+  import("./App/layout/AdminLayout/Report/Summary")
+);
+const TruckDataHistoryReport = React.lazy(() =>
+  import("./App/layout/AdminLayout/Report/TruckDataHistory")
+);
+const SupplierDataHistoryReport = React.lazy(() =>
+  import("./App/layout/AdminLayout/Report/SupplierDataHistory")
+);
 
 const routes = [
   // {
@@ -143,10 +151,24 @@ const routes = [
     permission_users: [], // user types who can access this page
   },
   {
-    path: "/report",
+    path: "/report/summary",
     exact: true,
-    name: "Report",
-    component: Report,
+    name: "Summary",
+    component: SummaryReport,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/report/truck_history",
+    exact: true,
+    name: "Truck Data History",
+    component: TruckDataHistoryReport,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/report/supplier_history",
+    exact: true,
+    name: "Supplier Data History",
+    component: SupplierDataHistoryReport,
     permission_users: [], // user types who can access this page
   },
   // {

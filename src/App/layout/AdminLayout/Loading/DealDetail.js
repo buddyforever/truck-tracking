@@ -11,7 +11,6 @@ import {
 import MaskedInput from "react-text-mask";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
-import InputMask from "react-input-mask";
 import NumberFormat from "react-number-format";
 import PNotify from "pnotify/dist/es/PNotify";
 
@@ -19,6 +18,28 @@ import Aux from "../../../../hoc/_Aux";
 import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
+const padLeft = function(num) {
+  return num >= 10 ? num : "0" + num;
+};
+
+const formatDateTime = function(timestamp) {
+  if (timestamp) {
+    var d = new Date(timestamp),
+      dformat =
+        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+          "-"
+        ) +
+        " " +
+        [
+          padLeft(d.getHours()),
+          padLeft(d.getMinutes()),
+          padLeft(d.getSeconds()),
+        ].join(":");
+  } else {
+    var dformat = "";
+  }
+  return dformat;
+};
 class MaskWithValidation extends BaseFormControl {
   constructor(props) {
     super(props);
@@ -67,13 +88,16 @@ class LoadingDealDetail extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startDateTime: "",
     alertTime: 0,
     finishDateTime: "",
     borderNumber: 0,
     receiptNumber: 0,
     description: "",
     newDescription: "",
+    startLoadingAt: "",
+    finishLoadingAt: "",
+    startUnloadingAt: "",
+    finishUnloadingAt: "",
     statue: 0,
     submitted: 0,
   };
@@ -87,6 +111,18 @@ class LoadingDealDetail extends React.Component {
       if (response.data.status == 200) {
         this.setState({
           ...response.data.result[0],
+          startLoadingAt: formatDateTime(
+            response.data.result[0].startLoadingAt
+          ),
+          finishLoadingAt: formatDateTime(
+            response.data.result[0].finishLoadingAt
+          ),
+          startUnloadingAt: formatDateTime(
+            response.data.result[0].sstartUnladingAt
+          ),
+          finishUnloadingAt: formatDateTime(
+            response.data.result[0].stafinishUnlingAt
+          ),
         });
       }
     }
@@ -116,23 +152,26 @@ class LoadingDealDetail extends React.Component {
 
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
-    this.setState({ status: 2, submitted: 1 }, async function() {
-      const response = await axios.post(
-        this.props.apiDomain + "/deals/update",
-        this.state
-      );
-      if (response.data.status == 200) {
-        PNotify.success({
-          title: "Success",
-          text: "Loading has been finished.",
-        });
-        this.props.setDeals(response.data.result);
-        let props = this.props;
-        setTimeout(function() {
-          props.history.push("/loading");
-        }, 2000);
+    this.setState(
+      { finishLoadingAt: formatDateTime(new Date()), status: 2, submitted: 1 },
+      async function() {
+        const response = await axios.post(
+          this.props.apiDomain + "/deals/update",
+          this.state
+        );
+        if (response.data.status == 200) {
+          PNotify.success({
+            title: "Success",
+            text: "Loading has been finished.",
+          });
+          this.props.setDeals(response.data.result);
+          let props = this.props;
+          setTimeout(function() {
+            props.history.push("/loading");
+          }, 2000);
+        }
       }
-    });
+    );
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -190,25 +229,17 @@ class LoadingDealDetail extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startDateTime">
+                        <Form.Label htmlFor="startLoadingAt">
                           Entry Date and Time
                         </Form.Label>
-                        {this.state.startDateTime ? (
-                          <TextInput
-                            name="startDateTime"
-                            id="startDateTime"
-                            placeholder="Entry Date and Time"
-                            readOnly={this.state.startDateTime ? true : false}
-                            value={this.state.startDateTime}
-                            autoComplete="off"
-                          />
-                        ) : (
-                          <InputMask
-                            className="form-control"
-                            mask="9999-99-99 99:99:99"
-                            placeholder="yyyy/mm/dd hh:mm:ss"
-                          />
-                        )}
+                        <TextInput
+                          name="startLoadingAt"
+                          id="startLoadingAt"
+                          placeholder="Entry Date and Time"
+                          readOnly
+                          value={this.state.startLoadingAt}
+                          autoComplete="off"
+                        />
                       </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="truckPlate">
@@ -480,29 +511,19 @@ class LoadingDealDetail extends React.Component {
                       </Form.Group>
                     </Col>
                     <Col md="4">
-                      {this.state.finishDateTime ? (
-                        <Form.Group>
-                          <Form.Label htmlFor="alertTime">
-                            Exit Date and Time
-                          </Form.Label>
-                          <InputMask
-                            className="form-control"
-                            mask="9999-99-99 99:99:99"
-                            placeholder="yyyy-mm-dd hh:mm:ss"
-                            readOnly={
-                              this.state.status == 2 ||
-                              this.state.finishDate != ""
-                            }
-                            id="finishDateTime"
-                            name="finishDateTime"
-                            value={this.state.finishDateTime}
-                            onChange={this.handleInputChange}
-                            autoComplete="off"
-                          />
-                        </Form.Group>
-                      ) : (
-                        <></>
-                      )}
+                      <Form.Group>
+                        <Form.Label htmlFor="alertTime">
+                          Exit Date and Time
+                        </Form.Label>
+                        <TextInput
+                          name="finishLoadingAt"
+                          id="finishLoadingAt"
+                          placeholder="Exit Date and Time"
+                          readOnly
+                          value={this.state.finishLoadingAt}
+                          autoComplete="off"
+                        />
+                      </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="borderNumber">
                           No de Bordereau

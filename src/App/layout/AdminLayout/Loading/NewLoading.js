@@ -67,13 +67,15 @@ class NewLoading extends React.Component {
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
-    startDateTime: "",
     alertTime: 0,
-    finishDateTime: "",
     borderNumber: 0,
     receiptNumber: 0,
     description: "",
     newDescription: "",
+    startLoadingAt: "",
+    finishLoadingAt: "",
+    startUnloadingAt: "",
+    finishUnloadingAt: "",
     status: 0,
   };
 
@@ -97,7 +99,7 @@ class NewLoading extends React.Component {
       (minute >= 10 ? minute : "0" + minute) +
       ":" +
       (second >= 10 ? second : "0" + second);
-    this.setState({ startDateTime: now });
+    this.setState({ startLoadingAt: now });
   }
 
   handleInputChange = (e) => {
@@ -171,14 +173,15 @@ class NewLoading extends React.Component {
                         />
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="startDateTime">
+                        <Form.Label htmlFor="startLoadingAt">
                           Entry Date and Time
                         </Form.Label>
                         <InputMask
+                          id="startLoadingAt"
                           className="form-control"
                           mask="9999-99-99 99:99:99"
                           placeholder="yyyy-mm-dd hh:mm:ss"
-                          value={this.state.startDateTime}
+                          value={this.state.startLoadingAt}
                           readOnly
                         />
                       </Form.Group>

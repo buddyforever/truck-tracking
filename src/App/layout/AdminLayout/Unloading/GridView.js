@@ -20,6 +20,28 @@ import truck1 from "./../../../../assets/images/truck1.png";
 import truck2 from "./../../../../assets/images/truck2.jpg";
 import truck3 from "./../../../../assets/images/truck3.png";
 
+const padLeft = function(num) {
+  return num >= 10 ? num : "0" + num;
+};
+
+const formatDateTime = function(timestamp) {
+  if (timestamp) {
+    var d = new Date(timestamp),
+      dformat =
+        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+          "-"
+        ) +
+        " " +
+        [
+          padLeft(d.getHours()),
+          padLeft(d.getMinutes()),
+          padLeft(d.getSeconds()),
+        ].join(":");
+  } else {
+    var dformat = "";
+  }
+  return dformat;
+};
 class GridView extends Component {
   state = {
     searchKey1: "",
@@ -49,10 +71,16 @@ class GridView extends Component {
         showCancelButton: true,
       }).then(async (isArrived) => {
         if (isArrived.value) {
-          deal.status = 3;
+          deal.userId = this.props.authUser.id;
           let temp = deal.firstWeight;
           deal.firstWeight = deal.secondWeight;
           deal.secondWeight = temp;
+          deal.startLoadingAt = formatDateTime(deal.startLoadingAt);
+          deal.finishLoadingAt = formatDateTime(deal.finishLoadingAt);
+          deal.startUnloadingAt = formatDateTime(new Date());
+          deal.status = 3;
+          deal.submitted = 1;
+          console.log(deal);
           const res = await axios.post(
             this.props.apiDomain + "/deals/update",
             deal
@@ -72,7 +100,6 @@ class GridView extends Component {
     let confirmKeyArray = [];
     if (deal.companyId == 1)
       confirmKeyArray = [
-        "startDateTime",
         "truckPlate",
         "trailerPlate",
         "secondPlate",
@@ -84,15 +111,14 @@ class GridView extends Component {
         "netWeight",
         "newNetWeight",
         "alertTime",
-        "finishDateTime",
         "borderNumber",
         "receiptNumber",
         "description",
         "newDescription",
+        "startUnloadingAt",
       ];
     else if (deal.companyId == 2)
       confirmKeyArray = [
-        "startDateTime",
         "truckPlate",
         "trailerPlate",
         "secondPlate",
@@ -102,11 +128,11 @@ class GridView extends Component {
         "quantity",
         "newQuantity",
         "alertTime",
-        "finishDateTime",
         "borderNumber",
         "receiptNumber",
         "description",
         "newDescription",
+        "startUnloadingAt",
       ];
     let numFilled = 0;
     let numTotal = confirmKeyArray.length;
@@ -273,6 +299,7 @@ class GridView extends Component {
 const mapStateToProps = (state) => {
   return {
     apiDomain: state.apiDomain,
+    authUser: state.authUser,
     deals: state.deals,
     companyId: state.companyId,
   };

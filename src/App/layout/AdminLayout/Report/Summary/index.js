@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Row, Col, Card, Table, Tabs, Tab } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 
 import Aux from "../../../../../hoc/_Aux";
 

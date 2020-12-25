@@ -20,6 +20,29 @@ $.DataTable = require("datatables.net-responsive-bs");
 
 let datatable1;
 let datatable2;
+
+const padLeft = function(num) {
+  return num >= 10 ? num : "0" + num;
+};
+
+const formatDateTime = function(timestamp) {
+  if (timestamp) {
+    var d = new Date(timestamp),
+      dformat =
+        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+          "-"
+        ) +
+        " " +
+        [
+          padLeft(d.getHours()),
+          padLeft(d.getMinutes()),
+          padLeft(d.getSeconds()),
+        ].join(":");
+  } else {
+    var dformat = "";
+  }
+  return dformat;
+};
 class TableView extends Component {
   componentDidMount() {
     this.initTable();
@@ -67,7 +90,16 @@ class TableView extends Component {
         showCancelButton: true,
       }).then(async (isArrived) => {
         if (isArrived.value) {
+          deal.userId = this.props.authUser.id;
+          let temp = deal.firstWeight;
+          deal.firstWeight = deal.secondWeight;
+          deal.secondWeight = temp;
+          deal.startLoadingAt = formatDateTime(deal.startLoadingAt);
+          deal.finishLoadingAt = formatDateTime(deal.finishLoadingAt);
+          deal.startUnloadingAt = formatDateTime(new Date());
           deal.status = 3;
+          deal.submitted = 1;
+          console.log(deal);
           const res = await axios.post(
             this.props.apiDomain + "/deals/update",
             deal
@@ -107,7 +139,13 @@ class TableView extends Component {
           },
         },
         {
-          data: "startDateTime",
+          data: "finishLoadingAt",
+          render: function(data, type, row) {
+            return formatDateTime(data);
+          },
+        },
+        {
+          data: "transporter",
           render: function(data, type, row) {
             return data;
           },
@@ -125,7 +163,7 @@ class TableView extends Component {
           },
         },
         {
-          targets: [4],
+          targets: [5],
           data: null,
           createdCell: (td, cellData, rowData) => {
             ReactDOM.render(
@@ -183,7 +221,13 @@ class TableView extends Component {
           },
         },
         {
-          data: "startDateTime",
+          data: "startUnloadingAt",
+          render: function(data, type, row) {
+            return formatDateTime(data);
+          },
+        },
+        {
+          data: "transporter",
           render: function(data, type, row) {
             return data;
           },
@@ -203,7 +247,7 @@ class TableView extends Component {
       ],
       columnDefs: [
         {
-          targets: [4],
+          targets: [5],
           data: null,
           createdCell: (td, cellData, rowData) => {
             ReactDOM.render(
@@ -253,6 +297,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -262,6 +307,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -288,6 +334,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -297,6 +344,7 @@ class TableView extends Component {
                     <tr>
                       <th>#</th>
                       <th>Entry Date Time</th>
+                      <th>Transporter</th>
                       <th>Driver</th>
                       <th>Truck Plate</th>
                       <th className="text-center">Action</th>
@@ -315,6 +363,7 @@ class TableView extends Component {
 const mapStateToProps = (state) => {
   return {
     apiDomain: state.apiDomain,
+    authUser: state.authUser,
     companyId: state.companyId,
     deals: state.deals,
   };
