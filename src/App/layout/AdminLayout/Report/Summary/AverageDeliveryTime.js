@@ -11,17 +11,27 @@ import Aux from "../../../../../hoc/_Aux";
 
 class AverageDeliveryTime extends React.Component {
   state = {
-    companyId: this.props.companyId,
     reportData: [],
     unit: "hour",
   };
   async componentDidMount() {
-    let companyId = this.state.companyId != 0 ? this.state.companyId : 1;
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const response = await axios.get(
       this.props.apiDomain + "/report/getMonthlyDeliveryTime/" + companyId
     );
     if (response.data.status == 200) {
       this.setState({ reportData: response.data.result });
+    }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId != this.props.companyId) {
+      let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+      const response = await axios.get(
+        this.props.apiDomain + "/report/getMonthlyDeliveryTime/" + companyId
+      );
+      if (response.data.status == 200) {
+        this.setState({ reportData: response.data.result });
+      }
     }
   }
   unitOptionChanged = (option) => {

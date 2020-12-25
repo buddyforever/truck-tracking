@@ -20,6 +20,17 @@ class AverageNetWeightLoss extends React.Component {
       this.setState({ reportData: response.data.result });
     }
   }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId != this.props.companyId) {
+      let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+      const response = await axios.get(
+        this.props.apiDomain + "/report/getMonthlyNetLoss/" + companyId
+      );
+      if (response.data.status == 200) {
+        this.setState({ reportData: response.data.result });
+      }
+    }
+  }
   getOption = () => {
     let reportData = [];
     let months = [
