@@ -50,6 +50,9 @@ class GridView extends Component {
       }).then(async (isArrived) => {
         if (isArrived.value) {
           deal.status = 3;
+          let temp = deal.firstWeight;
+          deal.firstWeight = deal.secondWeight;
+          deal.secondWeight = temp;
           const res = await axios.post(
             this.props.apiDomain + "/deals/update",
             deal

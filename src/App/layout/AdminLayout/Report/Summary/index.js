@@ -1,48 +1,51 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, Table, Tabs, Tab } from "react-bootstrap";
 
-import Aux from "../../../../hoc/_Aux";
-import Summary from "./Summary";
-import TruckDataHistory from "./TruckDataHistory";
-import SupplierDataHistory from "./SupplierDataHistory";
-class Report extends React.Component {
+import Aux from "../../../../../hoc/_Aux";
+
+import TruckHistory from "./TruckHistory";
+import AverageDeliveryTime from "./AverageDeliveryTime";
+import AverageNetWeightLoss from "./AverageNetWeightLoss";
+import TruckDataHistory from "../TruckDataHistory";
+
+class Summary extends React.Component {
   render() {
     return (
       <Aux>
         <Row>
-          <Col>
+          <Col md={12} xl={12}>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Summary</Card.Title>
+                <Card.Title as="h5">
+                  Number of Trucks loaded/unloaded
+                </Card.Title>
               </Card.Header>
               <Card.Body>
-                <Summary />
+                <TruckHistory title="Truck History" />
               </Card.Body>
             </Card>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col md={6} xl={6}>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Truck Data History</Card.Title>
+                <Card.Title as="h5">Average delivery time</Card.Title>
               </Card.Header>
               <Card.Body>
-                <TruckDataHistory />
+                <AverageDeliveryTime title="Average delivery time" />
               </Card.Body>
             </Card>
           </Col>
-        </Row>
-        <Row>
-          <Col>
+          <Col md={6} xl={6}>
             <Card>
               <Card.Header>
-                <Card.Title as="h5">Supplier Data History</Card.Title>
+                <Card.Title as="h5">Average net weight loss</Card.Title>
               </Card.Header>
               <Card.Body>
-                <SupplierDataHistory />
+                <AverageNetWeightLoss title="Average net weight loss" />
               </Card.Body>
             </Card>
           </Col>
@@ -66,5 +69,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(Report)
+  )(Summary)
 );

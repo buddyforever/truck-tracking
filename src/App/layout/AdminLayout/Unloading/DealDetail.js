@@ -52,8 +52,8 @@ class MaskWithValidation extends BaseFormControl {
 class UnloadingDealDetail extends React.Component {
   state = {
     id: 0,
-    userId: 0,
-    companyId: 0,
+    userId: this.props.authUser.id,
+    companyId: this.props.companyId,
     driverName: "",
     driverPhone: "",
     truckPlate: "",
@@ -75,6 +75,7 @@ class UnloadingDealDetail extends React.Component {
     description: "",
     newDescription: "",
     status: 0,
+    submitted: 0,
   };
 
   async componentDidMount() {
@@ -87,8 +88,6 @@ class UnloadingDealDetail extends React.Component {
         console.log(response.data.result);
         this.setState({
           ...response.data.result[0],
-          firstWeight: response.data.result[0].secondWeight,
-          secondWeight: response.data.result[0].firstWeight,
         });
       }
     }
@@ -101,7 +100,7 @@ class UnloadingDealDetail extends React.Component {
   };
 
   onSaveForm = () => {
-    this.setState({ status: 3 }, async function() {
+    this.setState({ status: 3, submitted: 0 }, async function() {
       const response = await axios.post(
         this.props.apiDomain + "/deals/update",
         this.state
@@ -118,23 +117,26 @@ class UnloadingDealDetail extends React.Component {
 
   handleSubmit = (e, formData, inputs) => {
     e.preventDefault();
-    this.setState({ status: 4 }, async function() {
-      const response = await axios.post(
-        this.props.apiDomain + "/deals/update",
-        this.state
-      );
-      if (response.data.status == 200) {
-        PNotify.success({
-          title: "Success",
-          text: "Unloading has been finished.",
-        });
-        this.props.setDeals(response.data.result);
-        let props = this.props;
-        setTimeout(function() {
-          props.history.push("/unloading");
-        }, 2000);
+    this.setState(
+      { firstWeight: this.state.secondWeight, status: 4, submitted: 1 },
+      async function() {
+        const response = await axios.post(
+          this.props.apiDomain + "/deals/update",
+          this.state
+        );
+        if (response.data.status == 200) {
+          PNotify.success({
+            title: "Success",
+            text: "Unloading has been finished.",
+          });
+          this.props.setDeals(response.data.result);
+          let props = this.props;
+          setTimeout(function() {
+            props.history.push("/unloading");
+          }, 2000);
+        }
       }
-    });
+    );
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -167,7 +169,12 @@ class UnloadingDealDetail extends React.Component {
                   <TextInput
                     type="hidden"
                     name="userId"
-                    value={this.props.authUser.id}
+                    value={this.state.userId}
+                  />
+                  <TextInput
+                    type="hidden"
+                    name="companyId"
+                    value={this.state.companyId}
                   />
                   <Form.Row>
                     <Col md="4">
@@ -311,7 +318,13 @@ class UnloadingDealDetail extends React.Component {
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
-                              onChange={this.handleInputChange}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  newNetWeight:
+                                    e.target.value - this.state.secondWeight,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -326,7 +339,13 @@ class UnloadingDealDetail extends React.Component {
                               id="secondWeight"
                               placeholder="Second Weight"
                               value={this.state.secondWeight}
-                              onChange={this.handleInputChange}
+                              onChange={(e) => {
+                                this.handleInputChange(e);
+                                this.setState({
+                                  newNetWeight:
+                                    this.state.firstWeight - e.target.value,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -401,15 +420,14 @@ class UnloadingDealDetail extends React.Component {
                           id="alertTime"
                           value={this.state.alertTime}
                           errorMessage="Transporter"
-                          readOnly
                           disabled
                         >
-                          <option value="">Alert Time</option>
-                          <option>An hour</option>
-                          <option>2 hours</option>
-                          <option>4 hours/</option>
-                          <option>8 hours</option>
-                          <option>16 hours</option>
+                          <option>Alert Time</option>
+                          <option value="60">An hour</option>
+                          <option value="120">2 hours</option>
+                          <option value="240">4 hours</option>
+                          <option value="480">8 hours</option>
+                          <option value="960">16 hours</option>
                         </SelectGroup>
                       </Form.Group>
                     </Col>
