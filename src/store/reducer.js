@@ -13,6 +13,7 @@ const initialState = {
   deals: [],
   users: [],
   companies: [],
+  transporters: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -23,6 +24,7 @@ const reducer = (state = initialState, action) => {
   let authUser = [];
   let deals = [];
   let companies = [];
+  let transporters = [];
 
   switch (action.type) {
     case actionTypes.COLLAPSE_MENU:
@@ -281,6 +283,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         deals: deals,
+      };
+    case actionTypes.TRANSPORTERS_SET:
+      transporters = action.transporters;
+      return {
+        ...state,
+        transporters: transporters,
       };
     default:
       return state;

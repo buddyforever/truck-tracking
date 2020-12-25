@@ -103,6 +103,12 @@ class UnloadingDealDetail extends React.Component {
   };
 
   async componentDidMount() {
+    const trans_response = await axios.get(
+      this.props.apiDomain + "/transporters/get"
+    );
+    if (trans_response.data.status == 200) {
+      this.props.setTransporters(trans_response.data.result);
+    }
     const { dealId } = this.props.match.params;
     if (dealId > 0) {
       const response = await axios.get(
@@ -290,7 +296,7 @@ class UnloadingDealDetail extends React.Component {
                           disabled
                         >
                           <option value="">Transporter</option>
-                          {DEMO.transporters.map((trans) => {
+                          {this.props.transporters.map((trans) => {
                             return (
                               <option value={trans.id} key={trans.id}>
                                 {trans.transporter}
@@ -418,6 +424,7 @@ class UnloadingDealDetail extends React.Component {
                             thousandSeparator={true}
                             name="quantity"
                             id="quantity"
+                            readOnly
                             placeholder="Quantity"
                             value={this.state.quantity}
                             onChange={this.handleInputChange}
@@ -425,34 +432,56 @@ class UnloadingDealDetail extends React.Component {
                           />
                         </Form.Group>
                       )}
-                      <Form.Group>
-                        <Form.Label htmlFor="netWeight">Net Weight</Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="netWeight"
-                          id="netWeight"
-                          placeholder="Net Weight"
-                          value={this.state.netWeight}
-                          readOnly
-                          autoComplete="off"
-                        />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor="newNetWeight">
-                          New Net Weight
-                        </Form.Label>
-                        <NumberFormat
-                          className="form-control"
-                          thousandSeparator={true}
-                          name="newNetWeight"
-                          id="newNetWeight"
-                          placeholder="New Net Weight"
-                          value={this.state.newNetWeight}
-                          onChange={this.handleInputChange}
-                          autoComplete="off"
-                        />
-                      </Form.Group>
+                      {this.props.companyId == 1 ? (
+                        <>
+                          <Form.Group>
+                            <Form.Label htmlFor="netWeight">
+                              Net Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="netWeight"
+                              id="netWeight"
+                              placeholder="Net Weight"
+                              value={this.state.netWeight}
+                              readOnly
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="newNetWeight">
+                              New Net Weight
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="newNetWeight"
+                              id="newNetWeight"
+                              placeholder="New Net Weight"
+                              value={this.state.newNetWeight}
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                        </>
+                      ) : (
+                        <Form.Group>
+                          <Form.Label htmlFor="newQuantity">
+                            New Quantity
+                          </Form.Label>
+                          <NumberFormat
+                            className="form-control"
+                            thousandSeparator={true}
+                            name="newQuantity"
+                            id="newQuantity"
+                            placeholder="New Quantity"
+                            value={this.state.newQuantity}
+                            onChange={this.handleInputChange}
+                            autoComplete="off"
+                          />
+                        </Form.Group>
+                      )}
                       <Form.Group>
                         <Form.Label htmlFor="alertTime">Alert Time</Form.Label>
                         <SelectGroup
@@ -569,6 +598,7 @@ const mapStateToProps = (state) => {
     apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
+    transporters: state.transporters,
   };
 };
 
@@ -576,6 +606,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setDeals: (deals) =>
       dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
+    setTransporters: (transporters) =>
+      dispatch({
+        type: actionTypes.TRANSPORTERS_SET,
+        transporters: transporters,
+      }),
   };
 };
 

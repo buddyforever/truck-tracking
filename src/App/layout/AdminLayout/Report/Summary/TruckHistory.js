@@ -6,6 +6,7 @@ import { Table, Card } from "react-bootstrap";
 import Aux from "../../../../../hoc/_Aux";
 
 import $ from "jquery";
+import axios from "axios";
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
@@ -14,8 +15,21 @@ $.DataTable = require("datatables.net-responsive-bs");
 let datatable;
 
 class TruckHistory extends React.Component {
-  componentDidMount() {
-    this.initTable();
+  state = {
+    from: "",
+    to: "",
+  };
+  async componentDidMount() {
+    let tableData;
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getDailyTruckNum",
+      this.state
+    );
+    if (response.data.status == 200) {
+      tableData = response.data.result;
+      console.log(tableData);
+      this.initTable(tableData);
+    }
   }
   componentDidUpdate() {
     // if (datatable) {
@@ -24,11 +38,11 @@ class TruckHistory extends React.Component {
     //   datatable.draw();
     // }
   }
-  initTable = () => {
+  initTable = (tableData) => {
     let tableResponsive = "#truck-history-table";
 
     datatable = $(tableResponsive).DataTable({
-      data: this.props.users,
+      data: tableData,
       order: [[0, "asc"]],
       columns: [
         {
@@ -93,6 +107,7 @@ class TruckHistory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
   };
 };

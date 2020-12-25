@@ -1,9 +1,12 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 import { Row, Col, Card, Table } from "react-bootstrap";
+import Select from "react-select";
 
 import Aux from "../../../../../hoc/_Aux";
+import * as actionTypes from "../../../../../store/actions";
 
 import $ from "jquery";
 window.jQuery = $;
@@ -14,31 +17,48 @@ $.DataTable = require("datatables.net-responsive-bs");
 let datatable;
 
 class TruckDataHistory extends React.Component {
-  componentDidMount() {
-    this.initTable();
+  async componentDidMount() {
+    const companies_response = await axios.get(
+      this.props.apiDomain + `/companies/get`
+    );
+    if (companies_response.data.status == 200) {
+      this.props.setCompanies(companies_response.data.result);
+    }
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getTruckDataHistory/" + companyId
+    );
+    if (response.data.status == 200) {
+      let tableData = response.data.result;
+      this.initTable(tableData);
+    }
   }
-  componentDidUpdate() {
-    // if (datatable) {
-    //   datatable.clear();
-    //   datatable.rows.add(companyUsers);
-    //   datatable.draw();
-    // }
+  async componentDidUpdate() {
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    console.log(companyId);
+
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getTruckDataHistory/" + companyId
+    );
+    if (response.data.status == 200) {
+      let tableData = response.data.result;
+      console.log(tableData);
+      if (datatable) {
+        datatable.clear();
+        datatable.rows.add(tableData);
+        datatable.draw();
+      }
+    }
   }
-  initTable = () => {
+  initTable = (tableData) => {
     let tableResponsive = "#truck-data-history-table";
 
     datatable = $(tableResponsive).DataTable({
-      data: this.props.users,
+      data: tableData,
       order: [[0, "desc"]],
       columns: [
         {
           data: "date",
-          render: function(data, type, row) {
-            return data;
-          },
-        },
-        {
-          data: "driverName",
           render: function(data, type, row) {
             return data;
           },
@@ -50,7 +70,19 @@ class TruckDataHistory extends React.Component {
           },
         },
         {
+          data: "driverName",
+          render: function(data, type, row) {
+            return data;
+          },
+        },
+        {
           data: "netLoss",
+          render: function(data, type, row) {
+            return data;
+          },
+        },
+        {
+          data: "timeLoaded",
           render: function(data, type, row) {
             return data;
           },
@@ -62,13 +94,7 @@ class TruckDataHistory extends React.Component {
           },
         },
         {
-          data: "timeLoad",
-          render: function(data, type, row) {
-            return data;
-          },
-        },
-        {
-          data: "timeUnload",
+          data: "timeUnloaded",
           render: function(data, type, row) {
             return data;
           },
@@ -84,9 +110,46 @@ class TruckDataHistory extends React.Component {
       },
     });
   };
+
+  onCompanyChange = (option) => {
+    this.props.onCompanyChange(option.value);
+  };
+
   render() {
+    let companyOptions = [];
+    this.props.companies.map((comp) => {
+      companyOptions.push({
+        value: comp.id,
+        label: comp.companyName,
+      });
+    });
+    let currentCompanyOption = companyOptions.filter(
+      (comp) => comp.value == this.props.companyId
+    );
     return (
       <Aux>
+        <Row className="mb-4">
+          <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
+            <div className="d-flex align-items-center justify-content-end">
+              {this.props.authUser.type == 1 ? (
+                <Select
+                  className="basic-single w-100 m-r-10"
+                  classNamePrefix="select"
+                  value={
+                    this.props.companyId != 0
+                      ? currentCompanyOption[0]
+                      : companyOptions[0]
+                  }
+                  onChange={this.onCompanyChange}
+                  name="company"
+                  options={companyOptions}
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col md={12} xl={12}>
             <Card>
@@ -108,8 +171,8 @@ class TruckDataHistory extends React.Component {
                       <th>Transporter</th>
                       <th>Driver</th>
                       <th>Net loss</th>
-                      <th>Time to arrive</th>
                       <th>Time to load</th>
+                      <th>Time to arrive</th>
                       <th>Time to unload</th>
                     </tr>
                   </thead>
@@ -119,8 +182,8 @@ class TruckDataHistory extends React.Component {
                       <th>Transporter</th>
                       <th>Driver</th>
                       <th>Net loss</th>
-                      <th>Time to arrive</th>
                       <th>Time to load</th>
+                      <th>Time to arrive</th>
                       <th>Time to unload</th>
                     </tr>
                   </tfoot>
@@ -136,12 +199,20 @@ class TruckDataHistory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
+    companies: state.companies,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setCompanies: (companies) =>
+      dispatch({ type: actionTypes.COMPANIES_SET, companies: companies }),
+    onCompanyChange: (companyId) =>
+      dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
+  };
 };
 
 export default withRouter(

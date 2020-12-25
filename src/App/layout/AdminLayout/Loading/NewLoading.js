@@ -79,7 +79,13 @@ class NewLoading extends React.Component {
     status: 0,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const response = await axios.get(
+      this.props.apiDomain + "/transporters/get"
+    );
+    if (response.data.status == 200) {
+      this.props.setTransporters(response.data.result);
+    }
     var dt = new Date();
     var year = dt.getFullYear();
     var month = dt.getMonth() + 1;
@@ -224,7 +230,7 @@ class NewLoading extends React.Component {
                           onChange={this.handleInputChange}
                         >
                           <option value="">Transporter</option>
-                          {DEMO.transporters.map((trans) => {
+                          {this.props.transporters.map((trans) => {
                             return (
                               <option value={trans.id} key={trans.id}>
                                 {trans.transporter}
@@ -459,6 +465,7 @@ const mapStateToProps = (state) => {
     apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
+    transporters: state.transporters,
   };
 };
 
@@ -466,6 +473,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setDeals: (deals) =>
       dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
+    setTransporters: (transporters) =>
+      dispatch({
+        type: actionTypes.TRANSPORTERS_SET,
+        transporters: transporters,
+      }),
   };
 };
 

@@ -103,6 +103,12 @@ class LoadingDealDetail extends React.Component {
   };
 
   async componentDidMount() {
+    const trans_response = await axios.get(
+      this.props.apiDomain + "/transporters/get"
+    );
+    if (trans_response.data.status == 200) {
+      this.props.setTransporters(trans_response.data.result);
+    }
     const { dealId } = this.props.match.params;
     if (dealId > 0) {
       const response = await axios.get(
@@ -302,7 +308,7 @@ class LoadingDealDetail extends React.Component {
                           onChange={this.handleInputChange}
                         >
                           <option value="">Transporter</option>
-                          {DEMO.transporters.map((trans) => {
+                          {this.props.transporters.map((trans) => {
                             return (
                               <option value={trans.id} key={trans.id}>
                                 {trans.transporter}
@@ -630,6 +636,7 @@ const mapStateToProps = (state) => {
     apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
+    transporters: state.transporters,
   };
 };
 
@@ -637,6 +644,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setDeals: (deals) =>
       dispatch({ type: actionTypes.DEALS_SET, deals: deals }),
+    setTransporters: (transporters) =>
+      dispatch({
+        type: actionTypes.TRANSPORTERS_SET,
+        transporters: transporters,
+      }),
   };
 };
 
