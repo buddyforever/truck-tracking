@@ -21,8 +21,9 @@ class TruckHistory extends React.Component {
   };
   async componentDidMount() {
     let tableData;
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const response = await axios.get(
-      this.props.apiDomain + "/report/getDailyTruckNum",
+      this.props.apiDomain + "/report/getDailyTruckNum/" + companyId,
       this.state
     );
     if (response.data.status == 200) {
@@ -31,19 +32,26 @@ class TruckHistory extends React.Component {
       this.initTable(tableData);
     }
   }
-  componentDidUpdate() {
-    // if (datatable) {
-    //   datatable.clear();
-    //   datatable.rows.add(companyUsers);
-    //   datatable.draw();
-    // }
+  async componentDidUpdate() {
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getDailyTruckNum/" + this.props.companyId,
+      this.state
+    );
+    if (response.data.status == 200) {
+      let tableData = response.data.result;
+      if (datatable) {
+        datatable.clear();
+        datatable.rows.add(tableData);
+        datatable.draw();
+      }
+    }
   }
   initTable = (tableData) => {
     let tableResponsive = "#truck-history-table";
 
     datatable = $(tableResponsive).DataTable({
       data: tableData,
-      order: [[0, "asc"]],
+      order: [[0, "desc"]],
       columns: [
         {
           data: "date",
@@ -74,6 +82,7 @@ class TruckHistory extends React.Component {
       },
     });
   };
+
   render() {
     return (
       <Aux>
@@ -109,6 +118,7 @@ const mapStateToProps = (state) => {
   return {
     apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 
