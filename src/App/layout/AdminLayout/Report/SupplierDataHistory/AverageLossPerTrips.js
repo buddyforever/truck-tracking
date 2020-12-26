@@ -1,15 +1,77 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 import { Card } from "react-bootstrap";
+import Select from "react-select";
 
 import { HorizontalBar } from "react-chartjs-2";
 
 import Aux from "../../../../../hoc/_Aux";
-
 class AverageLossPerTrips extends React.Component {
-  componentDidMount() {}
+  state = {
+    curTransporterId: 1,
+    reportData: [],
+    transOptions: [],
+  };
+  async componentDidMount() {
+    const trans_response = await axios.get(
+      this.props.apiDomain + "/transporters/get/"
+    );
+    if (trans_response.data.status == 200) {
+      let transporters = [];
+      for (let i = 0; i < trans_response.data.result.length; i++)
+        transporters.push({
+          value: trans_response.data.result[i].id,
+          label: trans_response.data.result[i].transporter,
+        });
+      this.setState({ transOptions: transporters });
+    }
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    const response = await axios.get(
+      this.props.apiDomain +
+        "/report/getAverageLossPerTrip/" +
+        companyId +
+        "/" +
+        this.state.curTransporterId
+    );
+    if (response.data.status == 200) {
+      this.setState({ reportData: response.data.result });
+    }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.curTransporterId != this.state.curTransporterId ||
+      prevProps.companyId != this.props.companyId
+    ) {
+      let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+      const response = await axios.get(
+        this.props.apiDomain +
+          "/report/getAverageLossPerTrip/" +
+          companyId +
+          "/" +
+          this.state.curTransporterId
+      );
+      if (response.data.status == 200) {
+        this.setState({ reportData: response.data.result });
+      }
+    }
+  }
+  onTransOptionChanged = (option) => {
+    this.setState({ curTransporterId: option.value });
+  };
   render() {
+    let reportData = [];
+    if (this.state.reportData.length > 0) {
+      for (let i = 1; i <= 12; i++) {
+        for (let j = 0; j < this.state.reportData.length; j++) {
+          if (i == this.state.reportData[j].month) {
+            reportData[i - 1] = this.state.reportData[j].avgLoss;
+            break;
+          } else reportData[i - 1] = 0;
+        }
+      }
+    }
     const data = (canvas) => {
       let bar = canvas.getContext("2d");
       let theme = bar.createLinearGradient(0, 300, 0, 0);
@@ -33,8 +95,8 @@ class AverageLossPerTrips extends React.Component {
         ],
         datasets: [
           {
-            label: "Average delivery time",
-            data: [30, 52, 65, 65, 27, 44, 93, 11, 46, 72, 22, 74],
+            label: "Average of loss per x trips",
+            data: reportData,
             borderColor: theme,
             backgroundColor: theme,
             hoverBorderColor: theme,
@@ -45,12 +107,29 @@ class AverageLossPerTrips extends React.Component {
     };
     return (
       <Aux>
-        <HorizontalBar
-          data={data}
-          options={{
-            barValueSpacing: 20,
-          }}
-        />
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Average of loss per x trips</Card.Title>
+            <div className="card-header-right" style={{ width: "200px" }}>
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                defaultValue={this.state.transOptions[0]}
+                onChange={this.onTransOptionChanged}
+                name="color"
+                options={this.state.transOptions}
+              />
+            </div>
+          </Card.Header>
+          <Card.Body>
+            <HorizontalBar
+              data={data}
+              options={{
+                barValueSpacing: 20,
+              }}
+            />
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }
@@ -58,7 +137,9 @@ class AverageLossPerTrips extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 

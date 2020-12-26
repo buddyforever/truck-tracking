@@ -17,7 +17,7 @@ class AverageDeliveryTime extends React.Component {
   async componentDidMount() {
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const response = await axios.get(
-      this.props.apiDomain + "/report/getMonthlyDeliveryTime/" + companyId
+      this.props.apiDomain + "/report/getAverageDeliveryTime/" + companyId
     );
     if (response.data.status == 200) {
       this.setState({ reportData: response.data.result });
@@ -27,7 +27,7 @@ class AverageDeliveryTime extends React.Component {
     if (prevProps.companyId != this.props.companyId) {
       let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
       const response = await axios.get(
-        this.props.apiDomain + "/report/getMonthlyDeliveryTime/" + companyId
+        this.props.apiDomain + "/report/getAverageDeliveryTime/" + companyId
       );
       if (response.data.status == 200) {
         this.setState({ reportData: response.data.result });
@@ -44,8 +44,9 @@ class AverageDeliveryTime extends React.Component {
         for (let j = 0; j < this.state.reportData.length; j++) {
           if (i == this.state.reportData[j].month) {
             reportData[i - 1] =
-              this.state.reportData[j].avg_delievery_time /
-              (this.state.unit == "hour" ? 3600 : 1);
+              this.state.unit == "hour"
+                ? this.state.reportData[j].avg_delievery_time / 3600
+                : this.state.reportData[j].avg_delievery_time;
             break;
           } else reportData[i - 1] = 0;
         }

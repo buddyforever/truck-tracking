@@ -1,6 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 import { Table, Card } from "react-bootstrap";
 
 import Aux from "../../../../../hoc/_Aux";
@@ -14,21 +15,42 @@ $.DataTable = require("datatables.net-responsive-bs");
 let datatable;
 
 class SupplierHistory extends React.Component {
-  componentDidMount() {
-    this.initTable();
+  async componentDidMount() {
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    const response = await axios.get(
+      this.props.apiDomain + "/report/getSupplierDataHistory/" + companyId
+    );
+    if (response.data.status == 200) {
+      let tableData = response.data.result;
+      console.log(tableData);
+      this.initTable(tableData);
+    }
   }
-  componentDidUpdate() {
-    // if (datatable) {
-    //   datatable.clear();
-    //   datatable.rows.add(companyUsers);
-    //   datatable.draw();
-    // }
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      this.props.companyId != prevProps.companyId ||
+      prevProps.companyId != this.props.companyId
+    ) {
+      const response = await axios.get(
+        this.props.apiDomain +
+          "/report/getSupplierDataHistory/" +
+          this.props.companyId
+      );
+      if (response.data.status == 200) {
+        let tableData = response.data.result;
+        if (datatable) {
+          datatable.clear();
+          datatable.rows.add(tableData);
+          datatable.draw();
+        }
+      }
+    }
   }
-  initTable = () => {
+  initTable = (tableData) => {
     let tableResponsive = "#supplier-history-table";
 
     datatable = $(tableResponsive).DataTable({
-      data: this.props.users,
+      data: tableData,
       order: [[0, "asc"]],
       columns: [
         {
@@ -38,7 +60,7 @@ class SupplierHistory extends React.Component {
           },
         },
         {
-          data: "loss",
+          data: "netLoss",
           render: function(data, type, row) {
             return data;
           },
@@ -46,7 +68,7 @@ class SupplierHistory extends React.Component {
         {
           data: "deliveryTime",
           render: function(data, type, row) {
-            return data;
+            return parseFloat(data).toFixed(2) + " hr";
           },
         },
         {
@@ -69,31 +91,38 @@ class SupplierHistory extends React.Component {
   render() {
     return (
       <Aux>
-        <Table
-          ref="tbl"
-          striped
-          hover
-          responsive
-          className="table table-condensed"
-          id="supplier-history-table"
-        >
-          <thead>
-            <tr>
-              <th>Supplier</th>
-              <th>Loss</th>
-              <th>Delivery Time</th>
-              <th>Number of Trips</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>Supplier</th>
-              <th>Loss</th>
-              <th>Delivery Time</th>
-              <th>Number of Trips</th>
-            </tr>
-          </tfoot>
-        </Table>
+        <Card>
+          <Card.Header>
+            <Card.Title as="h5">Supplier Data History</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Table
+              ref="tbl"
+              striped
+              hover
+              responsive
+              className="table table-condensed"
+              id="supplier-history-table"
+            >
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Loss</th>
+                  <th>Delivery Time</th>
+                  <th>Number of Trips</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Loss</th>
+                  <th>Delivery Time</th>
+                  <th>Number of Trips</th>
+                </tr>
+              </tfoot>
+            </Table>
+          </Card.Body>
+        </Card>
       </Aux>
     );
   }
@@ -101,7 +130,9 @@ class SupplierHistory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 
