@@ -51,6 +51,7 @@
     "pnotify": "^4.0.0-beta.2",
     "prism-react-renderer": "^0.1.6",
     "prop-types": "^15.7.2",
+    "public-ip": "^4.0.3",
     "rc-slider": "^8.6.6",
     "react": "^16.8.4",
     "react-animated-modal": "^1.1.1",

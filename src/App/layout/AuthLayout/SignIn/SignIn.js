@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import publicIp from "public-ip";
 
 import "./../../../../assets/scss/style.scss";
 import Aux from "../../../../hoc/_Aux";
@@ -26,9 +27,11 @@ class SignIn extends React.Component {
     });
   };
   onSignInPost = async () => {
+    const clientIp = await publicIp.v4();
     const response = await axios.post(this.props.apiDomain + "/auth/signin", {
       email: this.state.email,
       password: this.state.password,
+      ip_address: clientIp,
     });
     if (response.data.status == 200) {
       this.props.setAuthUser(response.data.result[0]);
