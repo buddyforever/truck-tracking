@@ -74,10 +74,12 @@ class DailyLoss extends React.Component {
 
               <div className="col-3 text-right">
                 <p className="m-b-0">
-                  {(
-                    (this.state.arrived_trucks / this.state.total_trucks) *
-                    100
-                  ).toFixed(1) + "%"}
+                  {(this.state.total_trucks != 0
+                    ? (
+                        (this.state.arrived_trucks / this.state.total_trucks) *
+                        100
+                      ).toFixed(1)
+                    : 0) + "%"}
                 </p>
               </div>
             </div>
@@ -87,12 +89,21 @@ class DailyLoss extends React.Component {
                 role="progressbar"
                 style={{
                   width:
-                    (this.state.arrived_trucks / this.state.total_trucks) *
-                      100 +
-                    "%",
+                    (this.state.total_trucks != 0
+                      ? (
+                          (this.state.arrived_trucks /
+                            this.state.total_trucks) *
+                          100
+                        ).toFixed(1)
+                      : 0) + "%",
                 }}
                 aria-valuenow={
-                  (this.state.arrived_trucks / this.state.total_trucks) * 100
+                  this.state.total_trucks != 0
+                    ? (
+                        (this.state.arrived_trucks / this.state.total_trucks) *
+                        100
+                      ).toFixed(1)
+                    : 0
                 }
                 aria-valuemin="0"
                 aria-valuemax="100"
