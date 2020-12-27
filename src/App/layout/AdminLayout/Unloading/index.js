@@ -31,9 +31,10 @@ class Unloading extends Component {
     if (response.data.status == 200) {
       this.props.setCompanies(response.data.result);
     }
+    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const deals_response = await axios.get(
       this.props.apiDomain + "/deals/get",
-      { companyId: this.props.companyId }
+      { companyId }
     );
     if (deals_response.data.status == 200) {
       this.props.setCompanyDeals(deals_response.data.result);
@@ -58,7 +59,7 @@ class Unloading extends Component {
   };
 
   render() {
-    let companyOptions = [{ value: 0, label: "All" }];
+    let companyOptions = [];
     this.props.companies.map((comp) => {
       companyOptions.push({
         value: comp.id,
