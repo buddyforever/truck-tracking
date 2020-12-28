@@ -17,6 +17,9 @@ $.DataTable = require("datatables.net-responsive-bs");
 let datatable;
 
 class TruckDataHistory extends React.Component {
+  state = {
+    unit: { label: "Hour", value: "hour" },
+  };
   async componentDidMount() {
     const companies_response = await axios.get(
       this.props.apiDomain + `/companies/get`
@@ -30,27 +33,32 @@ class TruckDataHistory extends React.Component {
     );
     if (response.data.status == 200) {
       let tableData = response.data.result;
-      this.initTable(tableData);
+      this.initTable(tableData, this.state.unit.value);
     }
   }
-  async componentDidUpdate() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    console.log(companyId);
-
-    const response = await axios.get(
-      this.props.apiDomain + "/report/getTruckDataHistory/" + companyId
-    );
-    if (response.data.status == 200) {
-      let tableData = response.data.result;
-      console.log(tableData);
-      if (datatable) {
-        datatable.clear();
-        datatable.rows.add(tableData);
-        datatable.draw();
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevProps.companyId != this.props.companyId ||
+      this.state.unit != prevState.unit
+    ) {
+      const response = await axios.get(
+        this.props.apiDomain +
+          "/report/getTruckDataHistory/" +
+          this.props.companyId
+      );
+      if (response.data.status == 200) {
+        let tableData = response.data.result;
+        if (datatable) {
+          //   datatable.clear();
+          //   datatable.rows.add(tableData);
+          //   datatable.draw();
+          datatable.destroy();
+          this.initTable(tableData, this.state.unit.value);
+        }
       }
     }
   }
-  initTable = (tableData) => {
+  initTable = (tableData, unit) => {
     let tableResponsive = "#truck-data-history-table";
 
     datatable = $(tableResponsive).DataTable({
@@ -84,19 +92,31 @@ class TruckDataHistory extends React.Component {
         {
           data: "timeLoaded",
           render: function(data, type, row) {
-            return data;
+            return unit == "hour"
+              ? (data / 3600).toFixed(2) + " hr"
+              : unit == "min"
+              ? (data / 60).toFixed(1) + " min"
+              : data + " s";
           },
         },
         {
           data: "timeArrived",
           render: function(data, type, row) {
-            return data;
+            return unit == "hour"
+              ? (data / 3600).toFixed(2) + " hr"
+              : unit == "min"
+              ? (data / 60).toFixed(1) + " min"
+              : data + " s";
           },
         },
         {
           data: "timeUnloaded",
           render: function(data, type, row) {
-            return data;
+            return unit == "hour"
+              ? (data / 3600).toFixed(2) + " hr"
+              : unit == "min"
+              ? (data / 60).toFixed(1) + " min"
+              : data + " s";
           },
         },
       ],
@@ -115,6 +135,10 @@ class TruckDataHistory extends React.Component {
     this.props.onCompanyChange(option.value);
   };
 
+  onUnitChange = (option) => {
+    this.setState({ unit: option });
+  };
+
   render() {
     let companyOptions = [];
     this.props.companies.map((comp) => {
@@ -126,6 +150,11 @@ class TruckDataHistory extends React.Component {
     let currentCompanyOption = companyOptions.filter(
       (comp) => comp.value == this.props.companyId
     );
+    let unitOptions = [
+      { label: "Hour", value: "hour" },
+      { label: "Minute", value: "min" },
+      { label: "Second", value: "sec" },
+    ];
     return (
       <Aux>
         <Row className="mb-4">
@@ -155,6 +184,16 @@ class TruckDataHistory extends React.Component {
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Truck Data History</Card.Title>
+                <div className="card-header-right" style={{ width: "150px" }}>
+                  <Select
+                    className="basic-single"
+                    classNamePrefix="select"
+                    value={this.state.unit}
+                    onChange={this.onUnitChange}
+                    name="color"
+                    options={unitOptions}
+                  />
+                </div>
               </Card.Header>
               <Card.Body>
                 <Table
