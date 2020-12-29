@@ -35,6 +35,32 @@ class CompanyYearlyLoss extends React.Component {
       this.init(dataum);
     }
   }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId != this.props.companyId) {
+      let companyId = this.props.companyId;
+      const response = await axios.get(
+        this.props.apiDomain + "/overview/getYearlyLoss/" + companyId
+      );
+      if (response.data.status == 200) {
+        let dataum = [];
+        let result = response.data.result;
+        let year = new Date().getFullYear();
+        for (let i = year - 3; i <= year + 1; i++) {
+          for (let j = 0; j < result.length; j++) {
+            if (result[j].year == i) {
+              dataum[i - year + 3] = {
+                year: i.toString(),
+                value: result[j].netLoss,
+              };
+              break;
+            } else dataum[i - year + 3] = { year: i.toString(), value: 0 };
+          }
+        }
+        this.init(dataum);
+      }
+    }
+  }
   init = (dataum) => {
     let maxValue = 0;
     for (let i = 0; i < dataum.length; i++)

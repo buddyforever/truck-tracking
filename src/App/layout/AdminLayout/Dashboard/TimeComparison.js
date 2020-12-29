@@ -55,7 +55,32 @@ class TimeComparison extends React.Component {
       });
     }
   }
-  async componentDidUpdate(prevProps, prevState) {}
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId != this.props.companyId) {
+      let companyId = this.props.companyId;
+      const response = await axios.get(
+        this.props.apiDomain +
+          "/overview/getDailyTotalLoadingUnloadingTime/" +
+          companyId
+      );
+      if (response.data.status == 200) {
+        let result = response.data.result;
+        let dates = [];
+        let times1 = [];
+        let times2 = [];
+        for (let i = 0; i < result.length; i++) {
+          dates.push(convertToDate(result[i].date));
+          times1.push((result[i].loading_time / 3600).toFixed(2));
+          times2.push((result[i].unloading_time / 3600).toFixed(2));
+        }
+        this.setState({
+          dates: dates,
+          loaded_time: times1,
+          unloaded_time: times2,
+        });
+      }
+    }
+  }
   render() {
     const data = (canvas) => {
       let bar = canvas.getContext("2d");

@@ -87,6 +87,7 @@ class CompanyMonthlyTotalVsLoss extends React.Component {
               loss: 0,
             };
         }
+        console.log(dataum);
         this.init(dataum);
       }
     }
