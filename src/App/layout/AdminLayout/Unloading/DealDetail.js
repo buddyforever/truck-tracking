@@ -117,6 +117,8 @@ class UnloadingDealDetail extends React.Component {
       if (response.data.status == 200) {
         this.setState({
           ...response.data.result[0],
+          firstWeight: response.data.result[0].secondWeight,
+          secondWeight: response.data.result[0].firstWeight,
           startLoadingAt: formatDateTime(
             response.data.result[0].startLoadingAt
           ),

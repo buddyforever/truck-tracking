@@ -22,15 +22,20 @@ function timeDifferenceFromNow(datetime) {
 }
 
 function customFormat(time) {
-  let hour = parseInt(time / 3600);
-  let min = parseInt((time - hour * 3600) / 60);
-  let sec = time - hour * 3600 - min * 60;
-  if (hour > 1) return hour + " hours ago";
-  else if (hour == 1) return "an hour ago";
-  else if (hour == 0) {
-    if (min > 1) return min + " minutes ago";
-    else if (min == 1) return "a minute ago";
-    else if (min == 0) return "Just now";
+  let days = parseInt(time / (3600 * 24));
+  let hours = parseInt((time - days * 3600 * 24) / 3600);
+  let mins = parseInt((time - days * 3600 * 24 - hours * 3600) / 60);
+  let secs = time - days * 3600 * 24 - hours * 3600 - mins * 60;
+  if (days > 1) return days + " days ago";
+  else if (days == 1) return "a day ago";
+  else if (days == 0) {
+    if (hours > 1) return hours + " hours ago";
+    else if (hours == 1) return "an hour ago";
+    else if (hours == 0) {
+      if (mins > 1) return mins + " minutes ago";
+      else if (mins == 1) return "a minute ago";
+      else if (mins == 0) return "Just now";
+    }
   }
 }
 

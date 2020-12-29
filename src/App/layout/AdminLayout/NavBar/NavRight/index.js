@@ -90,107 +90,117 @@ class NavRight extends Component {
     return (
       <Aux>
         <ul className="navbar-nav ml-auto">
-          <li>
-            <Dropdown alignRight={!this.props.rtlLayout}>
-              <Dropdown.Toggle variant={"link"} id="dropdown-basic">
-                <i className="icon feather icon-bell" />
-              </Dropdown.Toggle>
-              <Dropdown.Menu alignRight className="notification">
-                <div className="noti-head">
-                  <h6 className="d-inline-block m-b-0">Notifications</h6>
-                  <div className="float-right">
-                    <a
-                      href="javascript:void(0)"
-                      className="m-r-10"
-                      onClick={this.onMarkAllAsRead}
-                    >
-                      mark as read
+          {this.props.authUser.type == 1 ? (
+            <li>
+              <Dropdown alignRight={!this.props.rtlLayout}>
+                <Dropdown.Toggle variant={"link"} id="dropdown-basic">
+                  <i className="icon feather icon-bell" />
+                </Dropdown.Toggle>
+                <Dropdown.Menu alignRight className="notification">
+                  <div className="noti-head">
+                    <h6 className="d-inline-block m-b-0">Notifications</h6>
+                    <div className="float-right">
+                      <a
+                        href="javascript:void(0)"
+                        className="m-r-10"
+                        onClick={this.onMarkAllAsRead}
+                      >
+                        mark as read
+                      </a>
+                    </div>
+                  </div>
+                  <ul className="noti-body">
+                    {newNotifications.length > 0 ? (
+                      <li className="n-title">
+                        <p className="m-b-0">NEW</p>
+                      </li>
+                    ) : (
+                      <></>
+                    )}
+                    {newNotifications.map((item, index) => {
+                      return (
+                        <li className="notification" key={item.id}>
+                          <div className="media">
+                            {item.userId != 1 ? (
+                              <img
+                                src={avatars[index % 3]}
+                                alt="Generic placeholder"
+                              />
+                            ) : (
+                              <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
+                            )}
+                            <div className="media-body">
+                              <p>
+                                <strong>
+                                  {item.userId != 1
+                                    ? item.firstname + " " + item.lastname
+                                    : "Daily report"}
+                                </strong>
+                                <span className="n-time text-muted">
+                                  <i className="icon feather icon-clock m-r-10" />
+                                  {customFormat(
+                                    timeDifferenceFromNow(item.created_at)
+                                  )}
+                                </span>
+                              </p>
+                              <p>{item.notification}</p>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                    {oldNotifications.length > 0 ? (
+                      <li className="n-title">
+                        <p className="m-b-0">EARLIER</p>
+                      </li>
+                    ) : (
+                      <></>
+                    )}
+                    {oldNotifications.map((item, index) => {
+                      return (
+                        <li className="notification" key={item.id}>
+                          <div className="media">
+                            {item.userId != 1 ? (
+                              <img
+                                className="img-radius"
+                                src={avatars[index % 3]}
+                                alt="Generic placeholder"
+                              />
+                            ) : (
+                              <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
+                            )}
+                            <div className="media-body">
+                              <p>
+                                <strong>
+                                  {item.userId != 1
+                                    ? item.firstname + " " + item.lastname
+                                    : "Daily report"}
+                                </strong>
+                                <span className="n-time text-muted">
+                                  <i className="icon feather icon-clock m-r-10" />
+                                  {customFormat(
+                                    timeDifferenceFromNow(item.created_at)
+                                  )}
+                                </span>
+                              </p>
+                              <p>{item.notification}</p>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className="noti-footer">
+                    <a href="javascript:void(0)" onClick={this.onShowAll}>
+                      show all
                     </a>
                   </div>
-                </div>
-                <ul className="noti-body">
-                  {newNotifications.length > 0 ? (
-                    <li className="n-title">
-                      <p className="m-b-0">NEW</p>
-                    </li>
-                  ) : (
-                    <></>
-                  )}
-                  {newNotifications.map((item, index) => {
-                    return (
-                      <li className="notification" key={item.id}>
-                        <div className="media">
-                          {item.userId != 1 ? (
-                            <img
-                              src={avatars[index % 3]}
-                              alt="Generic placeholder"
-                            />
-                          ) : (
-                            <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
-                          )}
-                          <div className="media-body">
-                            <p>
-                              <strong>
-                                {item.userId != 1
-                                  ? item.firstname + " " + item.lastname
-                                  : "Daily report"}
-                              </strong>
-                              <span className="n-time text-muted">
-                                <i className="icon feather icon-clock m-r-10" />
-                                {customFormat(
-                                  timeDifferenceFromNow(item.created_at)
-                                )}
-                              </span>
-                            </p>
-                            <p>{item.notification}</p>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                  {oldNotifications.length > 0 ? (
-                    <li className="n-title">
-                      <p className="m-b-0">EARLIER</p>
-                    </li>
-                  ) : (
-                    <></>
-                  )}
-                  {oldNotifications.map((item, index) => {
-                    return (
-                      <li className="notification" key={item.id}>
-                        <div className="media">
-                          <img
-                            className="img-radius"
-                            src={avatars[index % 3]}
-                            alt="Generic placeholder"
-                          />
-                          <div className="media-body">
-                            <p>
-                              <strong>
-                                {item.firstname + " " + item.lastname}
-                              </strong>
-                              <span className="n-time text-muted">
-                                <i className="icon feather icon-clock m-r-10" />
-                                {customFormat(
-                                  timeDifferenceFromNow(item.created_at)
-                                )}
-                              </span>
-                            </p>
-                            <p>{item.notification}</p>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <div className="noti-footer">
-                  <a href="javascript:void(0)" onClick={this.onShowAll}>
-                    show all
-                  </a>
-                </div>
-              </Dropdown.Menu>
-            </Dropdown>
-          </li>
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+          ) : (
+            <></>
+          )}
 
           <li>
             <ThemeToggle />
