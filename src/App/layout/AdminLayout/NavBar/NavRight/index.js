@@ -78,15 +78,15 @@ class NavRight extends Component {
 
   render() {
     let avatars = [Avatar1, Avatar2, Avatar3];
-    let unReadNotificatons = this.props.notifications.filter((item) => {
-      return item.status == 0;
-    });
-    let newNotifications = unReadNotificatons.filter(
-      (item) => timeDifferenceFromNow(item.created_at) <= 1200 //set notifications as new within 20 mins
-    );
-    let oldNotifications = unReadNotificatons
-      .filter((item) => timeDifferenceFromNow(item.created_at) > 1200)
-      .slice(0, 5);
+    let unReadNotificatons = this.props.notifications
+      .filter((item) => {
+        return (
+          item.status == 0 && timeDifferenceFromNow(item.created_at) <= 3600
+        );
+      })
+      .slice(0, 6);
+    let newNotifications = unReadNotificatons.slice(0, 3);
+    let oldNotifications = unReadNotificatons.slice(3);
     return (
       <Aux>
         <ul className="navbar-nav ml-auto">
