@@ -28,7 +28,6 @@ class SignIn extends React.Component {
   };
   onSignInPost = async () => {
     const clientIp = await publicIp.v4();
-    console.log(clientIp);
     const response = await axios.post(this.props.apiDomain + "/auth/signin", {
       email: this.state.email,
       password: this.state.password,

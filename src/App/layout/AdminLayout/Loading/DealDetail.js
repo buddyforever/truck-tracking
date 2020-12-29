@@ -397,7 +397,7 @@ class LoadingDealDetail extends React.Component {
                                 this.handleInputChange(e);
                                 this.setState({
                                   netWeight:
-                                    this.state.secondWeight - e.target.value,
+                                    e.target.value - this.state.secondWeight,
                                 });
                               }}
                               autoComplete="off"
@@ -424,7 +424,7 @@ class LoadingDealDetail extends React.Component {
                                 this.handleInputChange(e);
                                 this.setState({
                                   netWeight:
-                                    e.target.value - this.state.firstWeight,
+                                    this.state.firstWeight - e.target.value,
                                 });
                               }}
                               autoComplete="off"

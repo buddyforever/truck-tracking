@@ -80,13 +80,18 @@ const SupplierDataHistoryReport = React.lazy(() =>
   import("./App/layout/AdminLayout/Report/SupplierDataHistory")
 );
 
+const Notifications = React.lazy(() =>
+  import("./App/layout/AdminLayout/Notifications")
+);
+
 const routes = [
-  // {
-  //   path: "/",
-  //   exact: true,
-  //   name: "Default",
-  //   component: Dashboard,
-  // },
+  {
+    path: "/",
+    exact: true,
+    name: "Default",
+    component: Dashboard,
+    permission_users: [2, 3], // user types who can access this page
+  },
   {
     path: "/dashboard",
     exact: true,
@@ -171,73 +176,13 @@ const routes = [
     component: SupplierDataHistoryReport,
     permission_users: [], // user types who can access this page
   },
-  // {
-  //   path: "/basic/button",
-  //   exact: true,
-  //   name: "Basic Button",
-  //   component: UIBasicButton,
-  // },
-  // {
-  //   path: "/basic/badges",
-  //   exact: true,
-  //   name: "Basic Badges",
-  //   component: UIBasicBadges,
-  // },
-  // {
-  //   path: "/basic/breadcrumb-paging",
-  //   exact: true,
-  //   name: "Basic Breadcrumb Pagination",
-  //   component: UIBasicBreadcrumbPagination,
-  // },
-  // {
-  //   path: "/basic/collapse",
-  //   exact: true,
-  //   name: "Basic Collapse",
-  //   component: UIBasicCollapse,
-  // },
-  // {
-  //   path: "/basic/tabs-pills",
-  //   exact: true,
-  //   name: "Basic Tabs & Pills",
-  //   component: UIBasicTabsPills,
-  // },
-  // {
-  //   path: "/basic/typography",
-  //   exact: true,
-  //   name: "Basic Typography",
-  //   component: UIBasicBasicTypography,
-  // },
-  // {
-  //   path: "/forms/form-basic",
-  //   exact: true,
-  //   name: "Forms Elements",
-  //   component: FormsElements,
-  // },
-  // {
-  //   path: "/tables/bootstrap",
-  //   exact: true,
-  //   name: "Bootstrap Table",
-  //   component: BootstrapTable,
-  // },
-  // {
-  //   path: "/charts/nvd3",
-  //   exact: true,
-  //   name: "Nvd3 Chart",
-  //   component: Nvd3Chart,
-  // },
-  // {
-  //   path: "/maps/google-map",
-  //   exact: true,
-  //   name: "Google Map",
-  //   component: GoogleMap,
-  // },
-  // {
-  //   path: "/sample-page",
-  //   exact: true,
-  //   name: "Sample Page",
-  //   component: OtherSamplePage,
-  // },
-  // { path: "/docs", exact: true, name: "Documentation", component: OtherDocs },
+  {
+    path: "/notifications",
+    exact: true,
+    name: "Notificatons",
+    component: Notifications,
+    permission_users: [], // user types who can access this page
+  },
 ];
 
 export default routes;

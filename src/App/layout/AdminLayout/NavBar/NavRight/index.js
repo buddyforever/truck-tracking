@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { connect } from "react-redux";
+import axios from "axios";
 
 import ChatList from "./ChatList";
 import ThemeToggle from "../NavRight/ThemeToggle";
@@ -13,9 +14,62 @@ import Avatar1 from "../../../../../assets/images/user/avatar-1.jpg";
 import Avatar2 from "../../../../../assets/images/user/avatar-2.jpg";
 import Avatar3 from "../../../../../assets/images/user/avatar-3.jpg";
 
+function timeDifferenceFromNow(datetime) {
+  let now = new Date().getTime();
+  let time = new Date(datetime).getTime();
+
+  let diff = Math.abs(now - time) / 1000;
+  return diff;
+}
+
+function customFormat(time) {
+  let hour = parseInt(time / 3600);
+  let min = parseInt((time - hour * 3600) / 60);
+  let sec = time - hour * 3600 - min * 60;
+  if (hour > 1) return hour + " hours ago";
+  else if (hour == 1) return "an hour ago";
+  else if (hour == 0) {
+    if (min > 1) return min + " minutes ago";
+    else if (min == 1) return "a minute ago";
+    else if (min == 0) return "Just now";
+  }
+}
 class NavRight extends Component {
   state = {
     listOpen: false,
+  };
+
+  async componentDidMount() {
+    const response = await axios.get(
+      this.props.apiDomain + "/notifications/get"
+    );
+    if (response.data.status == 200) {
+      this.props.setNotifications(response.data.result);
+    }
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (this.props.deals != prevProps.deals) {
+      const response = await axios.get(
+        this.props.apiDomain + "/notifications/get"
+      );
+      if (response.data.status == 200) {
+        this.props.setNotifications(response.data.result);
+      }
+    }
+  }
+
+  onMarkAllAsRead = async () => {
+    const response = await axios.post(
+      this.props.apiDomain + "/notifications/markAllAsRead"
+    );
+    if (response.data.status == 200) {
+      this.props.setNotifications(response.data.result);
+    }
+  };
+
+  onShowAll = () => {
+    this.props.history.push("/notifications");
   };
 
   onSignOutPost = () => {
@@ -23,6 +77,16 @@ class NavRight extends Component {
   };
 
   render() {
+    let avatars = [Avatar1, Avatar2, Avatar3];
+    let unReadNotificatons = this.props.notifications.filter((item) => {
+      return item.status == 0;
+    });
+    let newNotifications = unReadNotificatons.filter(
+      (item) => timeDifferenceFromNow(item.created_at) <= 1200 //set notifications as new within 20 mins
+    );
+    let oldNotifications = unReadNotificatons
+      .filter((item) => timeDifferenceFromNow(item.created_at) > 1200)
+      .slice(0, 5);
     return (
       <Aux>
         <ul className="navbar-nav ml-auto">
@@ -35,83 +99,94 @@ class NavRight extends Component {
                 <div className="noti-head">
                   <h6 className="d-inline-block m-b-0">Notifications</h6>
                   <div className="float-right">
-                    <a href={DEMO.BLANK_LINK} className="m-r-10">
+                    <a
+                      href="javascript:void(0)"
+                      className="m-r-10"
+                      onClick={this.onMarkAllAsRead}
+                    >
                       mark as read
                     </a>
-                    <a href={DEMO.BLANK_LINK}>clear all</a>
                   </div>
                 </div>
                 <ul className="noti-body">
-                  <li className="n-title">
-                    <p className="m-b-0">NEW</p>
-                  </li>
-                  <li className="notification">
-                    <div className="media">
-                      <img
-                        className="img-radius"
-                        src={Avatar1}
-                        alt="Generic placeholder"
-                      />
-                      <div className="media-body">
-                        <p>
-                          <strong>
-                            {this.props.authUser.firstname +
-                              " " +
-                              this.props.authUser.lastname}
-                          </strong>
-                          <span className="n-time text-muted">
-                            <i className="icon feather icon-clock m-r-10" />
-                            30 min
-                          </span>
-                        </p>
-                        <p>New ticket Added</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="n-title">
-                    <p className="m-b-0">EARLIER</p>
-                  </li>
-                  <li className="notification">
-                    <div className="media">
-                      <img
-                        className="img-radius"
-                        src={Avatar2}
-                        alt="Generic placeholder"
-                      />
-                      <div className="media-body">
-                        <p>
-                          <strong>Joseph William</strong>
-                          <span className="n-time text-muted">
-                            <i className="icon feather icon-clock m-r-10" />
-                            30 min
-                          </span>
-                        </p>
-                        <p>Prchace New Theme and make payment</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="notification">
-                    <div className="media">
-                      <img
-                        className="img-radius"
-                        src={Avatar3}
-                        alt="Generic placeholder"
-                      />
-                      <div className="media-body">
-                        <p>
-                          <strong>Sara Soudein</strong>
-                          <span className="n-time text-muted">
-                            <i className="icon feather icon-clock m-r-10" />
-                            30 min
-                          </span>
-                        </p>
-                        <p>currently login</p>
-                      </div>
-                    </div>
-                  </li>
+                  {newNotifications.length > 0 ? (
+                    <li className="n-title">
+                      <p className="m-b-0">NEW</p>
+                    </li>
+                  ) : (
+                    <></>
+                  )}
+                  {newNotifications.map((item, index) => {
+                    return (
+                      <li className="notification" key={item.id}>
+                        <div className="media">
+                          {item.userId != 1 ? (
+                            <img
+                              src={avatars[index % 3]}
+                              alt="Generic placeholder"
+                            />
+                          ) : (
+                            <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
+                          )}
+                          <div className="media-body">
+                            <p>
+                              <strong>
+                                {item.userId != 1
+                                  ? item.firstname + " " + item.lastname
+                                  : "Daily report"}
+                              </strong>
+                              <span className="n-time text-muted">
+                                <i className="icon feather icon-clock m-r-10" />
+                                {customFormat(
+                                  timeDifferenceFromNow(item.created_at)
+                                )}
+                              </span>
+                            </p>
+                            <p>{item.notification}</p>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                  {oldNotifications.length > 0 ? (
+                    <li className="n-title">
+                      <p className="m-b-0">EARLIER</p>
+                    </li>
+                  ) : (
+                    <></>
+                  )}
+                  {oldNotifications.map((item, index) => {
+                    return (
+                      <li className="notification" key={item.id}>
+                        <div className="media">
+                          <img
+                            className="img-radius"
+                            src={avatars[index % 3]}
+                            alt="Generic placeholder"
+                          />
+                          <div className="media-body">
+                            <p>
+                              <strong>
+                                {item.firstname + " " + item.lastname}
+                              </strong>
+                              <span className="n-time text-muted">
+                                <i className="icon feather icon-clock m-r-10" />
+                                {customFormat(
+                                  timeDifferenceFromNow(item.created_at)
+                                )}
+                              </span>
+                            </p>
+                            <p>{item.notification}</p>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
                 <div className="noti-footer">
-                  <a href={DEMO.BLANK_LINK}>show all</a>
+                  <a href="javascript:void(0)" onClick={this.onShowAll}>
+                    show all
+                  </a>
                 </div>
               </Dropdown.Menu>
             </Dropdown>
@@ -201,7 +276,9 @@ class NavRight extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    apiDomain: state.apiDomain,
     authUser: state.authUser,
+    notifications: state.notifications,
   };
 };
 
@@ -210,6 +287,11 @@ const mapDispatchToProps = (dispatch) => {
     onSignOutPost: () =>
       dispatch({
         type: actionTypes.AUTH_SIGNOUT_POST,
+      }),
+    setNotifications: (notifications) =>
+      dispatch({
+        type: actionTypes.NOTIFICATIONS_SET,
+        notifications: notifications,
       }),
   };
 };
