@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { connect } from "react-redux";
 import axios from "axios";
@@ -92,113 +92,118 @@ class NavRight extends Component {
         <ul className="navbar-nav ml-auto">
           {this.props.authUser.type == 1 ? (
             <li>
-              <Dropdown alignRight={!this.props.rtlLayout}>
-                <Dropdown.Toggle variant={"link"} id="dropdown-basic">
-                  <i className="icon feather icon-bell" />
-                </Dropdown.Toggle>
-                <Dropdown.Menu alignRight className="notification">
-                  <div className="noti-head">
-                    <h6 className="d-inline-block m-b-0">Notifications</h6>
-                    <div className="float-right">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-r-10"
-                        onClick={this.onMarkAllAsRead}
-                      >
-                        mark as read
-                      </a>
-                    </div>
-                  </div>
-                  <ul className="noti-body">
-                    {newNotifications.length > 0 ? (
-                      <li className="n-title">
-                        <p className="m-b-0">NEW</p>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-                    {newNotifications.map((item, index) => {
-                      return (
-                        <li className="notification" key={item.id}>
-                          <div className="media">
-                            {item.userId != 1 ? (
-                              <img
-                                src={avatars[index % 3]}
-                                alt="Generic placeholder"
-                              />
-                            ) : (
-                              <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
-                            )}
-                            <div className="media-body">
-                              <p>
-                                <strong>
-                                  {item.userId != 1
-                                    ? item.firstname + " " + item.lastname
-                                    : "Daily report"}
-                                </strong>
-                                <span className="n-time text-muted">
-                                  <i className="icon feather icon-clock m-r-10" />
-                                  {customFormat(
-                                    timeDifferenceFromNow(item.created_at)
-                                  )}
-                                </span>
-                              </p>
-                              <p>{item.notification}</p>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                    {oldNotifications.length > 0 ? (
-                      <li className="n-title">
-                        <p className="m-b-0">EARLIER</p>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-                    {oldNotifications.map((item, index) => {
-                      return (
-                        <li className="notification" key={item.id}>
-                          <div className="media">
-                            {item.userId != 1 ? (
-                              <img
-                                className="img-radius"
-                                src={avatars[index % 3]}
-                                alt="Generic placeholder"
-                              />
-                            ) : (
-                              <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
-                            )}
-                            <div className="media-body">
-                              <p>
-                                <strong>
-                                  {item.userId != 1
-                                    ? item.firstname + " " + item.lastname
-                                    : "Daily report"}
-                                </strong>
-                                <span className="n-time text-muted">
-                                  <i className="icon feather icon-clock m-r-10" />
-                                  {customFormat(
-                                    timeDifferenceFromNow(item.created_at)
-                                  )}
-                                </span>
-                              </p>
-                              <p>{item.notification}</p>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <div className="noti-footer">
-                    <a href="javascript:void(0)" onClick={this.onShowAll}>
-                      show all
-                    </a>
-                  </div>
-                </Dropdown.Menu>
-              </Dropdown>
+              <Link to="/notifications">
+                <i className="icon feather icon-bell" />
+              </Link>
             </li>
           ) : (
+            // <li>
+            //   <Dropdown alignRight={!this.props.rtlLayout}>
+            //     <Dropdown.Toggle variant={"link"} id="dropdown-basic">
+            //       <i className="icon feather icon-bell" />
+            //     </Dropdown.Toggle>
+            //     <Dropdown.Menu alignRight className="notification">
+            //       <div className="noti-head">
+            //         <h6 className="d-inline-block m-b-0">Notifications</h6>
+            //         <div className="float-right">
+            //           <a
+            //             href="javascript:void(0)"
+            //             className="m-r-10"
+            //             onClick={this.onMarkAllAsRead}
+            //           >
+            //             mark as read
+            //           </a>
+            //         </div>
+            //       </div>
+            //       <ul className="noti-body">
+            //         {newNotifications.length > 0 ? (
+            //           <li className="n-title">
+            //             <p className="m-b-0">NEW</p>
+            //           </li>
+            //         ) : (
+            //           <></>
+            //         )}
+            //         {newNotifications.map((item, index) => {
+            //           return (
+            //             <li className="notification" key={item.id}>
+            //               <div className="media">
+            //                 {item.userId != 1 ? (
+            //                   <img
+            //                     src={avatars[index % 3]}
+            //                     alt="Generic placeholder"
+            //                   />
+            //                 ) : (
+            //                   <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
+            //                 )}
+            //                 <div className="media-body">
+            //                   <p>
+            //                     <strong>
+            //                       {item.userId != 1
+            //                         ? item.firstname + " " + item.lastname
+            //                         : "Daily report"}
+            //                     </strong>
+            //                     <span className="n-time text-muted">
+            //                       <i className="icon feather icon-clock m-r-10" />
+            //                       {customFormat(
+            //                         timeDifferenceFromNow(item.created_at)
+            //                       )}
+            //                     </span>
+            //                   </p>
+            //                   <p>{item.notification}</p>
+            //                 </div>
+            //               </div>
+            //             </li>
+            //           );
+            //         })}
+            //         {oldNotifications.length > 0 ? (
+            //           <li className="n-title">
+            //             <p className="m-b-0">EARLIER</p>
+            //           </li>
+            //         ) : (
+            //           <></>
+            //         )}
+            //         {oldNotifications.map((item, index) => {
+            //           return (
+            //             <li className="notification" key={item.id}>
+            //               <div className="media">
+            //                 {item.userId != 1 ? (
+            //                   <img
+            //                     className="img-radius"
+            //                     src={avatars[index % 3]}
+            //                     alt="Generic placeholder"
+            //                   />
+            //                 ) : (
+            //                   <i className="fa fa-bell text-c-yellow m-r-20 f-30" />
+            //                 )}
+            //                 <div className="media-body">
+            //                   <p>
+            //                     <strong>
+            //                       {item.userId != 1
+            //                         ? item.firstname + " " + item.lastname
+            //                         : "Daily report"}
+            //                     </strong>
+            //                     <span className="n-time text-muted">
+            //                       <i className="icon feather icon-clock m-r-10" />
+            //                       {customFormat(
+            //                         timeDifferenceFromNow(item.created_at)
+            //                       )}
+            //                     </span>
+            //                   </p>
+            //                   <p>{item.notification}</p>
+            //                 </div>
+            //               </div>
+            //             </li>
+            //           );
+            //         })}
+            //       </ul>
+            //       <div className="noti-footer">
+            //         <a href="javascript:void(0)" onClick={this.onShowAll}>
+            //           show all
+            //         </a>
+            //       </div>
+            //     </Dropdown.Menu>
+            //   </Dropdown>
+            // </li>
             <></>
           )}
 
@@ -220,7 +225,7 @@ class NavRight extends Component {
             <Dropdown alignRight={!this.props.rtlLayout} className="drp-user">
               <Dropdown.Toggle variant={"link"} id="dropdown-basic">
                 <img
-                  src={Avatar1}
+                  src={Avatar2}
                   className="img-radius"
                   alt="User Profile"
                   width={40}
@@ -229,7 +234,7 @@ class NavRight extends Component {
               <Dropdown.Menu alignRight className="profile-notification">
                 <div className="pro-head">
                   <img
-                    src={Avatar1}
+                    src={Avatar2}
                     className="img-radius"
                     alt="User Profile"
                   />
@@ -249,23 +254,12 @@ class NavRight extends Component {
                 </div>
                 <ul className="pro-body">
                   <li>
-                    <a href={DEMO.BLANK_LINK} className="dropdown-item">
-                      <i className="feather icon-settings" /> Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a href={DEMO.BLANK_LINK} className="dropdown-item">
-                      <i className="feather icon-user" /> Profile
-                    </a>
-                  </li>
-                  <li>
-                    <a href={DEMO.BLANK_LINK} className="dropdown-item">
-                      <i className="feather icon-mail" /> My Messages
-                    </a>
-                  </li>
-                  <li>
-                    <a href={DEMO.BLANK_LINK} className="dropdown-item">
-                      <i className="feather icon-lock" /> Lock Screen
+                    <a
+                      href="javascript:void(0)"
+                      className="dropdown-item"
+                      onClick={this.onSignOutPost}
+                    >
+                      <i className="feather icon-log-out" /> Log out
                     </a>
                   </li>
                 </ul>
