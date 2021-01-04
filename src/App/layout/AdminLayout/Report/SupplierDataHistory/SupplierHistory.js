@@ -3,6 +3,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import { Table, Card } from "react-bootstrap";
+import Datetime from "react-datetime";
+import moment from "moment";
 
 import Aux from "../../../../../hoc/_Aux";
 
@@ -20,29 +22,42 @@ require("datatables.net-buttons/js/buttons.print.js");
 let datatable;
 
 class SupplierHistory extends React.Component {
+  state = { from: "", to: "" };
   async componentDidMount() {
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const response = await axios.get(
-      this.props.apiDomain + "/report/getSupplierDataHistory/" + companyId
+      this.props.apiDomain +
+        "/report/getSupplierDataHistory/" +
+        companyId +
+        "?from=" +
+        this.state.from +
+        "&to=" +
+        this.state.to
     );
     if (response.data.status == 200) {
       let tableData = response.data.result;
-      console.log(tableData);
       this.initTable(tableData);
     }
   }
   async componentDidUpdate(prevProps, prevState) {
     if (
       this.props.companyId != prevProps.companyId ||
-      prevProps.companyId != this.props.companyId
+      prevProps.companyId != this.props.companyId ||
+      prevState.from != this.state.from ||
+      prevState.to != this.state.to
     ) {
       const response = await axios.get(
         this.props.apiDomain +
           "/report/getSupplierDataHistory/" +
-          this.props.companyId
+          this.props.companyId +
+          "?from=" +
+          this.state.from +
+          "&to=" +
+          this.state.to
       );
       if (response.data.status == 200) {
         let tableData = response.data.result;
+        console.log(tableData);
         if (datatable) {
           datatable.clear();
           datatable.rows.add(tableData);
@@ -108,12 +123,41 @@ class SupplierHistory extends React.Component {
       ],
     });
   };
+
+  dateFromChanged = (date) => {
+    this.setState({ from: moment(date).format("YYYY-MM-DD") });
+  };
+
+  dateToChanged = (date) => {
+    this.setState({ to: moment(date).format("YYYY-MM-DD") });
+  };
+
   render() {
     return (
       <Aux>
         <Card>
           <Card.Header>
             <Card.Title as="h5">Supplier Data History</Card.Title>
+            <div className="card-header-right" style={{ width: "300px" }}>
+              <div className="d-flex align-items-center">
+                <Datetime
+                  className="m-r-10 w-100"
+                  timeFormat={false}
+                  inputProps={{ placeholder: "From" }}
+                  dateFormat="YYYY-MM-DD"
+                  value={this.state.from}
+                  onChange={this.dateFromChanged}
+                />
+                <Datetime
+                  className="w-100"
+                  timeFormat={false}
+                  inputProps={{ placeholder: "To" }}
+                  dateFormat="YYYY-MM-DD"
+                  value={this.state.to}
+                  onChange={this.dateToChanged}
+                />
+              </div>
+            </div>
           </Card.Header>
           <Card.Body>
             <Table

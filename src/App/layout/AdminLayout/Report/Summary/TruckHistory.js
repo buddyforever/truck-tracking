@@ -2,6 +2,8 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Table, Card } from "react-bootstrap";
+import Datetime from "react-datetime";
+import moment from "moment";
 
 import Aux from "../../../../../hoc/_Aux";
 
@@ -28,26 +30,35 @@ class TruckHistory extends React.Component {
     let tableData;
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
     const response = await axios.get(
-      this.props.apiDomain + "/report/getDailyTruckNum/" + companyId,
-      this.state
+      this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
     );
     if (response.data.status == 200) {
       tableData = response.data.result;
-      console.log(tableData);
       this.initTable(tableData);
     }
   }
-  async componentDidUpdate() {
-    const response = await axios.get(
-      this.props.apiDomain + "/report/getDailyTruckNum/" + this.props.companyId,
-      this.state
-    );
-    if (response.data.status == 200) {
-      let tableData = response.data.result;
-      if (datatable) {
-        datatable.clear();
-        datatable.rows.add(tableData);
-        datatable.draw();
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevProps.companyId != this.props.companyId ||
+      prevState.from != this.state.from ||
+      prevState.to != this.state.to
+    ) {
+      let companyId = this.props.companyId;
+      const response = await axios.get(
+        this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
+      );
+      if (response.data.status == 200) {
+        let tableData = response.data.result;
+        if (this.state.from)
+          tableData = tableData.filter((item) => item.date >= this.state.from);
+        if (this.state.to)
+          tableData = tableData.filter((item) => item.date <= this.state.to);
+        console.log(tableData);
+        if (datatable) {
+          datatable.clear();
+          datatable.rows.add(tableData);
+          datatable.draw();
+        }
       }
     }
   }
@@ -102,6 +113,12 @@ class TruckHistory extends React.Component {
       ],
     });
   };
+  dateFromChanged = (date) => {
+    this.setState({ from: moment(date).format("YYYY-MM-DD") });
+  };
+  dateToChanged = (date) => {
+    this.setState({ to: moment(date).format("YYYY-MM-DD") });
+  };
 
   render() {
     return (
@@ -109,6 +126,26 @@ class TruckHistory extends React.Component {
         <Card>
           <Card.Header>
             <Card.Title as="h5">Number of Trucks loaded/unloaded</Card.Title>
+            <div className="card-header-right" style={{ width: "300px" }}>
+              <div className="d-flex align-items-center">
+                <Datetime
+                  className="m-r-10 w-100"
+                  timeFormat={false}
+                  inputProps={{ placeholder: "From" }}
+                  dateFormat="YYYY-MM-DD"
+                  value={this.state.from}
+                  onChange={this.dateFromChanged}
+                />
+                <Datetime
+                  className="w-100"
+                  timeFormat={false}
+                  inputProps={{ placeholder: "To" }}
+                  dateFormat="YYYY-MM-DD"
+                  value={this.state.to}
+                  onChange={this.dateToChanged}
+                />
+              </div>
+            </div>
           </Card.Header>
           <Card.Body>
             <Table

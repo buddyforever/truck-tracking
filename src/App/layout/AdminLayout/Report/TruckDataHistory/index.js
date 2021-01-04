@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { Row, Col, Card, Table } from "react-bootstrap";
 import Select from "react-select";
+import Datetime from "react-datetime";
+import moment from "moment";
 
 import Aux from "../../../../../hoc/_Aux";
 import * as actionTypes from "../../../../../store/actions";
@@ -24,6 +26,8 @@ let datatable;
 class TruckDataHistory extends React.Component {
   state = {
     unit: { label: "Hour", value: "hour" },
+    from: "",
+    to: "",
   };
   async componentDidMount() {
     const companies_response = await axios.get(
@@ -44,7 +48,9 @@ class TruckDataHistory extends React.Component {
   async componentDidUpdate(prevProps, prevState) {
     if (
       prevProps.companyId != this.props.companyId ||
-      this.state.unit != prevState.unit
+      this.state.unit != prevState.unit ||
+      this.state.from != prevState.from ||
+      this.state.to != prevState.to
     ) {
       const response = await axios.get(
         this.props.apiDomain +
@@ -54,9 +60,12 @@ class TruckDataHistory extends React.Component {
       if (response.data.status == 200) {
         let tableData = response.data.result;
         if (datatable) {
-          //   datatable.clear();
-          //   datatable.rows.add(tableData);
-          //   datatable.draw();
+          if (this.state.from)
+            tableData = tableData.filter(
+              (item) => item.date >= this.state.from
+            );
+          if (this.state.to)
+            tableData = tableData.filter((item) => item.date <= this.state.to);
           datatable.destroy();
           this.initTable(tableData, this.state.unit.value);
         }
@@ -159,6 +168,14 @@ class TruckDataHistory extends React.Component {
     this.setState({ unit: option });
   };
 
+  dateFromChanged = (date) => {
+    this.setState({ from: moment(date).format("YYYY-MM-DD") });
+  };
+
+  dateToChanged = (date) => {
+    this.setState({ to: moment(date).format("YYYY-MM-DD") });
+  };
+
   render() {
     let companyOptions = [];
     this.props.companies.map((comp) => {
@@ -204,15 +221,25 @@ class TruckDataHistory extends React.Component {
             <Card>
               <Card.Header>
                 <Card.Title as="h5">Truck Data History</Card.Title>
-                <div className="card-header-right" style={{ width: "150px" }}>
-                  <Select
-                    className="basic-single"
-                    classNamePrefix="select"
-                    value={this.state.unit}
-                    onChange={this.onUnitChange}
-                    name="color"
-                    options={unitOptions}
-                  />
+                <div className="card-header-right" style={{ width: "300px" }}>
+                  <div className="d-flex align-items-center">
+                    <Datetime
+                      className="m-r-10 w-100"
+                      timeFormat={false}
+                      inputProps={{ placeholder: "From" }}
+                      dateFormat="YYYY-MM-DD"
+                      value={this.state.from}
+                      onChange={this.dateFromChanged}
+                    />
+                    <Datetime
+                      className="w-100"
+                      timeFormat={false}
+                      inputProps={{ placeholder: "To" }}
+                      dateFormat="YYYY-MM-DD"
+                      value={this.state.to}
+                      onChange={this.dateToChanged}
+                    />
+                  </div>
                 </div>
               </Card.Header>
               <Card.Body>
