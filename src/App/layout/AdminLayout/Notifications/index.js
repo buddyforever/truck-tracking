@@ -47,7 +47,16 @@ class Notifications extends React.Component {
     if (response.data.status == 200) {
       this.props.setNotifications(response.data.result);
     }
+    const companies_response = await axios.get(
+      this.props.apiDomain + `/companies/get`
+    );
+    if (companies_response.data.status == 200) {
+      this.props.setCompanies(companies_response.data.result);
+    }
   }
+  onCompanyChange = (option) => {
+    this.props.onCompanyChange(option.value);
+  };
   render() {
     let avatars = [avatar1, avatar2, avatar3];
     let dot_class = [
@@ -57,8 +66,41 @@ class Notifications extends React.Component {
       "text-c-red",
     ];
 
+    let companyOptions = [{ value: 0, label: "All" }];
+    this.props.companies.map((comp) => {
+      companyOptions.push({
+        value: comp.id,
+        label: comp.companyName,
+      });
+    });
+    let currentCompanyOption = companyOptions.filter(
+      (comp) => comp.value == this.props.companyId
+    );
+
     return (
       <Aux>
+        <Row className="mb-4">
+          <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
+            <div className="d-flex align-items-center justify-content-end">
+              {this.props.authUser.type == 0 ? (
+                <Select
+                  className="basic-single w-100 m-r-10"
+                  classNamePrefix="select"
+                  value={
+                    this.props.companyId != 0
+                      ? currentCompanyOption[0]
+                      : companyOptions[0]
+                  }
+                  onChange={this.onCompanyChange}
+                  name="company"
+                  options={companyOptions}
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <Card className="note-bar">
@@ -66,53 +108,63 @@ class Notifications extends React.Component {
                 <Card.Title as="h5">Notifications</Card.Title>
               </Card.Header>
               <Card.Body className="p-0">
-                {this.props.notifications.map((item, index) => {
-                  return (
-                    <a
-                      href={DEMO.BLANK_LINK}
-                      className={`media p-30 ${index != 0 ? "border-top" : ""}`}
-                      key={item.id}
-                    >
-                      <div className="mr-3 photo-table">
-                        {item.userId != 1 ? (
-                          <>
-                            <i
-                              className={`fa fa-circle ${
-                                dot_class[index % 4]
-                              } f-10 m-r-10`}
-                            />
-                            <img
-                              className="rounded-circle"
-                              style={{ width: "40px" }}
-                              src={avatars[index % 3]}
-                              alt="chat-user"
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <i
-                              className={`fa fa-circle ${
-                                dot_class[index % 4]
-                              } f-10 m-r-10`}
-                            />
-                            <i className="fa fa-bell text-c-yellow f-30 m-l-5 m-r-5" />
-                          </>
-                        )}
-                      </div>
-                      <div className="media-body">
-                        <h6>
-                          {item.userId != 1
-                            ? item.firstname + " " + item.lastname
-                            : "Daily report"}
-                        </h6>
-                        <span className="f-12 float-right text-muted">
-                          {customFormat(timeDifferenceFromNow(item.created_at))}
-                        </span>
-                        <p className="text-muted m-0">{item.notification}</p>
-                      </div>
-                    </a>
-                  );
-                })}
+                {this.props.notifications
+                  .filter(
+                    (item) =>
+                      item.companyId == this.props.companyId ||
+                      this.props.companyId == 0
+                  )
+                  .map((item, index) => {
+                    return (
+                      <a
+                        href={DEMO.BLANK_LINK}
+                        className={`media p-30 ${
+                          index != 0 ? "border-top" : ""
+                        }`}
+                        key={item.id}
+                      >
+                        <div className="mr-3 photo-table">
+                          {item.userId != 1 ? (
+                            <>
+                              <i
+                                className={`fa fa-circle ${
+                                  dot_class[index % 4]
+                                } f-10 m-r-10`}
+                              />
+                              <img
+                                className="rounded-circle"
+                                style={{ width: "40px" }}
+                                src={avatars[index % 3]}
+                                alt="chat-user"
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <i
+                                className={`fa fa-circle ${
+                                  dot_class[index % 4]
+                                } f-10 m-r-10`}
+                              />
+                              <i className="fa fa-bell text-c-yellow f-30 m-l-5 m-r-5" />
+                            </>
+                          )}
+                        </div>
+                        <div className="media-body">
+                          <h6>
+                            {item.userId != 1
+                              ? item.firstname + " " + item.lastname
+                              : "Daily report"}
+                          </h6>
+                          <span className="f-12 float-right text-muted">
+                            {customFormat(
+                              timeDifferenceFromNow(item.created_at)
+                            )}
+                          </span>
+                          <p className="text-muted m-0">{item.notification}</p>
+                        </div>
+                      </a>
+                    );
+                  })}
               </Card.Body>
             </Card>
           </Col>
@@ -125,7 +177,10 @@ class Notifications extends React.Component {
 const mapStateToProps = (state) => {
   return {
     apiDomain: state.apiDomain,
+    companies: state.companies,
     notifications: state.notifications,
+    authUser: state.authUser,
+    companyId: state.companyId,
   };
 };
 
@@ -136,6 +191,13 @@ const mapDispatchToProps = (dispatch) => {
         type: actionTypes.NOTIFICATIONS_SET,
         notifications: notifications,
       }),
+    setCompanies: (companies) =>
+      dispatch({
+        type: actionTypes.COMPANIES_SET,
+        companies: companies,
+      }),
+    onCompanyChange: (companyId) =>
+      dispatch({ type: actionTypes.COMPANY_CHANGE, companyId: companyId }),
   };
 };
 

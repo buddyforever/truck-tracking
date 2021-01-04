@@ -12,6 +12,11 @@ window.$ = $;
 global.jQuery = $;
 
 $.DataTable = require("datatables.net-responsive-bs");
+require("datatables.net-buttons-bs");
+require("datatables.net-buttons/js/buttons.colVis.js");
+require("datatables.net-buttons/js/buttons.flash.js");
+require("datatables.net-buttons/js/buttons.html5.js");
+require("datatables.net-buttons/js/buttons.print.js");
 let datatable;
 
 class SupplierHistory extends React.Component {
@@ -50,6 +55,7 @@ class SupplierHistory extends React.Component {
     let tableResponsive = "#supplier-history-table";
 
     datatable = $(tableResponsive).DataTable({
+      dom: "Bfrti",
       data: tableData,
       order: [[0, "asc"]],
       columns: [
@@ -86,6 +92,20 @@ class SupplierHistory extends React.Component {
           },
         },
       },
+      buttons: [
+        {
+          extend: "csvHtml5",
+          text: "CSV",
+          title: "Supplier Data History",
+          className: "btn btn-sm btn-outline-primary",
+        },
+        {
+          extend: "print",
+          text: "Print",
+          title: "Supplier Data History",
+          className: "btn btn-sm btn-outline-primary",
+        },
+      ],
     });
   };
   render() {

@@ -12,6 +12,11 @@ window.$ = $;
 global.jQuery = $;
 
 $.DataTable = require("datatables.net-responsive-bs");
+require("datatables.net-buttons-bs");
+require("datatables.net-buttons/js/buttons.colVis.js");
+require("datatables.net-buttons/js/buttons.flash.js");
+require("datatables.net-buttons/js/buttons.html5.js");
+require("datatables.net-buttons/js/buttons.print.js");
 let datatable;
 
 class TruckHistory extends React.Component {
@@ -50,6 +55,7 @@ class TruckHistory extends React.Component {
     let tableResponsive = "#truck-history-table";
 
     datatable = $(tableResponsive).DataTable({
+      dom: "Bfrti",
       data: tableData,
       order: [[0, "desc"]],
       columns: [
@@ -80,6 +86,20 @@ class TruckHistory extends React.Component {
           },
         },
       },
+      buttons: [
+        {
+          extend: "csvHtml5",
+          text: "CSV",
+          title: "Number of Trucks loaded/unloaded",
+          className: "btn btn-sm btn-outline-primary",
+        },
+        {
+          extend: "print",
+          text: "Print",
+          title: "Number of Trucks loaded/unloaded",
+          className: "btn btn-sm btn-outline-primary",
+        },
+      ],
     });
   };
 

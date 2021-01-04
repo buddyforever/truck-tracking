@@ -20,6 +20,11 @@ window.$ = $;
 global.jQuery = $;
 
 $.DataTable = require("datatables.net-responsive-bs");
+require("datatables.net-buttons-bs");
+require("datatables.net-buttons/js/buttons.colVis.js");
+require("datatables.net-buttons/js/buttons.flash.js");
+require("datatables.net-buttons/js/buttons.html5.js");
+require("datatables.net-buttons/js/buttons.print.js");
 let datatable;
 
 class Users extends React.Component {
@@ -102,6 +107,7 @@ class Users extends React.Component {
     let tableResponsive = "#users-table";
 
     datatable = $(tableResponsive).DataTable({
+      dom: "Bfrti",
       data: this.props.users.filter((user) => {
         return (
           (user.companyId == this.props.companyId && user.type != 1) ||
@@ -188,6 +194,20 @@ class Users extends React.Component {
           },
         },
       },
+      buttons: [
+        {
+          extend: "csvHtml5",
+          text: "CSV",
+          title: "Users",
+          className: "btn btn-sm btn-outline-primary",
+        },
+        {
+          extend: "print",
+          text: "Print",
+          title: "Users",
+          className: "btn btn-sm btn-outline-primary",
+        },
+      ],
     });
   };
 

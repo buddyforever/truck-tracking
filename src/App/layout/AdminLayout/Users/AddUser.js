@@ -55,7 +55,7 @@ class AddUser extends React.Component {
     firstname: "",
     lastname: "",
     email: "",
-    companyId: 0,
+    companyId: this.props.authUser.type == 0 ? 0 : this.props.companyId,
     password: "",
     confirmPassword: "",
     phone: "",
@@ -243,6 +243,7 @@ class AddUser extends React.Component {
                         id="companyId"
                         value={this.state.companyId}
                         required
+                        readOnly={this.props.authUser.type != 0 ? true : false}
                         errorMessage="Please select a company."
                         onChange={this.handleInputChange}
                       >
