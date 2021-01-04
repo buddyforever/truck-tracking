@@ -20,6 +20,12 @@ import truck1 from "./../../../../assets/images/truck1.png";
 import truck2 from "./../../../../assets/images/truck2.jpg";
 import truck3 from "./../../../../assets/images/truck3.png";
 
+import wheat from "./../../../../assets/images/wheat.png";
+import corn from "./../../../../assets/images/corn.png";
+import meat from "./../../../../assets/images/meat.png";
+import fish from "./../../../../assets/images/fish.png";
+import chicken from "./../../../../assets/images/chicken.png";
+
 const padLeft = function(num) {
   return num >= 10 ? num : "0" + num;
 };
@@ -210,7 +216,22 @@ class GridView extends Component {
                                 )} radial-bar-lg radial-bar-danger m-0`}
                                 onClick={() => this.onArrivedPopupShow(deal.id)}
                               >
-                                <img src={truck3} alt="User-Avatar" />
+                                <img
+                                  src={
+                                    deal.productName == "Wheat"
+                                      ? wheat
+                                      : deal.productName == "Corn"
+                                      ? corn
+                                      : deal.productName == "Meat"
+                                      ? meat
+                                      : deal.productName == "Fish"
+                                      ? fish
+                                      : deal.productName == "Chicken"
+                                      ? chicken
+                                      : truck1
+                                  }
+                                  alt="User-Avatar"
+                                />
                               </div>
                               <h5 className="m-t-10">
                                 {deal.truckPlate != ""
@@ -278,7 +299,22 @@ class GridView extends Component {
                                 )} radial-bar-lg radial-bar-warning m-0`}
                                 onClick={() => this.onDealClick(deal.id)}
                               >
-                                <img src={truck1} alt="User-Avatar" />
+                                <img
+                                  src={
+                                    deal.productName == "Wheat"
+                                      ? wheat
+                                      : deal.productName == "Corn"
+                                      ? corn
+                                      : deal.productName == "Meat"
+                                      ? meat
+                                      : deal.productName == "Fish"
+                                      ? fish
+                                      : deal.productName == "Chicken"
+                                      ? chicken
+                                      : truck1
+                                  }
+                                  alt="User-Avatar"
+                                />
                               </div>
                               <h5 className="m-t-10">{deal.truckPlate}</h5>
                             </div>

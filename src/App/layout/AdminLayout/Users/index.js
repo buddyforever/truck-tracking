@@ -31,7 +31,6 @@ class Users extends React.Component {
   async componentDidMount() {
     const response = await axios.get(this.props.apiDomain + `/users/get`);
     if (response.data.status == 200) {
-      console.log(response.data.result);
       this.props.setUsers(response.data.result);
       this.initTable();
     }
@@ -46,7 +45,10 @@ class Users extends React.Component {
 
   componentDidUpdate() {
     let companyUsers = this.props.users.filter((u) => {
-      return u.companyId == this.props.companyId || this.props.companyId == 0;
+      return (
+        (u.companyId == this.props.companyId && u.type != 1) ||
+        this.props.companyId == 0
+      );
     });
     if (datatable) {
       datatable.clear();
@@ -102,7 +104,8 @@ class Users extends React.Component {
     datatable = $(tableResponsive).DataTable({
       data: this.props.users.filter((user) => {
         return (
-          user.companyId == this.props.companyId || this.props.companyId == 0
+          (user.companyId == this.props.companyId && user.type != 1) ||
+          this.props.companyId == 0
         );
       }),
       order: [[0, "asc"]],
@@ -140,7 +143,13 @@ class Users extends React.Component {
         {
           data: "type",
           render: (data, type, row) => {
-            return data == 2 ? "Loading" : "Unloading";
+            return data == 1
+              ? "Admin"
+              : data == 2
+              ? "Loading"
+              : data == 3
+              ? "Unloading"
+              : "";
           },
         },
       ],
@@ -247,7 +256,7 @@ class Users extends React.Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 1 ? (
+              {this.props.authUser.type == 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"

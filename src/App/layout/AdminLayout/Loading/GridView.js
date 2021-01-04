@@ -15,6 +15,12 @@ import truck1 from "./../../../../assets/images/truck1.png";
 import truck2 from "./../../../../assets/images/truck2.jpg";
 import truck3 from "./../../../../assets/images/truck3.png";
 
+import wheat from "./../../../../assets/images/wheat.png";
+import corn from "./../../../../assets/images/corn.png";
+import meat from "./../../../../assets/images/meat.png";
+import fish from "./../../../../assets/images/fish.png";
+import chicken from "./../../../../assets/images/chicken.png";
+
 class GridView extends Component {
   state = {
     searchKey1: "",
@@ -94,7 +100,7 @@ class GridView extends Component {
                 <Card.Title as="h5">Pending</Card.Title>
                 <div className="card-header-right">
                   <div className="d-flex align-items-center">
-                    {this.props.authUser.type != 1 ? (
+                    {this.props.authUser.type == 2 ? (
                       <OverlayTrigger overlay={<Tooltip>New loading</Tooltip>}>
                         <Button
                           variant="outline-info"
@@ -126,7 +132,7 @@ class GridView extends Component {
                         this.state.searchKey1 == ""
                       );
                     })
-                    .map((deal) => {
+                    .map((deal, index) => {
                       return (
                         <Col md={6} xl={3} key={deal.id}>
                           <OverlayTrigger
@@ -148,7 +154,22 @@ class GridView extends Component {
                                 )} radial-bar-lg radial-bar-primary m-0`}
                                 onClick={() => this.onDealClick(deal.id)}
                               >
-                                <img src={truck1} alt="User-Avatar" />
+                                <img
+                                  src={
+                                    deal.productName == "Wheat"
+                                      ? wheat
+                                      : deal.productName == "Corn"
+                                      ? corn
+                                      : deal.productName == "Meat"
+                                      ? meat
+                                      : deal.productName == "Fish"
+                                      ? fish
+                                      : deal.productName == "Chicken"
+                                      ? chicken
+                                      : truck1
+                                  }
+                                  alt="User-Avatar"
+                                />
                               </div>
                               {/* <Button
                                 variant="warning"
@@ -221,7 +242,22 @@ class GridView extends Component {
                                 )} radial-bar-lg radial-bar-danger m-0`}
                                 onClick={() => this.onDealClick(deal.id)}
                               >
-                                <img src={truck3} alt="User-Avatar" />
+                                <img
+                                  src={
+                                    deal.productName == "Wheat"
+                                      ? wheat
+                                      : deal.productName == "Corn"
+                                      ? corn
+                                      : deal.productName == "Meat"
+                                      ? meat
+                                      : deal.productName == "Fish"
+                                      ? fish
+                                      : deal.productName == "Chicken"
+                                      ? chicken
+                                      : truck1
+                                  }
+                                  alt="User-Avatar"
+                                />
                               </div>
                               <h5 className="m-t-10">{deal.truckPlate}</h5>
                             </div>

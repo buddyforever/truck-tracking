@@ -58,6 +58,7 @@ class AdminLayout extends Component {
     const menu = routes.map((route, index) => {
       if (
         route.permission_users.includes(parseInt(this.props.authUser.type)) ||
+        this.props.authUser.type == 0 ||
         this.props.authUser.type == 1
       ) {
         // filter accessable routes from routes.js

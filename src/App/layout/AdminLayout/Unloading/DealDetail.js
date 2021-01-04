@@ -82,7 +82,7 @@ class UnloadingDealDetail extends React.Component {
     trailerPlate: "",
     secondPlate: "",
     transporterId: 0,
-    productType: 0, //weight based
+    productId: 0, //weight based
     firstWeight: 0,
     secondWeight: 0,
     netWeight: 0,
@@ -103,33 +103,37 @@ class UnloadingDealDetail extends React.Component {
   };
 
   async componentDidMount() {
-    const trans_response = await axios.get(
+    const response1 = await axios.get(
       this.props.apiDomain + "/transporters/get"
     );
-    if (trans_response.data.status == 200) {
-      this.props.setTransporters(trans_response.data.result);
+    if (response1.data.status == 200) {
+      this.props.setTransporters(response1.data.result);
+    }
+    const response2 = await axios.get(this.props.apiDomain + "/products/get");
+    if (response2.data.status == 200) {
+      this.props.setProducts(response2.data.result);
     }
     const { dealId } = this.props.match.params;
     if (dealId > 0) {
-      const response = await axios.get(
+      const response3 = await axios.get(
         this.props.apiDomain + "/deals/get/" + dealId
       );
-      if (response.data.status == 200) {
+      if (response3.data.status == 200) {
         this.setState({
-          ...response.data.result[0],
-          firstWeight: response.data.result[0].secondWeight,
-          secondWeight: response.data.result[0].firstWeight,
+          ...response3.data.result[0],
+          firstWeight: response3.data.result[0].secondWeight,
+          secondWeight: response3.data.result[0].firstWeight,
           startLoadingAt: formatDateTime(
-            response.data.result[0].startLoadingAt
+            response3.data.result[0].startLoadingAt
           ),
           finishLoadingAt: formatDateTime(
-            response.data.result[0].finishLoadingAt
+            response3.data.result[0].finishLoadingAt
           ),
           startUnloadingAt: formatDateTime(
-            response.data.result[0].startUnloadingAt
+            response3.data.result[0].startUnloadingAt
           ),
           finishUnloadingAt: formatDateTime(
-            response.data.result[0].finishUnloadingAt
+            response3.data.result[0].finishUnloadingAt
           ),
         });
       }
@@ -353,6 +357,29 @@ class UnloadingDealDetail extends React.Component {
                           autoComplete="off"
                         />
                       </Form.Group>
+                      <Form.Group>
+                        <Form.Label htmlFor="productId">Product</Form.Label>
+                        <SelectGroup
+                          name="productId"
+                          id="productId"
+                          value={this.state.productId}
+                          errorMessage="Transporter"
+                          disabled
+                        >
+                          <option value="0">Select Product</option>
+                          {this.props.products
+                            .filter(
+                              (item) => item.companyId == this.props.companyId
+                            )
+                            .map((item) => {
+                              return (
+                                <option key={item.id} value={item.id}>
+                                  {item.productName}
+                                </option>
+                              );
+                            })}
+                        </SelectGroup>
+                      </Form.Group>
                       {this.props.companyId == 1 ? (
                         <>
                           <Form.Group>
@@ -484,6 +511,8 @@ class UnloadingDealDetail extends React.Component {
                           />
                         </Form.Group>
                       )}
+                    </Col>
+                    <Col md="4">
                       <Form.Group>
                         <Form.Label htmlFor="alertTime">Alert Time</Form.Label>
                         <SelectGroup
@@ -501,8 +530,6 @@ class UnloadingDealDetail extends React.Component {
                           <option value="960">16 hours</option>
                         </SelectGroup>
                       </Form.Group>
-                    </Col>
-                    <Col md="4">
                       <Form.Group>
                         <Form.Label htmlFor="finishUnloadingAt">
                           Exit Date and Time
@@ -601,6 +628,7 @@ const mapStateToProps = (state) => {
     authUser: state.authUser,
     companyId: state.companyId,
     transporters: state.transporters,
+    products: state.products,
   };
 };
 
@@ -612,6 +640,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({
         type: actionTypes.TRANSPORTERS_SET,
         transporters: transporters,
+      }),
+    setProducts: (products) =>
+      dispatch({
+        type: actionTypes.PRODUCTS_SET,
+        products: products,
       }),
   };
 };

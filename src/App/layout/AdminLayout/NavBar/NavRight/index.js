@@ -90,7 +90,7 @@ class NavRight extends Component {
     return (
       <Aux>
         <ul className="navbar-nav ml-auto">
-          {this.props.authUser.type == 1 ? (
+          {this.props.authUser.type == 0 || this.props.authUser.type == 1 ? (
             <li>
               <Link to="/notifications">
                 <i className="icon feather icon-bell" />

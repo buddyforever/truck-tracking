@@ -55,7 +55,7 @@ class Loading extends Component {
   };
 
   render() {
-    let companyOptions = [];
+    let companyOptions = [{ value: 0, label: "All" }];
     this.props.companies.map((comp) => {
       companyOptions.push({
         value: comp.id,
@@ -124,7 +124,7 @@ class Loading extends Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 1 ? (
+              {this.props.authUser.type == 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
