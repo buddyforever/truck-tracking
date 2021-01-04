@@ -208,12 +208,8 @@ class GridView extends Component {
                                 <i className="fa fa-truck f-36 mr-0" />
                               </Button> */}
                               <div
-                                data-label={`${this.getDealDetailPercent(
-                                  deal
-                                )}%`}
-                                className={`radial-bar radial-bar-${this.getDealDetailPercent(
-                                  deal
-                                )} radial-bar-lg radial-bar-danger m-0`}
+                                data-label="100"
+                                className="radial-bar radial-bar-100 radial-bar-lg radial-bar-danger m-0"
                                 onClick={() => this.onArrivedPopupShow(deal.id)}
                               >
                                 <img
