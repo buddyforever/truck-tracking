@@ -13,6 +13,7 @@ class AverageLossPerTrips extends React.Component {
     curTransporterId: 1,
     reportData: [],
     transOptions: [],
+    curYear: new Date().getFullYear(),
   };
   async componentDidMount() {
     const trans_response = await axios.get(
@@ -28,12 +29,15 @@ class AverageLossPerTrips extends React.Component {
       this.setState({ transOptions: transporters });
     }
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    let curYear = new Date().getFullYear();
     const response = await axios.get(
       this.props.apiDomain +
         "/report/getAverageLossPerTrip/" +
         companyId +
         "/" +
-        this.state.curTransporterId
+        this.state.curTransporterId +
+        "/" +
+        curYear
     );
     if (response.data.status == 200) {
       this.setState({ reportData: response.data.result });
@@ -42,7 +46,8 @@ class AverageLossPerTrips extends React.Component {
   async componentDidUpdate(prevProps, prevState) {
     if (
       prevState.curTransporterId != this.state.curTransporterId ||
-      prevProps.companyId != this.props.companyId
+      prevProps.companyId != this.props.companyId ||
+      prevState.curYear != this.state.curYear
     ) {
       let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
       const response = await axios.get(
@@ -50,7 +55,9 @@ class AverageLossPerTrips extends React.Component {
           "/report/getAverageLossPerTrip/" +
           companyId +
           "/" +
-          this.state.curTransporterId
+          this.state.curTransporterId +
+          "/" +
+          this.state.curYear
       );
       if (response.data.status == 200) {
         this.setState({ reportData: response.data.result });
@@ -59,6 +66,9 @@ class AverageLossPerTrips extends React.Component {
   }
   onTransOptionChanged = (option) => {
     this.setState({ curTransporterId: option.value });
+  };
+  onYearOptionChanged = (option) => {
+    this.setState({ curYear: option.value });
   };
   render() {
     let reportData = [];
@@ -105,20 +115,35 @@ class AverageLossPerTrips extends React.Component {
         ],
       };
     };
+    let nowYear = new Date().getFullYear();
+    const yearOptions = [];
+    for (let i = nowYear; i >= 2000; i--) {
+      yearOptions.push({ label: i, value: i });
+    }
     return (
       <Aux>
         <Card>
           <Card.Header>
             <Card.Title as="h5">Average of loss per x trips</Card.Title>
-            <div className="card-header-right" style={{ width: "200px" }}>
-              <Select
-                className="basic-single"
-                classNamePrefix="select"
-                defaultValue={this.state.transOptions[0]}
-                onChange={this.onTransOptionChanged}
-                name="color"
-                options={this.state.transOptions}
-              />
+            <div className="card-header-right" style={{ width: "300px" }}>
+              <div className="d-flex align-items-center">
+                <Select
+                  className="basic-single w-100 m-r-10"
+                  classNamePrefix="select"
+                  defaultValue={yearOptions[0]}
+                  onChange={this.onYearOptionChanged}
+                  name="color"
+                  options={yearOptions}
+                />
+                <Select
+                  className="basic-single w-100"
+                  classNamePrefix="select"
+                  defaultValue={this.state.transOptions[0]}
+                  onChange={this.onTransOptionChanged}
+                  name="color"
+                  options={this.state.transOptions}
+                />
+              </div>
             </div>
           </Card.Header>
           <Card.Body>
