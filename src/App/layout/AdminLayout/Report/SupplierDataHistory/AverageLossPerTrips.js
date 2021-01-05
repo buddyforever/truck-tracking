@@ -8,28 +8,45 @@ import Select from "react-select";
 import { HorizontalBar } from "react-chartjs-2";
 
 import Aux from "../../../../../hoc/_Aux";
+import * as actionTypes from "../../../../../store/actions";
+
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function getSunday(d) {
+  d = new Date(d);
+  var day = d.getDay(),
+    diff = d.getDate() - day + (day == 0 ? -7 : 0);
+  var monday = new Date(d.setDate(diff));
+  return monday.getDate();
+}
 class AverageLossPerTrips extends React.Component {
   state = {
     curTransporterId: 1,
     reportData: [],
-    transOptions: [],
-    curYear: new Date().getFullYear(),
+    unit: "month",
+    yaxis: months,
   };
   async componentDidMount() {
     const trans_response = await axios.get(
       this.props.apiDomain + "/transporters/get/"
     );
     if (trans_response.data.status == 200) {
-      let transporters = [];
-      for (let i = 0; i < trans_response.data.result.length; i++)
-        transporters.push({
-          value: trans_response.data.result[i].id,
-          label: trans_response.data.result[i].transporter,
-        });
-      this.setState({ transOptions: transporters });
+      this.props.setTransporters(trans_response.data.result);
     }
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    let curYear = new Date().getFullYear();
     const response = await axios.get(
       this.props.apiDomain +
         "/report/getAverageLossPerTrip/" +
@@ -37,7 +54,7 @@ class AverageLossPerTrips extends React.Component {
         "/" +
         this.state.curTransporterId +
         "/" +
-        curYear
+        this.state.unit
     );
     if (response.data.status == 200) {
       this.setState({ reportData: response.data.result });
@@ -45,9 +62,9 @@ class AverageLossPerTrips extends React.Component {
   }
   async componentDidUpdate(prevProps, prevState) {
     if (
-      prevState.curTransporterId != this.state.curTransporterId ||
       prevProps.companyId != this.props.companyId ||
-      prevState.curYear != this.state.curYear
+      prevState.curTransporterId != this.state.curTransporterId ||
+      prevState.unit != this.state.unit
     ) {
       let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
       const response = await axios.get(
@@ -57,28 +74,57 @@ class AverageLossPerTrips extends React.Component {
           "/" +
           this.state.curTransporterId +
           "/" +
-          this.state.curYear
+          this.state.unit
       );
       if (response.data.status == 200) {
         this.setState({ reportData: response.data.result });
+        if (this.state.unit == "month") {
+          this.setState({ yaxis: months });
+        } else if (this.state.unit == "week") {
+          let year = new Date().getFullYear();
+          let month = new Date().getMonth();
+          let firstday = new Date(year, month, 1).getDate();
+          let lastday = new Date(year, month + 1, 0).getDate();
+          let numWeeks = Math.ceil((lastday - firstday) / 7);
+          let weeks = [];
+          for (let i = 1; i <= numWeeks; i++) weeks.push(i);
+          this.setState({ yaxis: weeks });
+        } else if (this.state.unit == "day") {
+          let sunday = getSunday(new Date());
+          let week_days = [];
+          for (let i = sunday; i <= sunday + 6; i++) week_days.push(i);
+          this.setState({ yaxis: week_days });
+        }
       }
     }
   }
   onTransOptionChanged = (option) => {
     this.setState({ curTransporterId: option.value });
   };
-  onYearOptionChanged = (option) => {
-    this.setState({ curYear: option.value });
+  onUnitOptionChanged = (option) => {
+    this.setState({ unit: option.value });
   };
   render() {
     let reportData = [];
     if (this.state.reportData.length > 0) {
-      for (let i = 1; i <= 12; i++) {
+      for (let i = 1; i <= this.state.yaxis.length; i++) {
         for (let j = 0; j < this.state.reportData.length; j++) {
-          if (i == this.state.reportData[j].month) {
-            reportData[i - 1] = this.state.reportData[j].avgLoss;
-            break;
-          } else reportData[i - 1] = 0;
+          if (this.state.unit == "month") {
+            if (i == this.state.reportData[j].month) {
+              reportData[i - 1] = this.state.reportData[j].avgLoss;
+              break;
+            } else reportData[i - 1] = 0;
+          } else if (this.state.unit == "week") {
+            if (i == this.state.reportData[j].week) {
+              reportData[i - 1] = this.state.reportData[j].avgLoss;
+              break;
+            } else reportData[i - 1] = 0;
+          } else if (this.state.unit == "day") {
+            if (this.state.yaxis[i - 1] == this.state.reportData[j].day) {
+              reportData[i - 1] = this.state.reportData[j].avgLoss;
+              break;
+            } else reportData[i - 1] = 0;
+          }
         }
       }
     }
@@ -89,20 +135,7 @@ class AverageLossPerTrips extends React.Component {
       theme.addColorStop(1, "#A389D4");
 
       return {
-        labels: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ],
+        labels: this.state.yaxis,
         datasets: [
           {
             label: "Average of loss per x trips",
@@ -115,11 +148,26 @@ class AverageLossPerTrips extends React.Component {
         ],
       };
     };
-    let nowYear = new Date().getFullYear();
-    const yearOptions = [];
-    for (let i = nowYear; i >= 2000; i--) {
-      yearOptions.push({ label: i, value: i });
-    }
+    const unitOptions = [
+      {
+        label: "Month",
+        value: "month",
+      },
+      {
+        label: "Week",
+        value: "week",
+      },
+      {
+        label: "Day",
+        value: "day",
+      },
+    ];
+    let transOptions = [];
+    for (let i = 0; i < this.props.transporters.length; i++)
+      transOptions.push({
+        value: this.props.transporters[i].id,
+        label: this.props.transporters[i].transporter,
+      });
     return (
       <Aux>
         <Card>
@@ -130,18 +178,22 @@ class AverageLossPerTrips extends React.Component {
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
-                  defaultValue={yearOptions[0]}
-                  onChange={this.onYearOptionChanged}
-                  name="color"
-                  options={yearOptions}
+                  defaultValue={unitOptions[0]}
+                  onChange={this.onUnitOptionChanged}
+                  name="unit"
+                  options={unitOptions}
                 />
                 <Select
                   className="basic-single w-100"
                   classNamePrefix="select"
-                  defaultValue={this.state.transOptions[0]}
+                  value={
+                    transOptions.filter(
+                      (t) => t.value == this.state.curTransporterId
+                    )[0]
+                  }
                   onChange={this.onTransOptionChanged}
-                  name="color"
-                  options={this.state.transOptions}
+                  name="transporter"
+                  options={transOptions}
                 />
               </div>
             </div>
@@ -165,11 +217,18 @@ const mapStateToProps = (state) => {
     apiDomain: state.apiDomain,
     authUser: state.authUser,
     companyId: state.companyId,
+    transporters: state.transporters,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    setTransporters: (transporters) =>
+      dispatch({
+        type: actionTypes.TRANSPORTERS_SET,
+        transporters: transporters,
+      }),
+  };
 };
 
 export default withRouter(
