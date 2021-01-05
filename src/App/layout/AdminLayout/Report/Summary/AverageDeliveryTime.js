@@ -28,8 +28,26 @@ function getSunday(d) {
   d = new Date(d);
   var day = d.getDay(),
     diff = d.getDate() - day + (day == 0 ? -7 : 0);
-  var monday = new Date(d.setDate(diff));
-  return monday.getDate();
+  var sunday = new Date(d.setDate(diff));
+  return sunday;
+}
+
+function addDays(date, days) {
+  const copy = new Date(Number(date));
+  copy.setDate(date.getDate() + days);
+  return copy;
+}
+function customDateFormat(date) {
+  let year = new Date(date).getFullYear();
+  let month = new Date(date).getMonth() + 1;
+  let day = new Date(date).getDate();
+  return (
+    year +
+    "-" +
+    (month < 10 ? "0" + month : month) +
+    "-" +
+    (day < 10 ? "0" + day : day)
+  );
 }
 class AverageDeliveryTime extends React.Component {
   state = {
@@ -55,8 +73,7 @@ class AverageDeliveryTime extends React.Component {
   async componentDidUpdate(prevProps, prevState) {
     if (
       prevProps.companyId != this.props.companyId ||
-      prevState.unit != this.state.unit ||
-      prevState.curYear != this.state.curYear
+      prevState.unit != this.state.unit
     ) {
       let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
       const response = await axios.get(
@@ -82,7 +99,8 @@ class AverageDeliveryTime extends React.Component {
         } else if (this.state.unit == "day") {
           let sunday = getSunday(new Date());
           let week_days = [];
-          for (let i = sunday; i <= sunday + 6; i++) week_days.push(i);
+          for (let i = 0; i < 7; i++)
+            week_days.push(customDateFormat(addDays(sunday, i)));
           this.setState({ yaxis: week_days });
         }
       }
@@ -98,20 +116,23 @@ class AverageDeliveryTime extends React.Component {
         for (let j = 0; j < this.state.reportData.length; j++) {
           if (this.state.unit == "month") {
             if (i == this.state.reportData[j].month) {
-              reportData[i - 1] =
-                this.state.reportData[j].avg_delievery_time / 3600;
+              reportData[i - 1] = (
+                this.state.reportData[j].avg_delievery_time / 3600
+              ).toFixed(2);
               break;
             } else reportData[i - 1] = 0;
           } else if (this.state.unit == "week") {
             if (i == this.state.reportData[j].week) {
-              reportData[i - 1] =
-                this.state.reportData[j].avg_delievery_time / 3600;
+              reportData[i - 1] = (
+                this.state.reportData[j].avg_delievery_time / 3600
+              ).toFixed(2);
               break;
             } else reportData[i - 1] = 0;
           } else if (this.state.unit == "day") {
             if (this.state.yaxis[i - 1] == this.state.reportData[j].day) {
-              reportData[i - 1] =
-                this.state.reportData[j].avg_delievery_time / 3600;
+              reportData[i - 1] = (
+                this.state.reportData[j].avg_delievery_time / 3600
+              ).toFixed(2);
               break;
             } else reportData[i - 1] = 0;
           }

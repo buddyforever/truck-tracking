@@ -29,8 +29,26 @@ function getSunday(d) {
   d = new Date(d);
   var day = d.getDay(),
     diff = d.getDate() - day + (day == 0 ? -7 : 0);
-  var monday = new Date(d.setDate(diff));
-  return monday.getDate();
+  var sunday = new Date(d.setDate(diff));
+  return sunday;
+}
+
+function addDays(date, days) {
+  const copy = new Date(Number(date));
+  copy.setDate(date.getDate() + days);
+  return copy;
+}
+function customDateFormat(date) {
+  let year = new Date(date).getFullYear();
+  let month = new Date(date).getMonth() + 1;
+  let day = new Date(date).getDate();
+  return (
+    year +
+    "-" +
+    (month < 10 ? "0" + month : month) +
+    "-" +
+    (day < 10 ? "0" + day : day)
+  );
 }
 class AverageLossPerTrips extends React.Component {
   state = {
@@ -92,7 +110,8 @@ class AverageLossPerTrips extends React.Component {
         } else if (this.state.unit == "day") {
           let sunday = getSunday(new Date());
           let week_days = [];
-          for (let i = sunday; i <= sunday + 6; i++) week_days.push(i);
+          for (let i = 0; i < 7; i++)
+            week_days.push(customDateFormat(addDays(sunday, i)));
           this.setState({ yaxis: week_days });
         }
       }
