@@ -92,10 +92,10 @@ class Dashboard extends React.Component {
             </Row>
             <Row>
               <Col md={6} xl={6}>
-                <CompanyYearlyNetLoss height="320px" />
+                <CompanyYearlyNetLoss height="420px" />
               </Col>
               <Col md={6} xl={6}>
-                <TimeComparison />
+                <TimeComparison height="360px" />
               </Col>
             </Row>
             <Row>
