@@ -15,7 +15,6 @@ import Aux from "../../../../hoc/_Aux";
 class SupplierAvgDeliveryTime extends React.Component {
   state = {
     dataum: [],
-    unit: "hour",
   };
   async componentDidMount() {
     let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
@@ -34,12 +33,7 @@ class SupplierAvgDeliveryTime extends React.Component {
       for (let i = 0; i < result.length; i++) {
         dataum[i] = {
           supplier: result[i].supplier,
-          avgDeliveryTime:
-            this.state.unit == "hour"
-              ? (result[i].avgDeliveryTime / 3600).toFixed(2)
-              : this.state.unit == "minute"
-              ? (result[i].avgDeliveryTime / 60).toFixed(1)
-              : result[i].avgDeliveryTime,
+          avgDeliveryTime: (result[i].avgDeliveryTime / 3600).toFixed(2),
           color: colors[i % result.length],
         };
       }
@@ -49,10 +43,7 @@ class SupplierAvgDeliveryTime extends React.Component {
     }
   }
   async componentDidUpdate(prevProps, prevState) {
-    if (
-      prevProps.companyId != this.props.companyId ||
-      this.state.unit != prevState.unit
-    ) {
+    if (prevProps.companyId != this.props.companyId) {
       let colors = [
         ["#1de9b6", "#1dc4e9"],
         ["#a389d4", "#899ed4"],
@@ -70,12 +61,7 @@ class SupplierAvgDeliveryTime extends React.Component {
         for (let i = 0; i < result.length; i++) {
           dataum[i] = {
             supplier: result[i].supplier,
-            avgDeliveryTime:
-              this.state.unit == "hour"
-                ? (result[i].avgDeliveryTime / 3600).toFixed(2)
-                : this.state.unit == "minute"
-                ? (result[i].avgDeliveryTime / 60).toFixed(1)
-                : result[i].avgDeliveryTime,
+            avgDeliveryTime: (result[i].avgDeliveryTime / 3600).toFixed(2),
             color: colors[i % result.length],
           };
         }
@@ -124,31 +110,13 @@ class SupplierAvgDeliveryTime extends React.Component {
       },
     });
   };
-  unitOptionChanged = (option) => {
-    this.setState({ unit: option.value });
-  };
   render() {
-    const unitOptions = [
-      { value: "hour", label: "Hour" },
-      { value: "minute", label: "Minute" },
-      { value: "second", label: "Second" },
-    ];
     let dot_colors_class = ["theme-bg", "theme-bg2", "bg-c-blue", "bg-c-red"];
     return (
       <Aux>
         <Card>
           <Card.Header>
             <Card.Title as="h5">Supplier Average Delivery Time</Card.Title>
-            <div className="card-header-right" style={{ width: "100px" }}>
-              <Select
-                className="basic-single"
-                classNamePrefix="select"
-                defaultValue={unitOptions[0]}
-                onChange={this.unitOptionChanged}
-                name="color"
-                options={unitOptions}
-              />
-            </div>
           </Card.Header>
           <Card.Body className="pl-0 pr-0 pb-2">
             <div
@@ -169,15 +137,7 @@ class SupplierAvgDeliveryTime extends React.Component {
                         } d-block rounded-circle mx-auto mb-2`}
                         style={{ width: "10px", height: "10px" }}
                       />
-                      <h6 className="mb-2">
-                        {sup.avgDeliveryTime +
-                          " " +
-                          (this.state.unit == "hour"
-                            ? "hr"
-                            : this.state.unit == "minute"
-                            ? "min"
-                            : "s")}
-                      </h6>
+                      <h6 className="mb-2">{sup.avgDeliveryTime + " hr"}</h6>
                       <h6 className="mt-2 mb-0">{sup.supplier}</h6>
                     </div>
                   );
