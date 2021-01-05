@@ -39,6 +39,14 @@ export default {
           icon: "feather icon-users",
         },
         {
+          id: "suppliers",
+          title: "Suppliers",
+          type: "item",
+          url: "/suppliers",
+          visible: [],
+          icon: "feather icon-layers",
+        },
+        {
           id: "report",
           title: "Report",
           type: "collapse",

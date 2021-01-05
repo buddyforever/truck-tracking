@@ -70,6 +70,18 @@ const EditUser = React.lazy(() =>
   import("./App/layout/AdminLayout/Users/EditUser")
 );
 
+const Suppliers = React.lazy(() =>
+  import("./App/layout/AdminLayout/Suppliers")
+);
+
+const AddSupplier = React.lazy(() =>
+  import("./App/layout/AdminLayout/Suppliers/AddSupplier")
+);
+
+const EditSupplier = React.lazy(() =>
+  import("./App/layout/AdminLayout/Suppliers/EditSupplier")
+);
+
 const SummaryReport = React.lazy(() =>
   import("./App/layout/AdminLayout/Report/Summary")
 );
@@ -153,6 +165,27 @@ const routes = [
     exact: true,
     name: "Edit User",
     component: EditUser,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/suppliers",
+    exact: true,
+    name: "Supppliers",
+    component: Suppliers,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/suppliers/add",
+    exact: true,
+    name: "Add New Supplier",
+    component: AddSupplier,
+    permission_users: [], // user types who can access this page
+  },
+  {
+    path: "/suppliers/:id",
+    exact: true,
+    name: "Edit Supplier",
+    component: EditSupplier,
     permission_users: [], // user types who can access this page
   },
   {
