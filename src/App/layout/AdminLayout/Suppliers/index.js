@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { withRouter, Link } from "react-router-dom";
 import axios from "axios";
 import { Row, Col, Card, Table, Dropdown, Button } from "react-bootstrap";
-import Select from "react-select";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import Swal from "sweetalert2";
@@ -26,7 +25,6 @@ require("datatables.net-buttons/js/buttons.flash.js");
 require("datatables.net-buttons/js/buttons.html5.js");
 require("datatables.net-buttons/js/buttons.print.js");
 let datatable;
-
 class Suppliers extends React.Component {
   state = {
     fullCard: false,
@@ -34,15 +32,38 @@ class Suppliers extends React.Component {
   };
 
   async componentDidMount() {
-    const response = await axios.get(
-      this.props.apiDomain + `/transporters/get`
-    );
-    if (response.data.status == 200) {
-      this.props.setTransporters(response.data.result);
-      this.initTable();
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(
+        this.props.apiDomain + `/transporters/get`
+      );
+      if (response.data.status === 200) {
+        this.props.setTransporters(response.data.result);
+        this.initTable();
+      }
     }
   }
 
+  async componentDiUpdate(prevProps, prevState) {
+    if (prevProps.transporters !== this.props.transporters) {
+      if (this.mounted) {
+        const response = await axios.get(
+          this.props.apiDomain + `/transporters/get`
+        );
+        if (response.data.status === 200) {
+          this.props.setTransporters(response.data.result);
+          if (datatable) {
+            datatable.clear();
+            datatable.rows.add(response.data.result);
+            datatable.draw();
+          }
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   cardHeaderRight = (
     <div className="card-header-right">
       <Dropdown alignRight={true} className="btn-group card-option">
@@ -178,7 +199,7 @@ class Suppliers extends React.Component {
         const response = await axios.post(
           this.props.apiDomain + "/transporters/delete/" + transId
         );
-        if (response.data.status == 200) {
+        if (response.data.status === 200) {
           this.props.setTransporters(response.data.result);
           PNotify.success({
             title: "Success",

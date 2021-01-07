@@ -1,15 +1,13 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import {
   ValidationForm,
   BaseFormControl,
   TextInput,
   SelectGroup,
-  FileInput,
   Checkbox,
-  Radio,
 } from "react-bootstrap4-form-validation";
 import PNotify from "pnotify/dist/es/PNotify";
 import MaskedInput from "react-text-mask";
@@ -18,7 +16,6 @@ import windowSize from "react-window-size";
 import { connect } from "react-redux";
 
 import Aux from "../../../../hoc/_Aux";
-import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
 class MaskWithValidation extends BaseFormControl {
@@ -66,23 +63,28 @@ class EditUser extends React.Component {
   };
 
   async componentDidMount() {
+    this.mounted = true;
     const { id } = this.props.match.params;
     if (id > 0) {
-      const response = await axios.get(this.props.apiDomain + "/users/" + id);
-      if (response.data.status == 200) {
-        console.log(response.data.result);
-        this.setState({
-          ...response.data.result[0],
-        });
+      if (this.mounted) {
+        const response = await axios.get(this.props.apiDomain + "/users/" + id);
+        if (response.data.status === 200) {
+          this.setState({
+            ...response.data.result[0],
+          });
+        }
+        const company_response = await axios.get(
+          this.props.apiDomain + "/companies/get"
+        );
+        const companies = company_response.data.result;
+        this.props.setCompanies(companies);
       }
-      const company_response = await axios.get(
-        this.props.apiDomain + "/companies/get"
-      );
-      const companies = company_response.data.result;
-      this.props.setCompanies(companies);
     }
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   handleCheckboxChange = (e, value) => {
     this.setState({
       [e.target.name]: value,
@@ -96,22 +98,24 @@ class EditUser extends React.Component {
 
   handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
-    const response = await axios.post(
-      this.props.apiDomain + "/users/update",
-      formData
-    );
-    if (response.data.status == 200) {
-      this.props.setUsers(response.data.result);
-      PNotify.success({
-        title: "Success",
-        text: "The user detail has been updated.",
-      });
-      let props = this.props;
-      setTimeout(function() {
-        props.history.push("/users");
-      }, 2000);
+    if (this.mounted) {
+      const response = await axios.post(
+        this.props.apiDomain + "/users/update",
+        formData
+      );
+      if (response.data.status === 200) {
+        this.props.setUsers(response.data.result);
+        PNotify.success({
+          title: "Success",
+          text: "The user detail has been updated.",
+        });
+        let props = this.props;
+        setTimeout(function() {
+          props.history.push("/users");
+        }, 2000);
+      }
+      //alert(JSON.stringify(formData, null, 2));
     }
-    //alert(JSON.stringify(formData, null, 2));
   };
 
   handleErrorSubmit = (e, formData, errorInputs) => {
@@ -290,31 +294,13 @@ class EditUser extends React.Component {
                       </SelectGroup>
                     </Form.Group>
 
-                    {/* <Form.Group as={Col} md="6">
-                      <Form.Label htmlFor="avatar">Upload Avatar</Form.Label>
-                      <div className="custom-file">
-                        <FileInput
-                          name="avatar"
-                          id="avatar"
-                          required
-                          fileType={["png", "jpg", "jpeg"]}
-                          maxFileSize="100 kb"
-                          errorMessage={{
-                            required: "Please upload a file",
-                            fileType: "Only .png or .jpg file is allowed",
-                            maxFileSize: "Max file size is 100 kb",
-                          }}
-                        />
-                      </div>
-                    </Form.Group> */}
-
                     <Form.Group as={Col} sm="6" className="mb-5">
                       <Form.Label htmlFor="status">Status</Form.Label>
                       <div className="switch">
                         <Checkbox
                           name="status"
                           id="status"
-                          value={this.state.status == 1}
+                          value={this.state.status === 1}
                           inline
                           onChange={this.handleCheckboxChange}
                         />

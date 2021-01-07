@@ -9,14 +9,13 @@ import {
   ToggleButton,
 } from "react-bootstrap";
 import Select from "react-select";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import Aux from "../../../../hoc/_Aux";
 import * as actionTypes from "../../../../store/actions";
-import DEMO from "../../../../store/constant";
 
 import GridView from "./GridView";
 import TableView from "./TableView";
@@ -27,20 +26,26 @@ class Unloading extends Component {
   };
 
   async componentDidMount() {
-    const response = await axios.get(this.props.apiDomain + "/companies/get");
-    if (response.data.status == 200) {
-      this.props.setCompanies(response.data.result);
-    }
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const deals_response = await axios.get(
-      this.props.apiDomain + "/deals/get",
-      { companyId }
-    );
-    if (deals_response.data.status == 200) {
-      this.props.setCompanyDeals(deals_response.data.result);
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(this.props.apiDomain + "/companies/get");
+      if (response.data.status === 200) {
+        this.props.setCompanies(response.data.result);
+      }
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+      const deals_response = await axios.get(
+        this.props.apiDomain + "/deals/get",
+        { companyId }
+      );
+      if (deals_response.data.status === 200) {
+        this.props.setCompanyDeals(deals_response.data.result);
+      }
     }
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
   };
@@ -54,7 +59,6 @@ class Unloading extends Component {
   };
 
   onTruckArrived = (dealId) => {
-    console.log(dealId);
     this.props.onTruckArrived(dealId);
   };
 
@@ -67,7 +71,7 @@ class Unloading extends Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
 
     let options = {
@@ -103,9 +107,9 @@ class Unloading extends Component {
               name: "Truck on Road",
               y: this.props.deals.filter((deal) => {
                 return (
-                  (deal.companyId == this.props.companyId ||
-                    this.props.companyId == 0) &&
-                  deal.status == 2
+                  (deal.companyId === this.props.companyId ||
+                    this.props.companyId === 0) &&
+                  deal.status === 2
                 );
               }).length,
             },
@@ -113,9 +117,9 @@ class Unloading extends Component {
               name: "Arrived",
               y: this.props.deals.filter((deal) => {
                 return (
-                  (deal.companyId == this.props.companyId ||
-                    this.props.companyId == 0) &&
-                  deal.status == 3
+                  (deal.companyId === this.props.companyId ||
+                    this.props.companyId === 0) &&
+                  deal.status === 3
                 );
               }).length,
             },
@@ -129,12 +133,12 @@ class Unloading extends Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }
@@ -155,7 +159,7 @@ class Unloading extends Component {
                   <ToggleButton
                     className="btn-icon shadow-1"
                     variant={
-                      this.state.viewMode == "grid"
+                      this.state.viewMode === "grid"
                         ? "outline-primary active"
                         : "outline-primary "
                     }
@@ -166,7 +170,7 @@ class Unloading extends Component {
                   <ToggleButton
                     className="btn-icon shadow-1"
                     variant={
-                      this.state.viewMode == "table"
+                      this.state.viewMode === "table"
                         ? "outline-primary active"
                         : "outline-primary "
                     }
@@ -181,13 +185,13 @@ class Unloading extends Component {
         </Row>
         <Row>
           <Col md={8} xl={9}>
-            {this.state.viewMode == "grid" ? (
+            {this.state.viewMode === "grid" ? (
               <GridView
                 company_deals={this.props.deals}
                 onTruckArrived={this.onTruckArrived}
                 onDealClick={this.onDealClick}
               />
-            ) : this.state.viewMode == "table" ? (
+            ) : this.state.viewMode === "table" ? (
               <TableView
                 company_deals={this.props.deals}
                 onTruckArrived={this.onTruckArrived}

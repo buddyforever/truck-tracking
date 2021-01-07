@@ -10,7 +10,6 @@ import "amcharts3/amcharts/themes/light";
 import AmCharts from "@amcharts/amcharts3-react";
 
 import Aux from "../../../../hoc/_Aux";
-import * as actionTypes from "../../../../store/actions";
 
 const months = [
   "Jan",
@@ -28,49 +27,20 @@ const months = [
 ];
 class CompanyMonthlyTotalVsLoss extends React.Component {
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain + "/overview/getMonthlyTotalVsLoss/" + companyId
-    );
-    if (response.data.status == 200) {
-      let result = response.data.result;
-      let dataum = [];
-      for (let i = 1; i <= 12; i++) {
-        let hasValue = 0;
-        for (let j = 0; j < result.length; j++) {
-          if (i == result[j].month) {
-            dataum[i - 1] = {
-              month: months[i - 1],
-              total: result[j].total,
-              loss: result[j].netLoss,
-            };
-            hasValue = 1;
-            break;
-          }
-        }
-        if (!hasValue)
-          dataum[i - 1] = {
-            month: months[i - 1],
-            total: 0,
-            loss: 0,
-          };
-      }
-      this.init(dataum);
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.companyId != this.props.companyId) {
-      let companyId = this.props.companyId;
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+
       const response = await axios.get(
         this.props.apiDomain + "/overview/getMonthlyTotalVsLoss/" + companyId
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let result = response.data.result;
         let dataum = [];
         for (let i = 1; i <= 12; i++) {
           let hasValue = 0;
           for (let j = 0; j < result.length; j++) {
-            if (i == result[j].month) {
+            if (i === result[j].month) {
               dataum[i - 1] = {
                 month: months[i - 1],
                 total: result[j].total,
@@ -87,10 +57,48 @@ class CompanyMonthlyTotalVsLoss extends React.Component {
               loss: 0,
             };
         }
-        console.log(dataum);
         this.init(dataum);
       }
     }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId !== this.props.companyId) {
+      if (this.mounted) {
+        let companyId = this.props.companyId;
+        const response = await axios.get(
+          this.props.apiDomain + "/overview/getMonthlyTotalVsLoss/" + companyId
+        );
+        if (response.data.status === 200) {
+          let result = response.data.result;
+          let dataum = [];
+          for (let i = 1; i <= 12; i++) {
+            let hasValue = 0;
+            for (let j = 0; j < result.length; j++) {
+              if (i === result[j].month) {
+                dataum[i - 1] = {
+                  month: months[i - 1],
+                  total: result[j].total,
+                  loss: result[j].netLoss,
+                };
+                hasValue = 1;
+                break;
+              }
+            }
+            if (!hasValue)
+              dataum[i - 1] = {
+                month: months[i - 1],
+                total: 0,
+                loss: 0,
+              };
+          }
+          this.init(dataum);
+        }
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
   init = (dataum) => {
     AmCharts.makeChart("monthly-total-vs-loss", {

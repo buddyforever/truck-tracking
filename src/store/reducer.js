@@ -1,7 +1,5 @@
-import axios from "axios";
 import * as actionTypes from "./actions";
 import config from "./../config";
-import DEMO from "../store/constant";
 
 const initialState = {
   isOpen: [], //for active default menu
@@ -9,7 +7,7 @@ const initialState = {
   ...config,
   isFullScreen: false, // static can't change
   authUser: JSON.parse(localStorage.getItem("authUser")),
-  companyId: localStorage.getItem("companyId"),
+  companyId: parseInt(localStorage.getItem("companyId")),
   deals: [],
   users: [],
   companies: [],
@@ -21,7 +19,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   let trigger = [];
   let open = [];
-  let user = null;
   let users = [];
   let authUser = [];
   let deals = [];

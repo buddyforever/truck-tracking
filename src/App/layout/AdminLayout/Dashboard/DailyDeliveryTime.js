@@ -2,12 +2,11 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col, Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/serial";
 import "amcharts3/amcharts/themes/light";
-import AmCharts from "@amcharts/amcharts3-react";
 
 import Aux from "../../../../hoc/_Aux";
 
@@ -29,46 +28,62 @@ class DailyDeliveryTime extends React.Component {
     delivery_time: 0,
   };
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const trucks_response = await axios.get(
-      this.props.apiDomain + "/overview/getDailyNumTrucks/" + companyId
-    );
-    if (trucks_response.data.status == 200) {
-      let result = trucks_response.data.result;
-      this.setState({ total_trucks: result[0].numTotalTrucks });
-    }
-    const response = await axios.get(
-      this.props.apiDomain + "/overview/getDailyDeliveryTime/" + companyId
-    );
-    if (response.data.status == 200) {
-      let result = response.data.result;
-      this.setState({
-        arrived_trucks: result[0].numTrucks,
-        delivery_time: result[0].deliveryTime,
-      });
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.companyId != this.props.companyId) {
-      let companyId = this.props.companyId;
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       const trucks_response = await axios.get(
         this.props.apiDomain + "/overview/getDailyNumTrucks/" + companyId
       );
-      if (trucks_response.data.status == 200) {
+      if (trucks_response.data.status === 200) {
         let result = trucks_response.data.result;
-        this.setState({ total_trucks: result[0].numTotalTrucks });
+        if (this.mounted) {
+          this.setState({ total_trucks: result[0].numTotalTrucks });
+        }
       }
       const response = await axios.get(
         this.props.apiDomain + "/overview/getDailyDeliveryTime/" + companyId
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let result = response.data.result;
-        this.setState({
-          arrived_trucks: result[0].numTrucks,
-          delivery_time: result[0].deliveryTime,
-        });
+        if (this.mounted) {
+          this.setState({
+            arrived_trucks: result[0].numTrucks,
+            delivery_time: result[0].deliveryTime,
+          });
+        }
       }
     }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId !== this.props.companyId) {
+      if (this.mounted) {
+        let companyId = this.props.companyId;
+        const trucks_response = await axios.get(
+          this.props.apiDomain + "/overview/getDailyNumTrucks/" + companyId
+        );
+        if (trucks_response.data.status === 200) {
+          let result = trucks_response.data.result;
+          if (this.mounted) {
+            this.setState({ total_trucks: result[0].numTotalTrucks });
+          }
+        }
+        const response = await axios.get(
+          this.props.apiDomain + "/overview/getDailyDeliveryTime/" + companyId
+        );
+        if (response.data.status === 200) {
+          let result = response.data.result;
+          if (this.mounted) {
+            this.setState({
+              arrived_trucks: result[0].numTrucks,
+              delivery_time: result[0].deliveryTime,
+            });
+          }
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   render() {
     return (
@@ -86,7 +101,7 @@ class DailyDeliveryTime extends React.Component {
 
               <div className="col-3 text-right">
                 <p className="m-b-0">
-                  {this.state.total_trucks != 0
+                  {this.state.total_trucks !== 0
                     ? (
                         (this.state.arrived_trucks / this.state.total_trucks) *
                         100
@@ -102,7 +117,7 @@ class DailyDeliveryTime extends React.Component {
                 role="progressbar"
                 style={{
                   width:
-                    (this.state.total_trucks != 0
+                    (this.state.total_trucks !== 0
                       ? (
                           (this.state.arrived_trucks /
                             this.state.total_trucks) *
@@ -111,7 +126,7 @@ class DailyDeliveryTime extends React.Component {
                       : 0) + "%",
                 }}
                 aria-valuenow={
-                  this.state.total_trucks != 0
+                  this.state.total_trucks !== 0
                     ? (
                         (this.state.arrived_trucks / this.state.total_trucks) *
                         100

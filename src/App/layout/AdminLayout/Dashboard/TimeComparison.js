@@ -27,7 +27,7 @@ const months = [
 function getSunday(d) {
   d = new Date(d);
   var day = d.getDay(),
-    diff = d.getDate() - day + (day == 0 ? -7 : 0);
+    diff = d.getDate() - day + (day === 0 ? -7 : 0);
   var sunday = new Date(d.setDate(diff));
   return sunday;
 }
@@ -57,45 +57,9 @@ class TimeComparison extends React.Component {
     unit: "month",
   };
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain +
-        "/overview/getDailyTotalLoadingUnloadingTime/" +
-        companyId +
-        "/" +
-        this.state.unit
-    );
-    if (response.data.status == 200) {
-      let result = response.data.result;
-      let times1 = [];
-      let times2 = [];
-      for (let i = 1; i <= 12; i++) {
-        let flag = 0;
-        for (let j = 0; j < result.length; j++)
-          if (i == result[j].month) {
-            times1.push((result[j].loading_time / 3600).toFixed(2));
-            times2.push((result[j].unloading_time / 3600).toFixed(2));
-            flag = 1;
-            break;
-          }
-        if (!flag) {
-          times1.push(0);
-          times2.push(0);
-        }
-      }
-      this.setState({
-        yaxis: months,
-        loaded_time: times1,
-        unloaded_time: times2,
-      });
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      prevProps.companyId != this.props.companyId ||
-      prevState.unit != this.state.unit
-    ) {
-      let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       const response = await axios.get(
         this.props.apiDomain +
           "/overview/getDailyTotalLoadingUnloadingTime/" +
@@ -103,84 +67,136 @@ class TimeComparison extends React.Component {
           "/" +
           this.state.unit
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let result = response.data.result;
         let times1 = [];
         let times2 = [];
-        if (this.state.unit == "month") {
-          for (let i = 1; i <= 12; i++) {
-            let flag = 0;
-            for (let j = 0; j < result.length; j++)
-              if (i == result[j].month) {
-                times1.push((result[j].loading_time / 3600).toFixed(2));
-                times2.push((result[j].unloading_time / 3600).toFixed(2));
-                flag = 1;
-                break;
-              }
-            if (!flag) {
-              times1.push(0);
-              times2.push(0);
+        for (let i = 1; i <= 12; i++) {
+          let flag = 0;
+          for (let j = 0; j < result.length; j++)
+            if (i === result[j].month) {
+              times1.push((result[j].loading_time / 3600).toFixed(2));
+              times2.push((result[j].unloading_time / 3600).toFixed(2));
+              flag = 1;
+              break;
             }
+          if (!flag) {
+            times1.push(0);
+            times2.push(0);
           }
+        }
+        if (this.mounted) {
           this.setState({
             yaxis: months,
-            loaded_time: times1,
-            unloaded_time: times2,
-          });
-        } else if (this.state.unit == "week") {
-          let year = new Date().getFullYear();
-          let month = new Date().getMonth();
-          let firstday = new Date(year, month, 1).getDate();
-          let lastday = new Date(year, month + 1, 0).getDate();
-          let numWeeks = Math.ceil((lastday - firstday) / 7);
-          let weeks = [];
-          for (let i = 1; i <= numWeeks; i++) weeks.push(i);
-          for (let i = 1; i <= weeks.length; i++) {
-            let flag = 0;
-            for (let j = 0; j < result.length; j++)
-              if (i == result[j].week) {
-                times1.push((result[j].loading_time / 3600).toFixed(2));
-                times2.push((result[j].unloading_time / 3600).toFixed(2));
-                flag = 1;
-                break;
-              }
-            if (!flag) {
-              times1.push(0);
-              times2.push(0);
-            }
-          }
-          this.setState({
-            yaxis: weeks,
-            loaded_time: times1,
-            unloaded_time: times2,
-          });
-        } else if (this.state.unit == "day") {
-          let sunday = getSunday(new Date());
-          let week_days = [];
-          for (let i = 0; i < 7; i++)
-            week_days.push(customDateFormat(addDays(sunday, i)));
-          for (let i = 1; i <= week_days.length; i++) {
-            let flag = 0;
-            for (let j = 0; j < result.length; j++)
-              if (week_days[i - 1] == result[j].day) {
-                times1.push((result[j].loading_time / 3600).toFixed(2));
-                times2.push((result[j].unloading_time / 3600).toFixed(2));
-                flag = 1;
-                break;
-              }
-            if (!flag) {
-              times1.push(0);
-              times2.push(0);
-            }
-          }
-          this.setState({
-            yaxis: week_days,
             loaded_time: times1,
             unloaded_time: times2,
           });
         }
       }
     }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevProps.companyId !== this.props.companyId ||
+      prevState.unit !== this.state.unit
+    ) {
+      if (this.mounted) {
+        let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+        const response = await axios.get(
+          this.props.apiDomain +
+            "/overview/getDailyTotalLoadingUnloadingTime/" +
+            companyId +
+            "/" +
+            this.state.unit
+        );
+        if (response.data.status === 200) {
+          let result = response.data.result;
+          let times1 = [];
+          let times2 = [];
+          if (this.state.unit === "month") {
+            for (let i = 1; i <= 12; i++) {
+              let flag = 0;
+              for (let j = 0; j < result.length; j++)
+                if (i === result[j].month) {
+                  times1.push((result[j].loading_time / 3600).toFixed(2));
+                  times2.push((result[j].unloading_time / 3600).toFixed(2));
+                  flag = 1;
+                  break;
+                }
+              if (!flag) {
+                times1.push(0);
+                times2.push(0);
+              }
+            }
+            if (this.mounted) {
+              this.setState({
+                yaxis: months,
+                loaded_time: times1,
+                unloaded_time: times2,
+              });
+            }
+          } else if (this.state.unit === "week") {
+            let year = new Date().getFullYear();
+            let month = new Date().getMonth();
+            let firstday = new Date(year, month, 1).getDate();
+            let lastday = new Date(year, month + 1, 0).getDate();
+            let numWeeks = Math.ceil((lastday - firstday) / 7);
+            let weeks = [];
+            for (let i = 1; i <= numWeeks; i++) weeks.push(i);
+            for (let i = 1; i <= weeks.length; i++) {
+              let flag = 0;
+              for (let j = 0; j < result.length; j++)
+                if (i === result[j].week) {
+                  times1.push((result[j].loading_time / 3600).toFixed(2));
+                  times2.push((result[j].unloading_time / 3600).toFixed(2));
+                  flag = 1;
+                  break;
+                }
+              if (!flag) {
+                times1.push(0);
+                times2.push(0);
+              }
+            }
+            if (this.mounted) {
+              this.setState({
+                yaxis: weeks,
+                loaded_time: times1,
+                unloaded_time: times2,
+              });
+            }
+          } else if (this.state.unit === "day") {
+            let sunday = getSunday(new Date());
+            let week_days = [];
+            for (let i = 0; i < 7; i++)
+              week_days.push(customDateFormat(addDays(sunday, i)));
+            for (let i = 1; i <= week_days.length; i++) {
+              let flag = 0;
+              for (let j = 0; j < result.length; j++)
+                if (week_days[i - 1] === result[j].day) {
+                  times1.push((result[j].loading_time / 3600).toFixed(2));
+                  times2.push((result[j].unloading_time / 3600).toFixed(2));
+                  flag = 1;
+                  break;
+                }
+              if (!flag) {
+                times1.push(0);
+                times2.push(0);
+              }
+            }
+            if (this.mounted) {
+              this.setState({
+                yaxis: week_days,
+                loaded_time: times1,
+                unloaded_time: times2,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   unitOptionChanged = (option) => {
     this.setState({ unit: option.value });

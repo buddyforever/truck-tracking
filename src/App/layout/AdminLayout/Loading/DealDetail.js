@@ -15,7 +15,6 @@ import NumberFormat from "react-number-format";
 import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
-import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
 const padLeft = function(num) {
@@ -23,20 +22,19 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
@@ -103,39 +101,47 @@ class LoadingDealDetail extends React.Component {
   };
 
   async componentDidMount() {
-    const response1 = await axios.get(
-      this.props.apiDomain + "/transporters/get"
-    );
-    if (response1.data.status == 200) {
-      this.props.setTransporters(response1.data.result);
-    }
-    const response2 = await axios.get(this.props.apiDomain + "/products/get");
-    if (response2.data.status == 200) {
-      this.props.setProducts(response2.data.result);
-    }
-    const { dealId } = this.props.match.params;
-    if (dealId > 0) {
-      const response3 = await axios.get(
-        this.props.apiDomain + "/deals/get/" + dealId
+    this.mounted = true;
+    if (this.mounted) {
+      const response1 = await axios.get(
+        this.props.apiDomain + "/transporters/get"
       );
-      if (response3.data.status == 200) {
-        this.setState({
-          ...response3.data.result[0],
-          startLoadingAt: formatDateTime(
-            response3.data.result[0].startLoadingAt
-          ),
-          finishLoadingAt: formatDateTime(
-            response3.data.result[0].finishLoadingAt
-          ),
-          startUnloadingAt: formatDateTime(
-            response3.data.result[0].sstartUnladingAt
-          ),
-          finishUnloadingAt: formatDateTime(
-            response3.data.result[0].stafinishUnlingAt
-          ),
-        });
+      if (response1.data.status === 200) {
+        this.props.setTransporters(response1.data.result);
+      }
+      const response2 = await axios.get(this.props.apiDomain + "/products/get");
+      if (response2.data.status === 200) {
+        this.props.setProducts(response2.data.result);
+      }
+      const { dealId } = this.props.match.params;
+      if (dealId > 0) {
+        const response3 = await axios.get(
+          this.props.apiDomain + "/deals/get/" + dealId
+        );
+        if (response3.data.status === 200) {
+          if (this.mounted) {
+            this.setState({
+              ...response3.data.result[0],
+              startLoadingAt: formatDateTime(
+                response3.data.result[0].startLoadingAt
+              ),
+              finishLoadingAt: formatDateTime(
+                response3.data.result[0].finishLoadingAt
+              ),
+              startUnloadingAt: formatDateTime(
+                response3.data.result[0].sstartUnladingAt
+              ),
+              finishUnloadingAt: formatDateTime(
+                response3.data.result[0].stafinishUnlingAt
+              ),
+            });
+          }
+        }
       }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   handleInputChange = (e) => {
@@ -150,7 +156,7 @@ class LoadingDealDetail extends React.Component {
         this.props.apiDomain + "/deals/update",
         this.state
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         PNotify.success({
           title: "Success",
           text: "The loading detail has been updated.",
@@ -169,7 +175,7 @@ class LoadingDealDetail extends React.Component {
           this.props.apiDomain + "/deals/update",
           this.state
         );
-        if (response.data.status == 200) {
+        if (response.data.status === 200) {
           PNotify.success({
             title: "Success",
             text: "Loading has been finished.",
@@ -196,11 +202,11 @@ class LoadingDealDetail extends React.Component {
             <Card>
               <Card.Header>
                 <Card.Title as="h5">
-                  {this.state.status == 1
+                  {this.state.status === 1
                     ? "Loading"
-                    : this.state.status == 2
+                    : this.state.status === 2
                     ? "On route"
-                    : this.state.status == 3
+                    : this.state.status === 3
                     ? "Unloading"
                     : ""}
                 </Card.Title>
@@ -259,8 +265,8 @@ class LoadingDealDetail extends React.Component {
                           name="truckPlate"
                           id="truckPlate"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -278,8 +284,8 @@ class LoadingDealDetail extends React.Component {
                           name="trailerPlate"
                           id="trailerPlate"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -302,8 +308,8 @@ class LoadingDealDetail extends React.Component {
                           name="transporterId"
                           id="transporterId"
                           disabled={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -329,8 +335,8 @@ class LoadingDealDetail extends React.Component {
                           name="driverName"
                           id="driverName"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -346,8 +352,8 @@ class LoadingDealDetail extends React.Component {
                           name="driverPhone"
                           id="driverPhone"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -386,8 +392,8 @@ class LoadingDealDetail extends React.Component {
                           value={this.state.productId}
                           onChange={this.handleInputChange}
                           disabled={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -395,7 +401,7 @@ class LoadingDealDetail extends React.Component {
                           <option value="0">Select Product</option>
                           {this.props.products
                             .filter(
-                              (item) => item.companyId == this.props.companyId
+                              (item) => item.companyId === this.props.companyId
                             )
                             .map((item) => {
                               return (
@@ -406,7 +412,7 @@ class LoadingDealDetail extends React.Component {
                             })}
                         </SelectGroup>
                       </Form.Group>
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <>
                           <Form.Group>
                             <Form.Label htmlFor="firstWeight">
@@ -417,8 +423,8 @@ class LoadingDealDetail extends React.Component {
                               thousandSeparator={true}
                               name="firstWeight"
                               readOnly={
-                                this.state.status == 1 &&
-                                this.props.authUser.type == 2
+                                this.state.status === 1 &&
+                                this.props.authUser.type === 2
                                   ? false
                                   : true
                               }
@@ -444,8 +450,8 @@ class LoadingDealDetail extends React.Component {
                               thousandSeparator={true}
                               name="secondWeight"
                               readOnly={
-                                this.state.status == 1 &&
-                                this.props.authUser.type == 2
+                                this.state.status === 1 &&
+                                this.props.authUser.type === 2
                                   ? false
                                   : true
                               }
@@ -493,7 +499,7 @@ class LoadingDealDetail extends React.Component {
                           />
                         </>
                       )}
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <TextInput
                           type="hidden"
                           name="quantity"
@@ -507,8 +513,8 @@ class LoadingDealDetail extends React.Component {
                             thousandSeparator={true}
                             name="quantity"
                             readOnly={
-                              this.state.status == 1 &&
-                              this.props.authUser.type == 2
+                              this.state.status === 1 &&
+                              this.props.authUser.type === 2
                                 ? false
                                 : true
                             }
@@ -535,8 +541,8 @@ class LoadingDealDetail extends React.Component {
                           value={this.state.alertTime}
                           onChange={this.handleInputChange}
                           disabled={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -570,8 +576,8 @@ class LoadingDealDetail extends React.Component {
                           className="form-control"
                           placeholder="No de Bordereau"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -590,8 +596,8 @@ class LoadingDealDetail extends React.Component {
                           className="form-control"
                           placeholder="Ben de Livraison"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -608,8 +614,8 @@ class LoadingDealDetail extends React.Component {
                           name="description"
                           id="description"
                           readOnly={
-                            this.state.status == 1 &&
-                            this.props.authUser.type == 2
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
                               ? false
                               : true
                           }
@@ -629,8 +635,8 @@ class LoadingDealDetail extends React.Component {
                     </Col>
                     <Form.Group as={Col} sm={12} className="mt-3">
                       {this.state.id > 0 ? (
-                        this.state.status == 1 &&
-                        this.props.authUser.type == 2 ? (
+                        this.state.status === 1 &&
+                        this.props.authUser.type === 2 ? (
                           <>
                             <Button
                               type="button"

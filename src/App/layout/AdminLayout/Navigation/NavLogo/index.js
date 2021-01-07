@@ -13,16 +13,16 @@ const navLogo = (props) => {
     toggleClass = [...toggleClass, "on"];
   }
   let company = DEMO.companies.filter((comp) => {
-    return comp.id == props.companyId;
+    return comp.id === props.companyId;
   });
   let companyName = company.length > 0 ? company[0].companyName : "Admin";
   return (
     <Aux>
       <div className="navbar-brand header-logo">
         <a href={DEMO.BLANK_LINK} className="b-brand">
-          {props.companyId == 1 ? (
+          {props.companyId === 1 ? (
             <img src={FAB_LOGO} alt={companyName} />
-          ) : props.companyId == 2 ? (
+          ) : props.companyId === 2 ? (
             <img src={AFF_LOGO} alt={companyName} />
           ) : (
             <span className="b-title">{companyName}</span>

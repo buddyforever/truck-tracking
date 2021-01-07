@@ -34,32 +34,41 @@ class Users extends React.Component {
   };
 
   async componentDidMount() {
-    const response = await axios.get(this.props.apiDomain + `/users/get`);
-    if (response.data.status == 200) {
-      this.props.setUsers(response.data.result);
-      this.initTable();
-    }
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(this.props.apiDomain + `/users/get`);
+      if (response.data.status === 200) {
+        this.props.setUsers(response.data.result);
+        this.initTable();
+      }
 
-    const companies_response = await axios.get(
-      this.props.apiDomain + `/companies/get`
-    );
-    if (companies_response.data.status == 200) {
-      this.props.setCompanies(companies_response.data.result);
+      const companies_response = await axios.get(
+        this.props.apiDomain + `/companies/get`
+      );
+      if (companies_response.data.status === 200) {
+        this.props.setCompanies(companies_response.data.result);
+      }
     }
   }
 
   componentDidUpdate() {
-    let companyUsers = this.props.users.filter((u) => {
-      return (
-        (u.companyId == this.props.companyId && u.type != 1) ||
-        this.props.companyId == 0
-      );
-    });
-    if (datatable) {
-      datatable.clear();
-      datatable.rows.add(companyUsers);
-      datatable.draw();
+    if (this.mounted) {
+      let companyUsers = this.props.users.filter((u) => {
+        return (
+          (u.companyId === this.props.companyId && u.type !== 1) ||
+          this.props.companyId === 0
+        );
+      });
+      if (datatable) {
+        datatable.clear();
+        datatable.rows.add(companyUsers);
+        datatable.draw();
+      }
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   cardHeaderRight = (
@@ -110,8 +119,8 @@ class Users extends React.Component {
       dom: "Bfrti",
       data: this.props.users.filter((user) => {
         return (
-          (user.companyId == this.props.companyId && user.type != 1) ||
-          this.props.companyId == 0
+          (user.companyId === this.props.companyId && user.type !== 1) ||
+          this.props.companyId === 0
         );
       }),
       order: [[0, "asc"]],
@@ -149,11 +158,11 @@ class Users extends React.Component {
         {
           data: "type",
           render: (data, type, row) => {
-            return data == 1
+            return data === 1
               ? "Admin"
-              : data == 2
+              : data === 2
               ? "Loading"
-              : data == 3
+              : data === 3
               ? "Unloading"
               : "";
           },
@@ -232,7 +241,7 @@ class Users extends React.Component {
         const response = await axios.post(
           this.props.apiDomain + "/users/delete/" + userId
         );
-        if (response.data.status == 200) {
+        if (response.data.status === 200) {
           this.props.setUsers(response.data.result);
           PNotify.success({
             title: "Success",
@@ -268,7 +277,7 @@ class Users extends React.Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
 
     return (
@@ -276,12 +285,12 @@ class Users extends React.Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }

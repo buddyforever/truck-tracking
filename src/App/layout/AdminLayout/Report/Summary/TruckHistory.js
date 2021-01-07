@@ -27,40 +27,49 @@ class TruckHistory extends React.Component {
     to: "",
   };
   async componentDidMount() {
-    let tableData;
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
-    );
-    if (response.data.status == 200) {
-      tableData = response.data.result;
-      this.initTable(tableData);
+    this.mounted = true;
+    if (this.mounted) {
+      let tableData;
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+      const response = await axios.get(
+        this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
+      );
+      if (response.data.status === 200) {
+        tableData = response.data.result;
+        this.initTable(tableData);
+      }
     }
   }
   async componentDidUpdate(prevProps, prevState) {
     if (
-      prevProps.companyId != this.props.companyId ||
-      prevState.from != this.state.from ||
-      prevState.to != this.state.to
+      prevProps.companyId !== this.props.companyId ||
+      prevState.from !== this.state.from ||
+      prevState.to !== this.state.to
     ) {
-      let companyId = this.props.companyId;
-      const response = await axios.get(
-        this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
-      );
-      if (response.data.status == 200) {
-        let tableData = response.data.result;
-        if (this.state.from)
-          tableData = tableData.filter((item) => item.date >= this.state.from);
-        if (this.state.to)
-          tableData = tableData.filter((item) => item.date <= this.state.to);
-        console.log(tableData);
-        if (datatable) {
-          datatable.clear();
-          datatable.rows.add(tableData);
-          datatable.draw();
+      if (this.mounted) {
+        let companyId = this.props.companyId;
+        const response = await axios.get(
+          this.props.apiDomain + "/report/getDailyTruckNum/" + companyId
+        );
+        if (response.data.status === 200) {
+          let tableData = response.data.result;
+          if (this.state.from)
+            tableData = tableData.filter(
+              (item) => item.date >= this.state.from
+            );
+          if (this.state.to)
+            tableData = tableData.filter((item) => item.date <= this.state.to);
+          if (datatable) {
+            datatable.clear();
+            datatable.rows.add(tableData);
+            datatable.draw();
+          }
         }
       }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   initTable = (tableData) => {
     let tableResponsive = "#truck-history-table";

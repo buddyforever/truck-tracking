@@ -25,7 +25,7 @@ class NavBar extends Component {
     }
 
     let company = DEMO.companies.filter((comp) => {
-      return comp.id == this.props.companyId;
+      return comp.id === this.props.companyId;
     });
     let companyName = company.length > 0 ? company[0].companyName : "Admin";
     return (

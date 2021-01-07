@@ -12,8 +12,6 @@ import {
 
 import Aux from "../../../../hoc/_Aux";
 import truck1 from "./../../../../assets/images/truck1.png";
-import truck2 from "./../../../../assets/images/truck2.jpg";
-import truck3 from "./../../../../assets/images/truck3.png";
 
 import wheat from "./../../../../assets/images/wheat.png";
 import corn from "./../../../../assets/images/corn.png";
@@ -40,7 +38,7 @@ class GridView extends Component {
   };
   getDealDetailPercent = (deal) => {
     let confirmKeyArray = [];
-    if (deal.companyId == 1)
+    if (deal.companyId === 1)
       confirmKeyArray = [
         "truckPlate",
         "trailerPlate",
@@ -55,7 +53,7 @@ class GridView extends Component {
         "receiptNumber",
         "description",
       ];
-    else if (deal.companyId == 2)
+    else if (deal.companyId === 2)
       confirmKeyArray = [
         "truckPlate",
         "trailerPlate",
@@ -81,14 +79,16 @@ class GridView extends Component {
   render() {
     let loading_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 1
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 1
       );
     });
     let onroute_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 2
       );
     });
     return (
@@ -100,7 +100,7 @@ class GridView extends Component {
                 <Card.Title as="h5">Pending</Card.Title>
                 <div className="card-header-right">
                   <div className="d-flex align-items-center">
-                    {this.props.authUser.type == 2 ? (
+                    {this.props.authUser.type === 2 ? (
                       <OverlayTrigger overlay={<Tooltip>New loading</Tooltip>}>
                         <Button
                           variant="outline-info"
@@ -129,7 +129,7 @@ class GridView extends Component {
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey1) > -1 ||
-                        this.state.searchKey1 == ""
+                        this.state.searchKey1 === ""
                       );
                     })
                     .map((deal, index) => {
@@ -138,7 +138,7 @@ class GridView extends Component {
                           <OverlayTrigger
                             overlay={
                               <Tooltip>
-                                {deal.driverName != ""
+                                {deal.driverName !== ""
                                   ? deal.driverName
                                   : "Undefined"}
                               </Tooltip>
@@ -156,15 +156,15 @@ class GridView extends Component {
                               >
                                 <img
                                   src={
-                                    deal.productName == "Wheat"
+                                    deal.productName === "Wheat"
                                       ? wheat
-                                      : deal.productName == "Corn"
+                                      : deal.productName === "Corn"
                                       ? corn
-                                      : deal.productName == "Meat"
+                                      : deal.productName === "Meat"
                                       ? meat
-                                      : deal.productName == "Fish"
+                                      : deal.productName === "Fish"
                                       ? fish
-                                      : deal.productName == "Chicken"
+                                      : deal.productName === "Chicken"
                                       ? chicken
                                       : truck1
                                   }
@@ -179,7 +179,7 @@ class GridView extends Component {
                                 <i className="fa fa-truck f-36 mr-0" />
                               </Button> */}
                               <h5 className="m-t-10">
-                                {deal.truckPlate != ""
+                                {deal.truckPlate !== ""
                                   ? deal.truckPlate
                                   : "Undefined"}
                               </h5>
@@ -211,7 +211,7 @@ class GridView extends Component {
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey2) > -1 ||
-                        this.state.searchKey2 == ""
+                        this.state.searchKey2 === ""
                       );
                     })
                     .map((deal) => {
@@ -244,15 +244,15 @@ class GridView extends Component {
                               >
                                 <img
                                   src={
-                                    deal.productName == "Wheat"
+                                    deal.productName === "Wheat"
                                       ? wheat
-                                      : deal.productName == "Corn"
+                                      : deal.productName === "Corn"
                                       ? corn
-                                      : deal.productName == "Meat"
+                                      : deal.productName === "Meat"
                                       ? meat
-                                      : deal.productName == "Fish"
+                                      : deal.productName === "Fish"
                                       ? fish
-                                      : deal.productName == "Chicken"
+                                      : deal.productName === "Chicken"
                                       ? chicken
                                       : truck1
                                   }

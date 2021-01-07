@@ -24,47 +24,54 @@ let datatable;
 class SupplierHistory extends React.Component {
   state = { from: "", to: "" };
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain +
-        "/report/getSupplierDataHistory/" +
-        companyId +
-        "?from=" +
-        this.state.from +
-        "&to=" +
-        this.state.to
-    );
-    if (response.data.status == 200) {
-      let tableData = response.data.result;
-      this.initTable(tableData);
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      this.props.companyId != prevProps.companyId ||
-      prevProps.companyId != this.props.companyId ||
-      prevState.from != this.state.from ||
-      prevState.to != this.state.to
-    ) {
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       const response = await axios.get(
         this.props.apiDomain +
           "/report/getSupplierDataHistory/" +
-          this.props.companyId +
+          companyId +
           "?from=" +
           this.state.from +
           "&to=" +
           this.state.to
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let tableData = response.data.result;
-        console.log(tableData);
-        if (datatable) {
-          datatable.clear();
-          datatable.rows.add(tableData);
-          datatable.draw();
+        this.initTable(tableData);
+      }
+    }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      this.props.companyId !== prevProps.companyId ||
+      prevProps.companyId !== this.props.companyId ||
+      prevState.from !== this.state.from ||
+      prevState.to !== this.state.to
+    ) {
+      if (this.mounted) {
+        const response = await axios.get(
+          this.props.apiDomain +
+            "/report/getSupplierDataHistory/" +
+            this.props.companyId +
+            "?from=" +
+            this.state.from +
+            "&to=" +
+            this.state.to
+        );
+        if (response.data.status === 200) {
+          let tableData = response.data.result;
+          if (datatable) {
+            datatable.clear();
+            datatable.rows.add(tableData);
+            datatable.draw();
+          }
         }
       }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   initTable = (tableData) => {
     let tableResponsive = "#supplier-history-table";

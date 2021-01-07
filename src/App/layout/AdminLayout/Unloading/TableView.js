@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { Card, Row, Col, Button, Table } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import Swal from "sweetalert2";
 import PNotify from "pnotify/dist/es/PNotify";
@@ -26,49 +26,59 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
 class TableView extends Component {
   componentDidMount() {
-    this.initTable();
+    this.mounted = true;
+    if (this.mounted) {
+      this.initTable();
+    }
   }
 
   componentDidUpdate() {
-    let onroute_deals = this.props.company_deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
-      );
-    });
-    let pending_deals = this.props.company_deals.filter((deal) => {
-      return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 3
-      );
-    });
+    if (this.mounted) {
+      let onroute_deals = this.props.company_deals.filter((deal) => {
+        return (
+          (deal.companyId === this.props.companyId ||
+            this.props.companyId === 0) &&
+          deal.status === 2
+        );
+      });
+      let pending_deals = this.props.company_deals.filter((deal) => {
+        return (
+          (deal.companyId === this.props.companyId ||
+            this.props.companyId === 0) &&
+          deal.status === 3
+        );
+      });
 
-    datatable1.clear();
-    datatable1.rows.add(onroute_deals);
-    datatable1.draw();
+      datatable1.clear();
+      datatable1.rows.add(onroute_deals);
+      datatable1.draw();
 
-    datatable2.clear();
-    datatable2.rows.add(pending_deals);
-    datatable2.draw();
+      datatable2.clear();
+      datatable2.rows.add(pending_deals);
+      datatable2.draw();
+    }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   onDealClick = (dealId) => {
@@ -79,7 +89,7 @@ class TableView extends Component {
     const response = await axios.get(
       this.props.apiDomain + "/deals/get/" + dealId
     );
-    if (response.data.status == 200) {
+    if (response.data.status === 200) {
       let deal = response.data.result[0];
       const MySwal = withReactContent(Swal);
       MySwal.fire({
@@ -104,7 +114,7 @@ class TableView extends Component {
             this.props.apiDomain + "/deals/update",
             deal
           );
-          if (res.data.status == 200) {
+          if (res.data.status === 200) {
             PNotify.success({
               title: "Success",
               text: "There's new truck arrived.",
@@ -118,14 +128,16 @@ class TableView extends Component {
   initTable = () => {
     let onroute_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 2
       );
     });
     let pending_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 3
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 3
       );
     });
     datatable1 = $("#onroute-deals-table").DataTable({

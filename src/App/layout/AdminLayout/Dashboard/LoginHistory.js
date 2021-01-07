@@ -12,20 +12,19 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
@@ -34,31 +33,43 @@ class Dashboard extends React.Component {
     login_logs: [],
   };
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain +
-        "/overview/getLoginLogs/" +
-        companyId +
-        "/" +
-        this.props.authUser.id
-    );
-    if (response.data.status == 200) {
-      this.setState({ login_logs: response.data.result });
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.companyId != this.props.companyId) {
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       const response = await axios.get(
         this.props.apiDomain +
           "/overview/getLoginLogs/" +
-          this.props.companyId +
+          companyId +
           "/" +
           this.props.authUser.id
       );
-      if (response.data.status == 200) {
-        this.setState({ login_logs: response.data.result });
+      if (response.data.status === 200) {
+        if (this.mounted) {
+          this.setState({ login_logs: response.data.result });
+        }
       }
     }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId !== this.props.companyId) {
+      if (this.mounted) {
+        const response = await axios.get(
+          this.props.apiDomain +
+            "/overview/getLoginLogs/" +
+            this.props.companyId +
+            "/" +
+            this.props.authUser.id
+        );
+        if (response.data.status === 200) {
+          if (this.mounted) {
+            this.setState({ login_logs: response.data.result });
+          }
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   render() {
     return (

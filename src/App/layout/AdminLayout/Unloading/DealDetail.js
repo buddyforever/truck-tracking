@@ -11,12 +11,10 @@ import {
 import MaskedInput from "react-text-mask";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
-import InputMask from "react-input-mask";
 import NumberFormat from "react-number-format";
 import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
-import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
 const padLeft = function(num) {
@@ -24,20 +22,19 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
@@ -103,41 +100,50 @@ class UnloadingDealDetail extends React.Component {
   };
 
   async componentDidMount() {
-    const response1 = await axios.get(
-      this.props.apiDomain + "/transporters/get"
-    );
-    if (response1.data.status == 200) {
-      this.props.setTransporters(response1.data.result);
-    }
-    const response2 = await axios.get(this.props.apiDomain + "/products/get");
-    if (response2.data.status == 200) {
-      this.props.setProducts(response2.data.result);
-    }
-    const { dealId } = this.props.match.params;
-    if (dealId > 0) {
-      const response3 = await axios.get(
-        this.props.apiDomain + "/deals/get/" + dealId
+    this.mounted = true;
+    if (this.mounted) {
+      const response1 = await axios.get(
+        this.props.apiDomain + "/transporters/get"
       );
-      if (response3.data.status == 200) {
-        this.setState({
-          ...response3.data.result[0],
-          firstWeight: response3.data.result[0].secondWeight,
-          secondWeight: response3.data.result[0].firstWeight,
-          startLoadingAt: formatDateTime(
-            response3.data.result[0].startLoadingAt
-          ),
-          finishLoadingAt: formatDateTime(
-            response3.data.result[0].finishLoadingAt
-          ),
-          startUnloadingAt: formatDateTime(
-            response3.data.result[0].startUnloadingAt
-          ),
-          finishUnloadingAt: formatDateTime(
-            response3.data.result[0].finishUnloadingAt
-          ),
-        });
+      if (response1.data.status === 200) {
+        this.props.setTransporters(response1.data.result);
+      }
+      const response2 = await axios.get(this.props.apiDomain + "/products/get");
+      if (response2.data.status === 200) {
+        this.props.setProducts(response2.data.result);
+      }
+      const { dealId } = this.props.match.params;
+      if (dealId > 0) {
+        const response3 = await axios.get(
+          this.props.apiDomain + "/deals/get/" + dealId
+        );
+        if (response3.data.status === 200) {
+          if (this.mounted) {
+            this.setState({
+              ...response3.data.result[0],
+              firstWeight: response3.data.result[0].secondWeight,
+              secondWeight: response3.data.result[0].firstWeight,
+              startLoadingAt: formatDateTime(
+                response3.data.result[0].startLoadingAt
+              ),
+              finishLoadingAt: formatDateTime(
+                response3.data.result[0].finishLoadingAt
+              ),
+              startUnloadingAt: formatDateTime(
+                response3.data.result[0].startUnloadingAt
+              ),
+              finishUnloadingAt: formatDateTime(
+                response3.data.result[0].finishUnloadingAt
+              ),
+            });
+          }
+        }
       }
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   handleInputChange = (e) => {
@@ -152,7 +158,7 @@ class UnloadingDealDetail extends React.Component {
         this.props.apiDomain + "/deals/update",
         this.state
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         PNotify.success({
           title: "Success",
           text: "The loading detail has been updated.",
@@ -176,7 +182,7 @@ class UnloadingDealDetail extends React.Component {
           this.props.apiDomain + "/deals/update",
           this.state
         );
-        if (response.data.status == 200) {
+        if (response.data.status === 200) {
           PNotify.success({
             title: "Success",
             text: "Unloading has been finished.",
@@ -203,11 +209,11 @@ class UnloadingDealDetail extends React.Component {
             <Card>
               <Card.Header>
                 <Card.Title as="h5">
-                  {this.state.status == 1
+                  {this.state.status === 1
                     ? "Loading"
-                    : this.state.status == 2
+                    : this.state.status === 2
                     ? "On route"
-                    : this.state.status == 3
+                    : this.state.status === 3
                     ? "Unloading"
                     : ""}
                 </Card.Title>
@@ -369,7 +375,7 @@ class UnloadingDealDetail extends React.Component {
                           <option value="0">Select Product</option>
                           {this.props.products
                             .filter(
-                              (item) => item.companyId == this.props.companyId
+                              (item) => item.companyId === this.props.companyId
                             )
                             .map((item) => {
                               return (
@@ -380,7 +386,7 @@ class UnloadingDealDetail extends React.Component {
                             })}
                         </SelectGroup>
                       </Form.Group>
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <>
                           <Form.Group>
                             <Form.Label htmlFor="firstWeight">
@@ -439,7 +445,7 @@ class UnloadingDealDetail extends React.Component {
                           />
                         </>
                       )}
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <TextInput
                           type="hidden"
                           name="quantity"
@@ -461,7 +467,7 @@ class UnloadingDealDetail extends React.Component {
                           />
                         </Form.Group>
                       )}
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <>
                           <Form.Group>
                             <Form.Label htmlFor="netWeight">

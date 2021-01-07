@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col, Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/serial";
@@ -13,42 +13,19 @@ import Aux from "../../../../hoc/_Aux";
 
 class CompanyYearlyLoss extends React.Component {
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain + "/overview/getYearlyLoss/" + companyId
-    );
-    if (response.data.status == 200) {
-      let dataum = [];
-      let result = response.data.result;
-      let year = new Date().getFullYear();
-      for (let i = year - 3; i <= year + 1; i++) {
-        for (let j = 0; j < result.length; j++) {
-          if (result[j].year == i) {
-            dataum[i - year + 3] = {
-              year: i.toString(),
-              value: result[j].netLoss,
-            };
-            break;
-          } else dataum[i - year + 3] = { year: i.toString(), value: 0 };
-        }
-      }
-      this.init(dataum);
-    }
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.companyId != this.props.companyId) {
-      let companyId = this.props.companyId;
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       const response = await axios.get(
         this.props.apiDomain + "/overview/getYearlyLoss/" + companyId
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let dataum = [];
         let result = response.data.result;
         let year = new Date().getFullYear();
         for (let i = year - 3; i <= year + 1; i++) {
           for (let j = 0; j < result.length; j++) {
-            if (result[j].year == i) {
+            if (result[j].year === i) {
               dataum[i - year + 3] = {
                 year: i.toString(),
                 value: result[j].netLoss,
@@ -61,11 +38,42 @@ class CompanyYearlyLoss extends React.Component {
       }
     }
   }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId !== this.props.companyId) {
+      if (this.mounted) {
+        let companyId = this.props.companyId;
+        const response = await axios.get(
+          this.props.apiDomain + "/overview/getYearlyLoss/" + companyId
+        );
+        if (response.data.status === 200) {
+          let dataum = [];
+          let result = response.data.result;
+          let year = new Date().getFullYear();
+          for (let i = year - 3; i <= year + 1; i++) {
+            for (let j = 0; j < result.length; j++) {
+              if (result[j].year === i) {
+                dataum[i - year + 3] = {
+                  year: i.toString(),
+                  value: result[j].netLoss,
+                };
+                break;
+              } else dataum[i - year + 3] = { year: i.toString(), value: 0 };
+            }
+          }
+          this.init(dataum);
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   init = (dataum) => {
     let maxValue = 0;
     for (let i = 0; i < dataum.length; i++)
       if (dataum[i].value > maxValue) maxValue = dataum[i].value;
-    let chartm = AmCharts.makeChart("netLoss-chart", {
+    AmCharts.makeChart("netLoss-chart", {
       type: "serial",
       addClassNames: true,
       defs: {
@@ -173,9 +181,6 @@ class CompanyYearlyLoss extends React.Component {
         },
       ],
     });
-    // setTimeout(() => {
-    //   chartm.zoomToIndexes(1, dataum.length - 1);
-    // }, 1000);
   };
   render() {
     return (

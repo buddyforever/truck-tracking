@@ -30,47 +30,57 @@ class TruckDataHistory extends React.Component {
     to: "",
   };
   async componentDidMount() {
-    const companies_response = await axios.get(
-      this.props.apiDomain + `/companies/get`
-    );
-    if (companies_response.data.status == 200) {
-      this.props.setCompanies(companies_response.data.result);
-    }
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const response = await axios.get(
-      this.props.apiDomain + "/report/getTruckDataHistory/" + companyId
-    );
-    if (response.data.status == 200) {
-      let tableData = response.data.result;
-      this.initTable(tableData, this.state.unit.value);
+    this.mounted = true;
+    if (this.mounted) {
+      const companies_response = await axios.get(
+        this.props.apiDomain + `/companies/get`
+      );
+      if (companies_response.data.status === 200) {
+        this.props.setCompanies(companies_response.data.result);
+      }
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+      const response = await axios.get(
+        this.props.apiDomain + "/report/getTruckDataHistory/" + companyId
+      );
+      if (response.data.status === 200) {
+        let tableData = response.data.result;
+        this.initTable(tableData, this.state.unit.value);
+      }
     }
   }
   async componentDidUpdate(prevProps, prevState) {
     if (
-      prevProps.companyId != this.props.companyId ||
-      this.state.unit != prevState.unit ||
-      this.state.from != prevState.from ||
-      this.state.to != prevState.to
+      prevProps.companyId !== this.props.companyId ||
+      this.state.unit !== prevState.unit ||
+      this.state.from !== prevState.from ||
+      this.state.to !== prevState.to
     ) {
-      const response = await axios.get(
-        this.props.apiDomain +
-          "/report/getTruckDataHistory/" +
-          this.props.companyId
-      );
-      if (response.data.status == 200) {
-        let tableData = response.data.result;
-        if (datatable) {
-          if (this.state.from)
-            tableData = tableData.filter(
-              (item) => item.date >= this.state.from
-            );
-          if (this.state.to)
-            tableData = tableData.filter((item) => item.date <= this.state.to);
-          datatable.destroy();
-          this.initTable(tableData, this.state.unit.value);
+      if (this.mounted) {
+        const response = await axios.get(
+          this.props.apiDomain +
+            "/report/getTruckDataHistory/" +
+            this.props.companyId
+        );
+        if (response.data.status === 200) {
+          let tableData = response.data.result;
+          if (datatable) {
+            if (this.state.from)
+              tableData = tableData.filter(
+                (item) => item.date >= this.state.from
+              );
+            if (this.state.to)
+              tableData = tableData.filter(
+                (item) => item.date <= this.state.to
+              );
+            datatable.destroy();
+            this.initTable(tableData, this.state.unit.value);
+          }
         }
       }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   initTable = (tableData, unit) => {
     let tableResponsive = "#truck-data-history-table";
@@ -107,9 +117,9 @@ class TruckDataHistory extends React.Component {
         {
           data: "timeLoaded",
           render: function(data, type, row) {
-            return unit == "hour"
+            return unit === "hour"
               ? (data / 3600).toFixed(2) + " hr"
-              : unit == "min"
+              : unit === "min"
               ? (data / 60).toFixed(1) + " min"
               : data + " s";
           },
@@ -117,9 +127,9 @@ class TruckDataHistory extends React.Component {
         {
           data: "timeArrived",
           render: function(data, type, row) {
-            return unit == "hour"
+            return unit === "hour"
               ? (data / 3600).toFixed(2) + " hr"
-              : unit == "min"
+              : unit === "min"
               ? (data / 60).toFixed(1) + " min"
               : data + " s";
           },
@@ -127,9 +137,9 @@ class TruckDataHistory extends React.Component {
         {
           data: "timeUnloaded",
           render: function(data, type, row) {
-            return unit == "hour"
+            return unit === "hour"
               ? (data / 3600).toFixed(2) + " hr"
-              : unit == "min"
+              : unit === "min"
               ? (data / 60).toFixed(1) + " min"
               : data + " s";
           },
@@ -185,24 +195,20 @@ class TruckDataHistory extends React.Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
-    let unitOptions = [
-      { label: "Hour", value: "hour" },
-      { label: "Minute", value: "min" },
-      { label: "Second", value: "sec" },
-    ];
+
     return (
       <Aux>
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }

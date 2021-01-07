@@ -8,14 +8,13 @@ import {
   ToggleButton,
 } from "react-bootstrap";
 import Select from "react-select";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import Aux from "../../../../hoc/_Aux";
-import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
 import GridView from "./GridView";
@@ -26,18 +25,24 @@ class Loading extends Component {
     viewMode: "grid",
   };
   async componentDidMount() {
-    const response = await axios.get(this.props.apiDomain + "/companies/get");
-    if (response.data.status == 200) {
-      this.props.setCompanies(response.data.result);
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(this.props.apiDomain + "/companies/get");
+      if (response.data.status === 200) {
+        this.props.setCompanies(response.data.result);
+      }
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
+      const deals_response = await axios.get(
+        this.props.apiDomain + "/deals/get",
+        { companyId: companyId }
+      );
+      if (deals_response.data.status === 200) {
+        this.props.setCompanyDeals(deals_response.data.result);
+      }
     }
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    const deals_response = await axios.get(
-      this.props.apiDomain + "/deals/get",
-      { companyId: companyId }
-    );
-    if (deals_response.data.status == 200) {
-      this.props.setCompanyDeals(deals_response.data.result);
-    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
@@ -63,7 +68,7 @@ class Loading extends Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
 
     let options = {
@@ -99,9 +104,9 @@ class Loading extends Component {
               name: "Truck loaded",
               y: this.props.deals.filter((deal) => {
                 return (
-                  (deal.companyId == this.props.companyId ||
-                    this.props.companyId == 0) &&
-                  deal.status == 1
+                  (deal.companyId === this.props.companyId ||
+                    this.props.companyId === 0) &&
+                  deal.status === 1
                 );
               }).length,
             },
@@ -109,9 +114,9 @@ class Loading extends Component {
               name: "On route",
               y: this.props.deals.filter((deal) => {
                 return (
-                  (deal.companyId == this.props.companyId ||
-                    this.props.companyId == 0) &&
-                  deal.status == 2
+                  (deal.companyId === this.props.companyId ||
+                    this.props.companyId === 0) &&
+                  deal.status === 2
                 );
               }).length,
             },
@@ -124,12 +129,12 @@ class Loading extends Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }
@@ -150,7 +155,7 @@ class Loading extends Component {
                   <ToggleButton
                     className="btn-icon shadow-1"
                     variant={
-                      this.state.viewMode == "grid"
+                      this.state.viewMode === "grid"
                         ? "outline-primary active"
                         : "outline-primary"
                     }
@@ -161,7 +166,7 @@ class Loading extends Component {
                   <ToggleButton
                     className="btn-icon shadow-1"
                     variant={
-                      this.state.viewMode == "table"
+                      this.state.viewMode === "table"
                         ? "outline-primary active"
                         : "outline-primary"
                     }
@@ -176,13 +181,13 @@ class Loading extends Component {
         </Row>
         <Row>
           <Col md={8} xl={9}>
-            {this.state.viewMode == "grid" ? (
+            {this.state.viewMode === "grid" ? (
               <GridView
                 company_deals={this.props.deals}
                 onDealClick={this.onDealClick}
                 onNewLoadingClick={this.onNewLoadingClick}
               />
-            ) : this.state.viewMode == "table" ? (
+            ) : this.state.viewMode === "table" ? (
               <TableView
                 company_deals={this.props.deals}
                 onDealClick={this.onDealClick}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import { ValidationForm, TextInput } from "react-bootstrap4-form-validation";
 import PNotify from "pnotify/dist/es/PNotify";
@@ -27,7 +27,7 @@ class AddSupplier extends React.Component {
       this.props.apiDomain + "/transporters/add",
       formData
     );
-    if (response.data.status == 200) {
+    if (response.data.status === 200) {
       PNotify.success({
         title: "Success",
         text: "The new transporter has been added.",

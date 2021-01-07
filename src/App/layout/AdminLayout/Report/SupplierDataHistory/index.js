@@ -13,10 +13,16 @@ import SupplierHistory from "./SupplierHistory";
 
 class SupplierDataHistory extends React.Component {
   async componentDidMount() {
-    const response = await axios.get(this.props.apiDomain + `/companies/get`);
-    if (response.data.status == 200) {
-      this.props.setCompanies(response.data.result);
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(this.props.apiDomain + `/companies/get`);
+      if (response.data.status === 200) {
+        this.props.setCompanies(response.data.result);
+      }
     }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
@@ -30,19 +36,19 @@ class SupplierDataHistory extends React.Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
     return (
       <Aux>
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }

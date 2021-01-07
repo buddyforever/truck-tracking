@@ -25,27 +25,32 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
 
 class TableView extends Component {
   componentDidMount() {
-    this.initTable();
+    this.mounted = true;
+    if (this.mounted) {
+      this.initTable();
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   onDealClick = (dealId) => {
     this.props.onDealClick(dealId);
@@ -56,18 +61,18 @@ class TableView extends Component {
   initTable = () => {
     let loading_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 1
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 1
       );
     });
     let onroute_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 2
       );
     });
-    console.log(loading_deals);
-    console.log(onroute_deals);
     $("#pending-deals-table").DataTable({
       data: loading_deals,
       order: [[1, "desc"]],

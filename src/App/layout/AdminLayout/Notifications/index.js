@@ -25,34 +25,39 @@ function customFormat(time) {
   let days = parseInt(time / (3600 * 24));
   let hours = parseInt((time - days * 3600 * 24) / 3600);
   let mins = parseInt((time - days * 3600 * 24 - hours * 3600) / 60);
-  let secs = time - days * 3600 * 24 - hours * 3600 - mins * 60;
   if (days > 1) return days + " days ago";
-  else if (days == 1) return "a day ago";
-  else if (days == 0) {
+  else if (days === 1) return "a day ago";
+  else if (days === 0) {
     if (hours > 1) return hours + " hours ago";
-    else if (hours == 1) return "an hour ago";
-    else if (hours == 0) {
+    else if (hours === 1) return "an hour ago";
+    else if (hours === 0) {
       if (mins > 1) return mins + " minutes ago";
-      else if (mins == 1) return "a minute ago";
-      else if (mins == 0) return "Just now";
+      else if (mins === 1) return "a minute ago";
+      else if (mins === 0) return "Just now";
     }
   }
 }
 
 class Notifications extends React.Component {
   async componentDidMount() {
-    const response = await axios.get(
-      this.props.apiDomain + "/notifications/get"
-    );
-    if (response.data.status == 200) {
-      this.props.setNotifications(response.data.result);
+    this.mounted = true;
+    if (this.mounted) {
+      const response = await axios.get(
+        this.props.apiDomain + "/notifications/get"
+      );
+      if (response.data.status === 200) {
+        this.props.setNotifications(response.data.result);
+      }
+      const companies_response = await axios.get(
+        this.props.apiDomain + `/companies/get`
+      );
+      if (companies_response.data.status === 200) {
+        this.props.setCompanies(companies_response.data.result);
+      }
     }
-    const companies_response = await axios.get(
-      this.props.apiDomain + `/companies/get`
-    );
-    if (companies_response.data.status == 200) {
-      this.props.setCompanies(companies_response.data.result);
-    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   onCompanyChange = (option) => {
     this.props.onCompanyChange(option.value);
@@ -74,7 +79,7 @@ class Notifications extends React.Component {
       });
     });
     let currentCompanyOption = companyOptions.filter(
-      (comp) => comp.value == this.props.companyId
+      (comp) => comp.value === this.props.companyId
     );
 
     return (
@@ -82,12 +87,12 @@ class Notifications extends React.Component {
         <Row className="mb-4">
           <Col md={{ span: 4, offset: 8 }} xl={{ span: 3, offset: 9 }}>
             <div className="d-flex align-items-center justify-content-end">
-              {this.props.authUser.type == 0 ? (
+              {this.props.authUser.type === 0 ? (
                 <Select
                   className="basic-single w-100 m-r-10"
                   classNamePrefix="select"
                   value={
-                    this.props.companyId != 0
+                    this.props.companyId !== 0
                       ? currentCompanyOption[0]
                       : companyOptions[0]
                   }
@@ -111,20 +116,20 @@ class Notifications extends React.Component {
                 {this.props.notifications
                   .filter(
                     (item) =>
-                      item.companyId == this.props.companyId ||
-                      this.props.companyId == 0
+                      item.companyId === this.props.companyId ||
+                      this.props.companyId === 0
                   )
                   .map((item, index) => {
                     return (
                       <a
                         href={DEMO.BLANK_LINK}
                         className={`media p-30 ${
-                          index != 0 ? "border-top" : ""
+                          index !== 0 ? "border-top" : ""
                         }`}
                         key={item.id}
                       >
                         <div className="mr-3 photo-table">
-                          {item.userId != 1 ? (
+                          {item.userId !== 1 ? (
                             <>
                               <i
                                 className={`fa fa-circle ${
@@ -151,7 +156,7 @@ class Notifications extends React.Component {
                         </div>
                         <div className="media-body">
                           <h6>
-                            {item.userId != 1
+                            {item.userId !== 1
                               ? item.firstname + " " + item.lastname
                               : "Daily report"}
                           </h6>

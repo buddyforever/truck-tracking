@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import { ValidationForm, TextInput } from "react-bootstrap4-form-validation";
 import PNotify from "pnotify/dist/es/PNotify";
@@ -17,19 +17,27 @@ class EditSupplier extends React.Component {
   };
 
   async componentDidMount() {
+    this.mounted = true;
     const { id } = this.props.match.params;
     if (id > 0) {
-      const response = await axios.get(
-        this.props.apiDomain + "/transporters/" + id
-      );
-      if (response.data.status == 200) {
-        this.setState({
-          ...response.data.result[0],
-        });
+      if (this.mounted) {
+        const response = await axios.get(
+          this.props.apiDomain + "/transporters/" + id
+        );
+        if (response.data.status === 200) {
+          if (this.mounted) {
+            this.setState({
+              ...response.data.result[0],
+            });
+          }
+        }
       }
     }
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   handleInputChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -42,7 +50,7 @@ class EditSupplier extends React.Component {
       this.props.apiDomain + "/transporters/update",
       formData
     );
-    if (response.data.status == 200) {
+    if (response.data.status === 200) {
       this.props.setTransporters(response.data.result);
       PNotify.success({
         title: "Success",

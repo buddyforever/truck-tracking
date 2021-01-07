@@ -1,12 +1,11 @@
 import React, { Component, Suspense } from "react";
-import { Route, Switch, Redirect, withRouter } from "react-router-dom";
+import { Route, Switch, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import Fullscreen from "react-full-screen";
 import windowSize from "react-window-size";
 
 import Navigation from "./Navigation";
 import NavBar from "./NavBar";
-import Breadcrumb from "./Breadcrumb";
 import Loader from "../Loader";
 import routes from "../../../routes";
 import Aux from "../../../hoc/_Aux";
@@ -58,8 +57,8 @@ class AdminLayout extends Component {
     const menu = routes.map((route, index) => {
       if (
         route.permission_users.includes(parseInt(this.props.authUser.type)) ||
-        this.props.authUser.type == 0 ||
-        this.props.authUser.type == 1
+        this.props.authUser.type === 0 ||
+        this.props.authUser.type === 1
       ) {
         // filter accessable routes from routes.js
         return route.component ? (

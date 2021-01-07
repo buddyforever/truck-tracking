@@ -1,15 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import {
-  Card,
-  Row,
-  Col,
-  OverlayTrigger,
-  Button,
-  Tooltip,
-  Form,
-} from "react-bootstrap";
+import { Card, Row, Col, OverlayTrigger, Tooltip, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import PNotify from "pnotify/dist/es/PNotify";
 import withReactContent from "sweetalert2-react-content";
@@ -17,8 +9,6 @@ import Aux from "../../../../hoc/_Aux";
 import * as actionTypes from "../../../../store/actions";
 
 import truck1 from "./../../../../assets/images/truck1.png";
-import truck2 from "./../../../../assets/images/truck2.jpg";
-import truck3 from "./../../../../assets/images/truck3.png";
 
 import wheat from "./../../../../assets/images/wheat.png";
 import corn from "./../../../../assets/images/corn.png";
@@ -31,20 +21,19 @@ const padLeft = function(num) {
 };
 
 const formatDateTime = function(timestamp) {
+  let dformat = "";
   if (timestamp) {
-    var d = new Date(timestamp),
-      dformat =
-        [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
-          "-"
-        ) +
-        " " +
-        [
-          padLeft(d.getHours()),
-          padLeft(d.getMinutes()),
-          padLeft(d.getSeconds()),
-        ].join(":");
-  } else {
-    var dformat = "";
+    var d = new Date(timestamp);
+    dformat =
+      [d.getFullYear(), padLeft(d.getMonth() + 1), padLeft(d.getDate())].join(
+        "-"
+      ) +
+      " " +
+      [
+        padLeft(d.getHours()),
+        padLeft(d.getMinutes()),
+        padLeft(d.getSeconds()),
+      ].join(":");
   }
   return dformat;
 };
@@ -53,6 +42,9 @@ class GridView extends Component {
     searchKey1: "",
     searchKey2: "",
   };
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   onDealClick = (dealId) => {
     this.props.onDealClick(dealId);
   };
@@ -63,48 +55,50 @@ class GridView extends Component {
     this.setState({ searchKey2: e.target.value });
   };
   onArrivedPopupShow = async (dealId) => {
-    const response = await axios.get(
-      this.props.apiDomain + "/deals/get/" + dealId
-    );
-    if (response.data.status == 200) {
-      let deal = response.data.result[0];
-      const MySwal = withReactContent(Swal);
-      MySwal.fire({
-        title: "Are you sure?",
-        text: "If this truck is arrived, just click 'OK' button.",
-        type: "warning",
-        showCloseButton: true,
-        showCancelButton: true,
-      }).then(async (isArrived) => {
-        if (isArrived.value) {
-          deal.userId = this.props.authUser.id;
-          let temp = deal.firstWeight;
-          deal.firstWeight = deal.secondWeight;
-          deal.secondWeight = temp;
-          deal.startLoadingAt = formatDateTime(deal.startLoadingAt);
-          deal.finishLoadingAt = formatDateTime(deal.finishLoadingAt);
-          deal.startUnloadingAt = formatDateTime(new Date());
-          deal.status = 3;
-          deal.submitted = 1;
-          console.log(deal);
-          const res = await axios.post(
-            this.props.apiDomain + "/deals/update",
-            deal
-          );
-          if (res.data.status == 200) {
-            PNotify.success({
-              title: "Success",
-              text: "There's new truck arrived.",
-            });
-            this.props.setCompanyDeals(res.data.result);
+    if (this.mounted) {
+      const response = await axios.get(
+        this.props.apiDomain + "/deals/get/" + dealId
+      );
+      if (response.data.status === 200) {
+        let deal = response.data.result[0];
+        const MySwal = withReactContent(Swal);
+        MySwal.fire({
+          title: "Are you sure?",
+          text: "If this truck is arrived, just click 'OK' button.",
+          type: "warning",
+          showCloseButton: true,
+          showCancelButton: true,
+        }).then(async (isArrived) => {
+          if (isArrived.value) {
+            deal.userId = this.props.authUser.id;
+            let temp = deal.firstWeight;
+            deal.firstWeight = deal.secondWeight;
+            deal.secondWeight = temp;
+            deal.startLoadingAt = formatDateTime(deal.startLoadingAt);
+            deal.finishLoadingAt = formatDateTime(deal.finishLoadingAt);
+            deal.startUnloadingAt = formatDateTime(new Date());
+            deal.status = 3;
+            deal.submitted = 1;
+            console.log(deal);
+            const res = await axios.post(
+              this.props.apiDomain + "/deals/update",
+              deal
+            );
+            if (res.data.status === 200) {
+              PNotify.success({
+                title: "Success",
+                text: "There's new truck arrived.",
+              });
+              this.props.setCompanyDeals(res.data.result);
+            }
           }
-        }
-      });
+        });
+      }
     }
   };
   getDealDetailPercent = (deal) => {
     let confirmKeyArray = [];
-    if (deal.companyId == 1)
+    if (deal.companyId === 1)
       confirmKeyArray = [
         "truckPlate",
         "trailerPlate",
@@ -123,7 +117,7 @@ class GridView extends Component {
         "newDescription",
         "startUnloadingAt",
       ];
-    else if (deal.companyId == 2)
+    else if (deal.companyId === 2)
       confirmKeyArray = [
         "truckPlate",
         "trailerPlate",
@@ -152,14 +146,16 @@ class GridView extends Component {
   render() {
     let onroute_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 2
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 2
       );
     });
     let pending_deals = this.props.company_deals.filter((deal) => {
       return (
-        (deal.companyId == this.props.companyId || this.props.companyId == 0) &&
-        deal.status == 3
+        (deal.companyId === this.props.companyId ||
+          this.props.companyId === 0) &&
+        deal.status === 3
       );
     });
     return (
@@ -184,7 +180,7 @@ class GridView extends Component {
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey1) > -1 ||
-                        this.state.searchKey1 == ""
+                        this.state.searchKey1 === ""
                       );
                     })
                     .map((deal) => {
@@ -193,20 +189,13 @@ class GridView extends Component {
                           <OverlayTrigger
                             overlay={
                               <Tooltip>
-                                {deal.driverName != ""
+                                {deal.driverName !== ""
                                   ? deal.driverName
                                   : "Undefined"}
                               </Tooltip>
                             }
                           >
                             <div className="d-flex flex-column align-items-center m-b-20">
-                              {/* <Button
-                                variant="danger"
-                                className="btn-circle w-80 m-0"
-                                onClick={() => this.onArrivedPopupShow(deal.id)}
-                              >
-                                <i className="fa fa-truck f-36 mr-0" />
-                              </Button> */}
                               <div
                                 data-label="100"
                                 className="radial-bar radial-bar-100 radial-bar-lg radial-bar-danger m-0"
@@ -214,15 +203,15 @@ class GridView extends Component {
                               >
                                 <img
                                   src={
-                                    deal.productName == "Wheat"
+                                    deal.productName === "Wheat"
                                       ? wheat
-                                      : deal.productName == "Corn"
+                                      : deal.productName === "Corn"
                                       ? corn
-                                      : deal.productName == "Meat"
+                                      : deal.productName === "Meat"
                                       ? meat
-                                      : deal.productName == "Fish"
+                                      : deal.productName === "Fish"
                                       ? fish
-                                      : deal.productName == "Chicken"
+                                      : deal.productName === "Chicken"
                                       ? chicken
                                       : truck1
                                   }
@@ -230,7 +219,7 @@ class GridView extends Component {
                                 />
                               </div>
                               <h5 className="m-t-10">
-                                {deal.truckPlate != ""
+                                {deal.truckPlate !== ""
                                   ? deal.truckPlate
                                   : "Undefined"}
                               </h5>
@@ -263,7 +252,7 @@ class GridView extends Component {
                     .filter((deal) => {
                       return (
                         deal.truckPlate.indexOf(this.state.searchKey2) > -1 ||
-                        this.state.searchKey2 == ""
+                        this.state.searchKey2 === ""
                       );
                     })
                     .map((deal) => {
@@ -278,14 +267,6 @@ class GridView extends Component {
                             overlay={<Tooltip>{deal.driverName}</Tooltip>}
                           >
                             <div className="d-flex flex-column align-items-center m-b-20">
-                              {/* <Button
-                                variant="warning"
-                                className="btn-circle w-80"
-                                onClick={() => this.onDealClick(deal.id)}
-                              >
-                                <i className="fa fa-truck f-36 mr-0" />
-                              </Button> */}
-
                               <div
                                 data-label={`${this.getDealDetailPercent(
                                   deal
@@ -297,15 +278,15 @@ class GridView extends Component {
                               >
                                 <img
                                   src={
-                                    deal.productName == "Wheat"
+                                    deal.productName === "Wheat"
                                       ? wheat
-                                      : deal.productName == "Corn"
+                                      : deal.productName === "Corn"
                                       ? corn
-                                      : deal.productName == "Meat"
+                                      : deal.productName === "Meat"
                                       ? meat
-                                      : deal.productName == "Fish"
+                                      : deal.productName === "Fish"
                                       ? fish
-                                      : deal.productName == "Chicken"
+                                      : deal.productName === "Chicken"
                                       ? chicken
                                       : truck1
                                   }

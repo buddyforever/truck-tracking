@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import {
   ValidationForm,
@@ -9,7 +9,6 @@ import {
   SelectGroup,
 } from "react-bootstrap4-form-validation";
 import MaskedInput from "react-text-mask";
-import validator from "validator";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
@@ -17,7 +16,6 @@ import NumberFormat from "react-number-format";
 import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
-import DEMO from "../../../../store/constant";
 import * as actionTypes from "../../../../store/actions";
 
 class MaskWithValidation extends BaseFormControl {
@@ -80,36 +78,45 @@ class NewLoading extends React.Component {
   };
 
   async componentDidMount() {
-    const response1 = await axios.get(
-      this.props.apiDomain + "/transporters/get"
-    );
-    if (response1.data.status == 200) {
-      this.props.setTransporters(response1.data.result);
+    this.mounted = true;
+    if (this.mounted) {
+      const response1 = await axios.get(
+        this.props.apiDomain + "/transporters/get"
+      );
+      if (response1.data.status === 200) {
+        this.props.setTransporters(response1.data.result);
+      }
+      const response2 = await axios.get(this.props.apiDomain + "/products/get");
+      if (response2.data.status === 200) {
+        this.props.setProducts(response2.data.result);
+      }
+      var dt = new Date();
+      var year = dt.getFullYear();
+      var month = dt.getMonth() + 1;
+      var date = dt.getDate();
+      var hour = dt.getHours();
+      var minute = dt.getMinutes();
+      var second = dt.getSeconds();
+      var now =
+        year +
+        "-" +
+        (month >= 10 ? month : "0" + month) +
+        "-" +
+        (date >= 10 ? date : "0" + date) +
+        " " +
+        (hour >= 10 ? hour : "0" + hour) +
+        ":" +
+        (minute >= 10 ? minute : "0" + minute) +
+        ":" +
+        (second >= 10 ? second : "0" + second);
+      if (this.mounted) {
+        this.setState({ startLoadingAt: now });
+      }
     }
-    const response2 = await axios.get(this.props.apiDomain + "/products/get");
-    if (response2.data.status == 200) {
-      this.props.setProducts(response2.data.result);
-    }
-    var dt = new Date();
-    var year = dt.getFullYear();
-    var month = dt.getMonth() + 1;
-    var date = dt.getDate();
-    var hour = dt.getHours();
-    var minute = dt.getMinutes();
-    var second = dt.getSeconds();
-    var now =
-      year +
-      "-" +
-      (month >= 10 ? month : "0" + month) +
-      "-" +
-      (date >= 10 ? date : "0" + date) +
-      " " +
-      (hour >= 10 ? hour : "0" + hour) +
-      ":" +
-      (minute >= 10 ? minute : "0" + minute) +
-      ":" +
-      (second >= 10 ? second : "0" + second);
-    this.setState({ startLoadingAt: now });
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   handleInputChange = (e) => {
@@ -124,7 +131,7 @@ class NewLoading extends React.Component {
       this.props.apiDomain + "/deals/add",
       this.state
     );
-    if (response.data.status == 200) {
+    if (response.data.status === 200) {
       PNotify.success({
         title: "Success",
         text: "The new truck is ready to load.",
@@ -301,7 +308,7 @@ class NewLoading extends React.Component {
                           <option value="0">Select Product</option>
                           {this.props.products
                             .filter(
-                              (item) => item.companyId == this.props.companyId
+                              (item) => item.companyId === this.props.companyId
                             )
                             .map((item) => {
                               return (
@@ -312,7 +319,7 @@ class NewLoading extends React.Component {
                             })}
                         </SelectGroup>
                       </Form.Group>
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <>
                           <Form.Group>
                             <Form.Label htmlFor="firstWeight">
@@ -374,7 +381,7 @@ class NewLoading extends React.Component {
                           />
                         </>
                       )}
-                      {this.props.companyId == 1 ? (
+                      {this.props.companyId === 1 ? (
                         <TextInput
                           type="hidden"
                           name="quantity"

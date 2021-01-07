@@ -7,7 +7,6 @@ import "./../../../../assets/scss/style.scss";
 import Aux from "../../../../hoc/_Aux";
 import Breadcrumb from "../../AdminLayout/Breadcrumb";
 import * as actionTypes from "../../../../store/actions";
-import DEMO from "../../../../store/constant";
 import axios from "axios";
 
 class SignIn extends React.Component {
@@ -33,7 +32,7 @@ class SignIn extends React.Component {
       password: this.state.password,
       ip_address: clientIp,
     });
-    if (response.data.status == 200) {
+    if (response.data.status === 200) {
       this.props.setAuthUser(response.data.result[0]);
     } else {
       this.setState({

@@ -2,8 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col, Card, Table } from "react-bootstrap";
-import Select from "react-select";
+import { Card } from "react-bootstrap";
 
 import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/serial";
@@ -17,33 +16,9 @@ class SupplierAvgDeliveryTime extends React.Component {
     dataum: [],
   };
   async componentDidMount() {
-    let companyId = this.props.companyId != 0 ? this.props.companyId : 1;
-    let colors = [
-      ["#1de9b6", "#1dc4e9"],
-      ["#a389d4", "#899ed4"],
-      ["#04a9f5", "#049df5"],
-      ["#f44236", "#f48f36"],
-    ];
-    const response = await axios.get(
-      this.props.apiDomain + "/overview/getSupplierAvgDeliveryTime/" + companyId
-    );
-    if (response.data.status == 200) {
-      let result = response.data.result;
-      let dataum = [];
-      for (let i = 0; i < result.length; i++) {
-        dataum[i] = {
-          supplier: result[i].supplier,
-          avgDeliveryTime: (result[i].avgDeliveryTime / 3600).toFixed(2),
-          color: colors[i % result.length],
-        };
-      }
-      this.setState({ dataum: dataum }, function() {
-        this.init();
-      });
-    }
-  }
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.companyId != this.props.companyId) {
+    this.mounted = true;
+    if (this.mounted) {
+      let companyId = this.props.companyId !== 0 ? this.props.companyId : 1;
       let colors = [
         ["#1de9b6", "#1dc4e9"],
         ["#a389d4", "#899ed4"],
@@ -53,9 +28,9 @@ class SupplierAvgDeliveryTime extends React.Component {
       const response = await axios.get(
         this.props.apiDomain +
           "/overview/getSupplierAvgDeliveryTime/" +
-          this.props.companyId
+          companyId
       );
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         let result = response.data.result;
         let dataum = [];
         for (let i = 0; i < result.length; i++) {
@@ -65,11 +40,49 @@ class SupplierAvgDeliveryTime extends React.Component {
             color: colors[i % result.length],
           };
         }
-        this.setState({ dataum: dataum }, function() {
-          this.init();
-        });
+        if (this.mounted) {
+          this.setState({ dataum: dataum }, function() {
+            this.init();
+          });
+        }
       }
     }
+  }
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.companyId !== this.props.companyId) {
+      if (this.mounted) {
+        let colors = [
+          ["#1de9b6", "#1dc4e9"],
+          ["#a389d4", "#899ed4"],
+          ["#04a9f5", "#049df5"],
+          ["#f44236", "#f48f36"],
+        ];
+        const response = await axios.get(
+          this.props.apiDomain +
+            "/overview/getSupplierAvgDeliveryTime/" +
+            this.props.companyId
+        );
+        if (response.data.status === 200) {
+          let result = response.data.result;
+          let dataum = [];
+          for (let i = 0; i < result.length; i++) {
+            dataum[i] = {
+              supplier: result[i].supplier,
+              avgDeliveryTime: (result[i].avgDeliveryTime / 3600).toFixed(2),
+              color: colors[i % result.length],
+            };
+          }
+          if (this.mounted) {
+            this.setState({ dataum: dataum }, function() {
+              this.init();
+            });
+          }
+        }
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.mounted = false;
   }
   init = () => {
     AmCharts.makeChart("supplier-avg-time", {
