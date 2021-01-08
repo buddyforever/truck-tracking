@@ -305,7 +305,7 @@ class NewLoading extends React.Component {
                           errorMessage="Product"
                           onChange={this.handleInputChange}
                         >
-                          <option value="0">Select Product</option>
+                          <option value="">Select Product</option>
                           {this.props.products
                             .filter(
                               (item) => item.companyId === this.props.companyId
@@ -317,6 +317,7 @@ class NewLoading extends React.Component {
                                 </option>
                               );
                             })}
+                          <option value="-1">Truck</option>
                         </SelectGroup>
                       </Form.Group>
                       {this.props.companyId === 1 ? (

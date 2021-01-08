@@ -7,13 +7,15 @@ const navGroup = (props) => {
   let navItems = "";
   if (props.group.children) {
     const groups = props.group.children;
-    navItems = Object.keys(groups).map((item) => {
-      item = groups[item];
-      if (
-        props.authUser.type === 0 ||
-        props.authUser.type === 1 ||
-        item.visible.includes(parseInt(props.authUser.type))
-      ) {
+    navItems = Object.keys(groups)
+      .filter(
+        (item) =>
+          props.authUser.type === 0 ||
+          props.authUser.type === 1 ||
+          groups[item].visible.includes(parseInt(props.authUser.type))
+      )
+      .map((item) => {
+        item = groups[item];
         switch (item.type) {
           case "collapse":
             return (
@@ -29,9 +31,7 @@ const navGroup = (props) => {
           default:
             return false;
         }
-      }
-      return item;
-    });
+      });
   }
 
   return (

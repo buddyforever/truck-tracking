@@ -42,6 +42,9 @@ class GridView extends Component {
     searchKey1: "",
     searchKey2: "",
   };
+  componentDidMount() {
+    this.mounted = true;
+  }
   componentWillUnmount() {
     this.mounted = false;
   }
@@ -79,7 +82,6 @@ class GridView extends Component {
             deal.startUnloadingAt = formatDateTime(new Date());
             deal.status = 3;
             deal.submitted = 1;
-            console.log(deal);
             const res = await axios.post(
               this.props.apiDomain + "/deals/update",
               deal
@@ -196,28 +198,57 @@ class GridView extends Component {
                             }
                           >
                             <div className="d-flex flex-column align-items-center m-b-20">
-                              <div
-                                data-label="100"
-                                className="radial-bar radial-bar-100 radial-bar-lg radial-bar-danger m-0"
-                                onClick={() => this.onArrivedPopupShow(deal.id)}
-                              >
-                                <img
-                                  src={
-                                    deal.productName === "Wheat"
-                                      ? wheat
-                                      : deal.productName === "Corn"
-                                      ? corn
-                                      : deal.productName === "Meat"
-                                      ? meat
-                                      : deal.productName === "Fish"
-                                      ? fish
-                                      : deal.productName === "Chicken"
-                                      ? chicken
-                                      : truck1
+                              {this.props.authUser.type === 0 ||
+                              this.props.authUser.type === 1 ? (
+                                <div
+                                  data-label="100"
+                                  className="radial-bar radial-bar-100 radial-bar-lg radial-bar-danger m-0"
+                                  onClick={() => this.onDealClick(deal.id)}
+                                >
+                                  <img
+                                    src={
+                                      deal.productName === "Wheat"
+                                        ? wheat
+                                        : deal.productName === "Corn"
+                                        ? corn
+                                        : deal.productName === "Meat"
+                                        ? meat
+                                        : deal.productName === "Fish"
+                                        ? fish
+                                        : deal.productName === "Chicken"
+                                        ? chicken
+                                        : truck1
+                                    }
+                                    alt="User-Avatar"
+                                  />
+                                </div>
+                              ) : (
+                                <div
+                                  data-label="100"
+                                  className="radial-bar radial-bar-100 radial-bar-lg radial-bar-danger m-0"
+                                  onClick={() =>
+                                    this.onArrivedPopupShow(deal.id)
                                   }
-                                  alt="User-Avatar"
-                                />
-                              </div>
+                                >
+                                  <img
+                                    src={
+                                      deal.productName === "Wheat"
+                                        ? wheat
+                                        : deal.productName === "Corn"
+                                        ? corn
+                                        : deal.productName === "Meat"
+                                        ? meat
+                                        : deal.productName === "Fish"
+                                        ? fish
+                                        : deal.productName === "Chicken"
+                                        ? chicken
+                                        : truck1
+                                    }
+                                    alt="User-Avatar"
+                                  />
+                                </div>
+                              )}
+
                               <h5 className="m-t-10">
                                 {deal.truckPlate !== ""
                                   ? deal.truckPlate

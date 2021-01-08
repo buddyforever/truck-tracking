@@ -27,13 +27,15 @@ class NavCollapse extends Component {
     let navItems = "";
     if (this.props.collapse.children) {
       const collapses = this.props.collapse.children;
-      navItems = Object.keys(collapses).map((item) => {
-        item = collapses[item];
-        if (
-          this.props.authUser.type === 0 ||
-          this.props.authUser.type === 1 ||
-          item.visible.includes(parseInt(this.props.authUser.type))
-        ) {
+      navItems = Object.keys(collapses)
+        .filter(
+          (item) =>
+            this.props.authUser.type === 0 ||
+            this.props.authUser.type === 1 ||
+            collapses[item].visible.includes(parseInt(this.props.authUser.type))
+        )
+        .map((item) => {
+          item = collapses[item];
           // check if nav item is visible for user
           switch (item.type) {
             case "collapse":
@@ -47,9 +49,7 @@ class NavCollapse extends Component {
             default:
               return false;
           }
-        }
-        return item;
-      });
+        });
     }
 
     let itemTitle = this.props.collapse.title;

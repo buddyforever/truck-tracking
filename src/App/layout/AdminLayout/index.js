@@ -54,13 +54,15 @@ class AdminLayout extends Component {
     );
     document.addEventListener("MSFullscreenChange", this.fullScreenExitHandler);
 
-    const menu = routes.map((route, index) => {
-      if (
-        route.permission_users.includes(parseInt(this.props.authUser.type)) ||
-        this.props.authUser.type === 0 ||
-        this.props.authUser.type === 1
-      ) {
+    const menu = routes
+      .filter(
         // filter accessable routes from routes.js
+        (route) =>
+          route.permission_users.includes(parseInt(this.props.authUser.type)) ||
+          this.props.authUser.type === 0 ||
+          this.props.authUser.type === 1
+      )
+      .map((route, index) => {
         return route.component ? (
           <Route
             key={index}
@@ -70,9 +72,7 @@ class AdminLayout extends Component {
             render={(props) => <route.component {...props} />}
           />
         ) : null;
-      }
-      return route;
-    });
+      });
 
     return (
       <Aux>

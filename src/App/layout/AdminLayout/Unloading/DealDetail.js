@@ -271,6 +271,7 @@ class UnloadingDealDetail extends React.Component {
                           id="truckPlate"
                           placeholder="Truck Plate"
                           readOnly
+                          required
                           value={this.state.truckPlate}
                         />
                       </Form.Group>
@@ -281,6 +282,7 @@ class UnloadingDealDetail extends React.Component {
                           id="trailerPlate"
                           placeholder="Trailer Plate"
                           readOnly
+                          required
                           value={this.state.trailerPlate}
                           autoComplete="off"
                         />
@@ -291,6 +293,10 @@ class UnloadingDealDetail extends React.Component {
                           name="secondPlate"
                           id="secondPlate"
                           placeholder="Second Plate"
+                          readOnly={
+                            this.props.authUser.type === 3 ? false : true
+                          }
+                          required
                           value={this.state.secondPlate}
                           onChange={this.handleInputChange}
                           autoComplete="off"
@@ -305,6 +311,7 @@ class UnloadingDealDetail extends React.Component {
                           id="transporterId"
                           value={this.state.transporterId}
                           readOnly
+                          required
                           disabled
                         >
                           <option value="">Transporter</option>
@@ -326,6 +333,7 @@ class UnloadingDealDetail extends React.Component {
                           id="driverName"
                           placeholder="Driver"
                           readOnly
+                          required
                           value={this.state.driverName}
                           autoComplete="off"
                         />
@@ -337,6 +345,7 @@ class UnloadingDealDetail extends React.Component {
                           id="driverPhone"
                           placeholder="Phone number"
                           readOnly
+                          required
                           className="form-control"
                           value={this.state.driverPhone}
                           onChange={this.handleInputChange}
@@ -371,8 +380,9 @@ class UnloadingDealDetail extends React.Component {
                           value={this.state.productId}
                           errorMessage="Transporter"
                           disabled
+                          required
                         >
-                          <option value="0">Select Product</option>
+                          <option value="">Select Product</option>
                           {this.props.products
                             .filter(
                               (item) => item.companyId === this.props.companyId
@@ -384,6 +394,7 @@ class UnloadingDealDetail extends React.Component {
                                 </option>
                               );
                             })}
+                          <option value="-1">Truck</option>
                         </SelectGroup>
                       </Form.Group>
                       {this.props.companyId === 1 ? (
@@ -399,6 +410,10 @@ class UnloadingDealDetail extends React.Component {
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
+                              readOnly={
+                                this.props.authUser.type === 3 ? false : true
+                              }
+                              required
                               onChange={(e) => {
                                 this.handleInputChange(e);
                                 this.setState({
@@ -419,6 +434,10 @@ class UnloadingDealDetail extends React.Component {
                               name="secondWeight"
                               id="secondWeight"
                               placeholder="Second Weight"
+                              readOnly={
+                                this.props.authUser.type === 3 ? false : true
+                              }
+                              required
                               value={this.state.secondWeight}
                               onChange={(e) => {
                                 this.handleInputChange(e);
@@ -460,6 +479,7 @@ class UnloadingDealDetail extends React.Component {
                             name="quantity"
                             id="quantity"
                             readOnly
+                            required
                             placeholder="Quantity"
                             value={this.state.quantity}
                             onChange={this.handleInputChange}
@@ -481,6 +501,7 @@ class UnloadingDealDetail extends React.Component {
                               placeholder="Net Weight"
                               value={this.state.netWeight}
                               readOnly
+                              required
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -494,6 +515,10 @@ class UnloadingDealDetail extends React.Component {
                               name="newNetWeight"
                               id="newNetWeight"
                               placeholder="New Net Weight"
+                              readOnly={
+                                this.props.authUser.type === 3 ? false : true
+                              }
+                              required
                               value={this.state.newNetWeight}
                               onChange={this.handleInputChange}
                               autoComplete="off"
@@ -511,6 +536,10 @@ class UnloadingDealDetail extends React.Component {
                             name="newQuantity"
                             id="newQuantity"
                             placeholder="New Quantity"
+                            readOnly={
+                              this.props.authUser.type === 3 ? false : true
+                            }
+                            required
                             value={this.state.newQuantity}
                             onChange={this.handleInputChange}
                             autoComplete="off"
@@ -527,6 +556,7 @@ class UnloadingDealDetail extends React.Component {
                           value={this.state.alertTime}
                           errorMessage="Transporter"
                           disabled
+                          required
                         >
                           <option>Alert Time</option>
                           <option value="60">An hour</option>
@@ -544,6 +574,7 @@ class UnloadingDealDetail extends React.Component {
                           name="finishUnloadingAt"
                           id="finishUnloadingAt"
                           readOnly
+                          required
                           placeholder="Exit Date and Time"
                           value={this.state.finishUnloadingAt}
                           autoComplete="off"
@@ -556,6 +587,8 @@ class UnloadingDealDetail extends React.Component {
                         <NumberFormat
                           className="form-control"
                           placeholder="No de Bordereau"
+                          readOnly
+                          required
                           id="borderNumber"
                           name="borderNumber"
                           value={this.state.borderNumber}
@@ -565,11 +598,13 @@ class UnloadingDealDetail extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="borderNumber">
-                          Ben de Livraison
+                          Bon de Livraison
                         </Form.Label>
                         <NumberFormat
                           className="form-control"
-                          placeholder="Ben de Livraison"
+                          placeholder="Bon de Livraison"
+                          readOnly
+                          required
                           id="receiptNumber"
                           name="receiptNumber"
                           value={this.state.receiptNumber}
@@ -585,6 +620,7 @@ class UnloadingDealDetail extends React.Component {
                           placeholder="Description"
                           multiline
                           readOnly
+                          required
                           value={this.state.description}
                           rows="3"
                           autoComplete="off"
@@ -596,6 +632,10 @@ class UnloadingDealDetail extends React.Component {
                           name="newDescription"
                           id="newDescription"
                           placeholder="New Description"
+                          readOnly={
+                            this.props.authUser.type === 3 ? false : true
+                          }
+                          required
                           multiline
                           value={this.state.newDescription}
                           onChange={this.handleInputChange}
@@ -605,18 +645,22 @@ class UnloadingDealDetail extends React.Component {
                       </Form.Group>
                     </Col>
 
-                    <Form.Group as={Col} sm={12} className="mt-3">
-                      <Button
-                        type="button"
-                        variant="primary"
-                        onClick={this.onSaveForm}
-                      >
-                        Save
-                      </Button>
-                      <Button type="submit" variant="danger">
-                        Submit & Close
-                      </Button>
-                    </Form.Group>
+                    {this.state.id && this.props.authUser.type === 3 ? (
+                      <Form.Group as={Col} sm={12} className="mt-3">
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={this.onSaveForm}
+                        >
+                          Save
+                        </Button>
+                        <Button type="submit" variant="danger">
+                          Submit & Close
+                        </Button>
+                      </Form.Group>
+                    ) : (
+                      <></>
+                    )}
                   </Form.Row>
                 </ValidationForm>
               </Card.Body>

@@ -270,6 +270,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           placeholder="Truck Plate"
                           value={this.state.truckPlate}
                           onChange={this.handleInputChange}
@@ -289,6 +290,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           placeholder="Trailer Plate"
                           value={this.state.trailerPlate}
                           onChange={this.handleInputChange}
@@ -313,6 +315,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           value={this.state.transporterId}
                           errorMessage="Transporter"
                           onChange={this.handleInputChange}
@@ -340,6 +343,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           placeholder="Driver Name"
                           value={this.state.driverName}
                           onChange={this.handleInputChange}
@@ -357,6 +361,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           placeholder="Phone number"
                           className="form-control"
                           value={this.state.driverPhone}
@@ -397,8 +402,9 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                         >
-                          <option value="0">Select Product</option>
+                          <option value="">Select Product</option>
                           {this.props.products
                             .filter(
                               (item) => item.companyId === this.props.companyId
@@ -410,6 +416,7 @@ class LoadingDealDetail extends React.Component {
                                 </option>
                               );
                             })}
+                          <option value="-1">Truck</option>
                         </SelectGroup>
                       </Form.Group>
                       {this.props.companyId === 1 ? (
@@ -428,6 +435,7 @@ class LoadingDealDetail extends React.Component {
                                   ? false
                                   : true
                               }
+                              required
                               id="firstWeight"
                               placeholder="First Weight"
                               value={this.state.firstWeight}
@@ -455,6 +463,7 @@ class LoadingDealDetail extends React.Component {
                                   ? false
                                   : true
                               }
+                              required
                               id="secondWeight"
                               placeholder="Second Weight"
                               value={this.state.secondWeight}
@@ -477,6 +486,7 @@ class LoadingDealDetail extends React.Component {
                               thousandSeparator={true}
                               name="netWeight"
                               readOnly
+                              required
                               id="netWeight"
                               placeholder="Net Weight"
                               value={this.state.netWeight}
@@ -518,6 +528,7 @@ class LoadingDealDetail extends React.Component {
                                 ? false
                                 : true
                             }
+                            required
                             id="quantity"
                             placeholder="Quantity"
                             value={this.state.quantity}
@@ -546,8 +557,9 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                         >
-                          <option value="0">Select Time</option>
+                          <option value="">Select Time</option>
                           <option value="60">An hour</option>
                           <option value="120">2 hours</option>
                           <option value="240">4 hours</option>
@@ -564,6 +576,7 @@ class LoadingDealDetail extends React.Component {
                           id="finishLoadingAt"
                           placeholder="Exit Date and Time"
                           readOnly
+                          required
                           value={this.state.finishLoadingAt}
                           autoComplete="off"
                         />
@@ -581,6 +594,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           id="borderNumber"
                           name="borderNumber"
                           value={this.state.borderNumber}
@@ -590,17 +604,18 @@ class LoadingDealDetail extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="borderNumber">
-                          Ben de Livraison
+                          Bon de Livraison
                         </Form.Label>
                         <NumberFormat
                           className="form-control"
-                          placeholder="Ben de Livraison"
+                          placeholder="Bon de Livraison"
                           readOnly={
                             this.state.status === 1 &&
                             this.props.authUser.type === 2
                               ? false
                               : true
                           }
+                          required
                           id="receiptNumber"
                           name="receiptNumber"
                           value={this.state.receiptNumber}
@@ -619,6 +634,7 @@ class LoadingDealDetail extends React.Component {
                               ? false
                               : true
                           }
+                          required
                           placeholder="Description"
                           multiline
                           value={this.state.description}
