@@ -10,7 +10,6 @@ import "amcharts3/amcharts/themes/light";
 import AmCharts from "@amcharts/amcharts3-react";
 
 import Aux from "../../../../hoc/_Aux";
-import { isObject } from "highcharts";
 
 class SupplierLoss extends React.Component {
   state = {

@@ -1,6 +1,9 @@
 import React from "react";
-import { NavLink, Redirect, withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import { ValidationForm, TextInput } from "react-bootstrap4-form-validation";
 import { connect } from "react-redux";
+import validator from "validator";
 import publicIp from "public-ip";
 
 import "./../../../../assets/scss/style.scss";
@@ -25,7 +28,13 @@ class SignIn extends React.Component {
       password: e.target.value,
     });
   };
-  onSignInPost = async () => {
+  onKeyPressed = (e) => {
+    if (e.keyCode === 13) {
+      this.handleSubmit(e);
+    }
+  };
+  handleSubmit = async (e, formData, inputs) => {
+    e.preventDefault();
     const clientIp = await publicIp.v4();
     const response = await axios.post(this.props.apiDomain + "/auth/signin", {
       email: this.state.email,
@@ -40,6 +49,9 @@ class SignIn extends React.Component {
       });
     }
   };
+  handleErrorSubmit = (e, formData, errorInputs) => {
+    //console.log(errorInputs);
+  };
   render() {
     return !this.props.authUser ? (
       <Aux>
@@ -53,61 +65,54 @@ class SignIn extends React.Component {
               <span className="r" />
             </div>
             <div className="card">
-              <div className="card-body text-center">
-                <div className="mb-4">
-                  <i className="feather icon-unlock auth-icon" />
-                </div>
-                <h3 className="mb-4">Login</h3>
-                <div className="input-group mb-3">
-                  <p className="text-c-red">{this.state.msg}</p>
-                </div>
-
-                <div className="input-group mb-3">
-                  <input
-                    type="email"
-                    className="form-control"
-                    placeholder="Email"
-                    value={this.state.email}
-                    onChange={this.onEmailChange}
-                    required
-                  />
-                </div>
-                <div className="input-group mb-4">
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="password"
-                    value={this.state.password}
-                    onChange={this.onPasswordChange}
-                    required
-                  />
-                </div>
-                <div className="form-group text-left">
-                  <div className="checkbox checkbox-fill d-inline">
-                    <input
-                      type="checkbox"
-                      name="checkbox-fill-1"
-                      id="checkbox-fill-a1"
-                    />
-                    <label htmlFor="checkbox-fill-a1" className="cr">
-                      Save credentials
-                    </label>
+              <div className="card-body">
+                <div className="card-body-top text-center">
+                  <div className="mb-4">
+                    <i className="feather icon-unlock auth-icon" />
+                  </div>
+                  <h3 className="mb-4">Login</h3>
+                  <div className="input-group mb-3">
+                    <p className="text-c-red">{this.state.msg}</p>
                   </div>
                 </div>
-                <button
-                  className="btn btn-primary shadow-2 mb-4"
-                  onClick={this.onSignInPost}
+                <ValidationForm
+                  onSubmit={(e) => this.handleSubmit(e)}
+                  onErrorSubmit={this.handleErrorSubmit}
                 >
-                  Login
-                </button>
-                <p className="mb-2 text-muted">
-                  Forgot password?{" "}
-                  <NavLink to="/auth/reset-password-1">Reset</NavLink>
-                </p>
-                <p className="mb-0 text-muted">
-                  Don’t have an account?{" "}
-                  <NavLink to="/auth/signup-1">Signup</NavLink>
-                </p>
+                  <Form.Row>
+                    <Form.Group as={Col} md="12">
+                      <TextInput
+                        required
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Email"
+                        validator={validator.isEmail}
+                        errorMessage={{
+                          validator: "Please enter a valid email",
+                        }}
+                        value={this.state.email}
+                        onChange={this.onEmailChange}
+                        onKeyDown={this.onKeyPressed}
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} md="12">
+                      <TextInput
+                        required
+                        type="password"
+                        name="password"
+                        className="form-control"
+                        placeholder="Password"
+                        value={this.state.password}
+                        onChange={this.onPasswordChange}
+                        onKeyDown={this.onKeyPressed}
+                      />
+                    </Form.Group>
+                    <Form.Group className="text-center mt-4" as={Col} md="12">
+                      <Button type="submit">Login</Button>
+                    </Form.Group>
+                  </Form.Row>
+                </ValidationForm>
               </div>
             </div>
           </div>
