@@ -8,6 +8,7 @@ import ChatList from "./ChatList";
 import ThemeToggle from "../NavRight/ThemeToggle";
 import Aux from "../../../../../hoc/_Aux";
 import * as actionTypes from "../../../../../store/actions";
+import DEMO from "../../../../../store/constant";
 
 import Avatar2 from "../../../../../assets/images/user/avatar-2.jpg";
 class NavRight extends Component {
@@ -92,7 +93,7 @@ class NavRight extends Component {
                       this.props.authUser.lastname}
                   </span>
                   <a
-                    href="javascript:void(0)"
+                    href={DEMO.BLANK_LINK}
                     className="dud-logout"
                     title="Logout"
                     onClick={this.onSignOutPost}
@@ -103,7 +104,7 @@ class NavRight extends Component {
                 <ul className="pro-body">
                   <li>
                     <a
-                      href="javascript:void(0)"
+                      href={DEMO.BLANK_LINK}
                       className="dropdown-item"
                       onClick={this.onSignOutPost}
                     >

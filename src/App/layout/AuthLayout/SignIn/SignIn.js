@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, withRouter } from "react-router-dom";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Col } from "react-bootstrap";
 import { ValidationForm, TextInput } from "react-bootstrap4-form-validation";
 import { connect } from "react-redux";
 import validator from "validator";

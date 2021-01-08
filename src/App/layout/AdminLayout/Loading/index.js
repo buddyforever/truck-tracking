@@ -61,7 +61,7 @@ class Loading extends Component {
 
   render() {
     let companyOptions = [{ value: 0, label: "All" }];
-    this.props.companies.map((comp) => {
+    this.props.companies.forEach((comp) => {
       companyOptions.push({
         value: comp.id,
         label: comp.companyName,

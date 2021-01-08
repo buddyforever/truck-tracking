@@ -48,6 +48,7 @@ class NavCollapse extends Component {
               return false;
           }
         }
+        return item;
       });
     }
 

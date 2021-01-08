@@ -30,6 +30,7 @@ const navGroup = (props) => {
             return false;
         }
       }
+      return item;
     });
   }
 

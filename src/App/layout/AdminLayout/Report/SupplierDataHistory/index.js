@@ -29,7 +29,7 @@ class SupplierDataHistory extends React.Component {
   };
   render() {
     let companyOptions = [];
-    this.props.companies.map((comp) => {
+    this.props.companies.forEach((comp) => {
       companyOptions.push({
         value: comp.id,
         label: comp.companyName,

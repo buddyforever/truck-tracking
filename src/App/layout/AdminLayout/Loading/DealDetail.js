@@ -653,9 +653,7 @@ class LoadingDealDetail extends React.Component {
                           <></>
                         )
                       ) : (
-                        <Button type="submit" variant="primary">
-                          Create
-                        </Button>
+                        <></>
                       )}
                     </Form.Group>
                   </Form.Row>

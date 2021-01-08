@@ -71,6 +71,7 @@ class AdminLayout extends Component {
           />
         ) : null;
       }
+      return route;
     });
 
     return (
