@@ -83,6 +83,8 @@ class UnloadingDealDetail extends React.Component {
     firstWeight: 0,
     secondWeight: 0,
     netWeight: 0,
+    newFirstWeight: 0,
+    newSecondWeight: 0,
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
@@ -121,8 +123,6 @@ class UnloadingDealDetail extends React.Component {
           if (this.mounted) {
             this.setState({
               ...response3.data.result[0],
-              firstWeight: response3.data.result[0].secondWeight,
-              secondWeight: response3.data.result[0].firstWeight,
               startLoadingAt: formatDateTime(
                 response3.data.result[0].startLoadingAt
               ),
@@ -324,8 +324,6 @@ class UnloadingDealDetail extends React.Component {
                           })}
                         </SelectGroup>
                       </Form.Group>
-                    </Col>
-                    <Col md="4">
                       <Form.Group>
                         <Form.Label htmlFor="driverName">Driver</Form.Label>
                         <TextInput
@@ -338,6 +336,8 @@ class UnloadingDealDetail extends React.Component {
                           autoComplete="off"
                         />
                       </Form.Group>
+                    </Col>
+                    <Col md="4">
                       <Form.Group>
                         <Form.Label htmlFor="driverPhone">Phone</Form.Label>
                         <MaskWithValidation
@@ -403,105 +403,88 @@ class UnloadingDealDetail extends React.Component {
                             <Form.Label htmlFor="firstWeight">
                               First Weight
                             </Form.Label>
-                            <NumberFormat
+                            <TextInput
                               className="form-control"
-                              thousandSeparator={true}
                               name="firstWeight"
                               id="firstWeight"
+                              readOnly
                               placeholder="First Weight"
                               value={this.state.firstWeight}
-                              readOnly={
-                                this.props.authUser.type === 3 ? false : true
-                              }
-                              required
-                              onChange={(e) => {
-                                this.handleInputChange(e);
-                                this.setState({
-                                  newNetWeight:
-                                    e.target.value - this.state.secondWeight,
-                                });
-                              }}
-                              autoComplete="off"
                             />
                           </Form.Group>
                           <Form.Group>
                             <Form.Label htmlFor="secondWeight">
                               Second Weight
                             </Form.Label>
+                            <TextInput
+                              className="form-control"
+                              name="secondWeight"
+                              id="secondWeight"
+                              readOnly
+                              placeholder="Second Weight"
+                              value={this.state.secondWeight}
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="netWeight">
+                              Net Weight
+                            </Form.Label>
+                            <TextInput
+                              className="form-control"
+                              name="netWeight"
+                              id="netWeight"
+                              readOnly
+                              placeholder="Net Weight"
+                              value={this.state.netWeight}
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="newFirstWeight">
+                              New First Weight
+                            </Form.Label>
                             <NumberFormat
                               className="form-control"
                               thousandSeparator={true}
-                              name="secondWeight"
-                              id="secondWeight"
-                              placeholder="Second Weight"
+                              name="newFirstWeight"
+                              id="newFirstWeight"
+                              placeholder="New First Weight"
                               readOnly={
                                 this.props.authUser.type === 3 ? false : true
                               }
                               required
-                              value={this.state.secondWeight}
+                              value={this.state.newFirstWeight}
                               onChange={(e) => {
-                                this.handleInputChange(e);
                                 this.setState({
+                                  newFirstWeight: e.target.value,
                                   newNetWeight:
-                                    this.state.firstWeight - e.target.value,
+                                    e.target.value - this.state.newSecondWeight,
                                 });
                               }}
                               autoComplete="off"
                             />
                           </Form.Group>
-                        </>
-                      ) : (
-                        <>
-                          <TextInput
-                            type="hidden"
-                            name="firstWeight"
-                            value={this.state.firstWeight}
-                          />
-                          <TextInput
-                            type="hidden"
-                            name="secondWeight"
-                            value={this.state.secondWeight}
-                          />
-                        </>
-                      )}
-                      {this.props.companyId === 1 ? (
-                        <TextInput
-                          type="hidden"
-                          name="quantity"
-                          value={this.state.quantity}
-                        />
-                      ) : (
-                        <Form.Group>
-                          <Form.Label htmlFor="quantity">Quantity</Form.Label>
-                          <NumberFormat
-                            className="form-control"
-                            thousandSeparator={true}
-                            name="quantity"
-                            id="quantity"
-                            readOnly
-                            required
-                            placeholder="Quantity"
-                            value={this.state.quantity}
-                            onChange={this.handleInputChange}
-                            autoComplete="off"
-                          />
-                        </Form.Group>
-                      )}
-                      {this.props.companyId === 1 ? (
-                        <>
                           <Form.Group>
-                            <Form.Label htmlFor="netWeight">
-                              Net Weight
+                            <Form.Label htmlFor="newSecondWeight">
+                              New Second Weight
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
                               thousandSeparator={true}
-                              name="netWeight"
-                              id="netWeight"
-                              placeholder="Net Weight"
-                              value={this.state.netWeight}
-                              readOnly
+                              name="newSecondWeight"
+                              id="newSecondWeight"
+                              placeholder="New Second Weight"
+                              readOnly={
+                                this.props.authUser.type === 3 ? false : true
+                              }
                               required
+                              value={this.state.newSecondWeight}
+                              onChange={(e) => {
+                                this.setState({
+                                  newSecondWeight: e.target.value,
+                                  newNetWeight:
+                                    this.state.newFirstWeight - e.target.value,
+                                });
+                              }}
                               autoComplete="off"
                             />
                           </Form.Group>
@@ -526,25 +509,75 @@ class UnloadingDealDetail extends React.Component {
                           </Form.Group>
                         </>
                       ) : (
-                        <Form.Group>
-                          <Form.Label htmlFor="newQuantity">
-                            New Quantity
-                          </Form.Label>
-                          <NumberFormat
-                            className="form-control"
-                            thousandSeparator={true}
-                            name="newQuantity"
-                            id="newQuantity"
-                            placeholder="New Quantity"
-                            readOnly={
-                              this.props.authUser.type === 3 ? false : true
-                            }
-                            required
-                            value={this.state.newQuantity}
-                            onChange={this.handleInputChange}
-                            autoComplete="off"
+                        <>
+                          <TextInput
+                            type="hidden"
+                            name="firstWeight"
+                            value={this.state.firstWeight}
                           />
-                        </Form.Group>
+                          <TextInput
+                            type="hidden"
+                            name="secondWeight"
+                            value={this.state.secondWeight}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="netWeight"
+                            value={this.state.netWeight}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="newNetWeight"
+                            value={this.state.newNetWeight}
+                          />
+                        </>
+                      )}
+                      {this.props.companyId === 1 ? (
+                        <>
+                          <TextInput
+                            type="hidden"
+                            name="quantity"
+                            value={this.state.quantity}
+                          />
+                          <TextInput
+                            type="hidden"
+                            name="newQuantity"
+                            value={this.state.newQuantity}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Form.Group>
+                            <Form.Label htmlFor="quantity">Quantity</Form.Label>
+                            <TextInput
+                              className="form-control"
+                              name="quantity"
+                              id="quantity"
+                              readOnly
+                              placeholder="Quantity"
+                              value={this.state.quantity}
+                            />
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="newQuantity">
+                              New Quantity
+                            </Form.Label>
+                            <NumberFormat
+                              className="form-control"
+                              thousandSeparator={true}
+                              name="newQuantity"
+                              id="newQuantity"
+                              placeholder="New Quantity"
+                              readOnly={
+                                this.props.authUser.type === 3 ? false : true
+                              }
+                              required
+                              value={this.state.newQuantity}
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
+                        </>
                       )}
                     </Col>
                     <Col md="4">

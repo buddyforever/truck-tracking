@@ -83,6 +83,8 @@ class LoadingDealDetail extends React.Component {
     firstWeight: 0,
     secondWeight: 0,
     netWeight: 0,
+    newFirstWeight: 0,
+    newSecondWeight: 0,
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
@@ -443,7 +445,7 @@ class LoadingDealDetail extends React.Component {
                                 this.handleInputChange(e);
                                 this.setState({
                                   netWeight:
-                                    e.target.value - this.state.secondWeight,
+                                    this.state.secondWeight - e.target.value,
                                 });
                               }}
                               autoComplete="off"
@@ -471,7 +473,7 @@ class LoadingDealDetail extends React.Component {
                                 this.handleInputChange(e);
                                 this.setState({
                                   netWeight:
-                                    this.state.firstWeight - e.target.value,
+                                    e.target.value - this.state.firstWeight,
                                 });
                               }}
                               autoComplete="off"
@@ -507,8 +509,28 @@ class LoadingDealDetail extends React.Component {
                             name="secondWeight"
                             value={this.state.secondWeight}
                           />
+                          <TextInput
+                            type="hidden"
+                            name="netWeight"
+                            value={this.state.netWeight}
+                          />
                         </>
                       )}
+                      <TextInput
+                        type="hidden"
+                        name="newFirstWeight"
+                        value={this.state.newFirstWeight}
+                      />
+                      <TextInput
+                        type="hidden"
+                        name="newSecondWeight"
+                        value={this.state.newSecondWeight}
+                      />
+                      <TextInput
+                        type="hidden"
+                        name="newNetWeight"
+                        value={this.state.newNetWeight}
+                      />
                       {this.props.companyId === 1 ? (
                         <TextInput
                           type="hidden"

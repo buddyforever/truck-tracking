@@ -62,6 +62,8 @@ class NewLoading extends React.Component {
     firstWeight: 0,
     secondWeight: 0,
     netWeight: 0,
+    newFirstWeight: 0,
+    newSecondWeight: 0,
     newNetWeight: 0,
     quantity: 0,
     newQuantity: 0,
@@ -362,6 +364,20 @@ class NewLoading extends React.Component {
                               autoComplete="off"
                             />
                           </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor="netWeight">
+                              Net Weight
+                            </Form.Label>
+                            <TextInput
+                              name="netWeight"
+                              id="netWeight"
+                              placeholder="Net Weight"
+                              readOnly
+                              value={this.state.netWeight}
+                              onChange={this.handleInputChange}
+                              autoComplete="off"
+                            />
+                          </Form.Group>
                         </>
                       ) : (
                         <>
@@ -382,6 +398,21 @@ class NewLoading extends React.Component {
                           />
                         </>
                       )}
+                      <TextInput
+                        type="hidden"
+                        name="newFirstWeight"
+                        value={this.state.newFirstWeight}
+                      />
+                      <TextInput
+                        type="hidden"
+                        name="newSecondWeight"
+                        value={this.state.newSecondWeight}
+                      />
+                      <TextInput
+                        type="hidden"
+                        name="newNetWeight"
+                        value={this.state.newNetWeight}
+                      />
                       {this.props.companyId === 1 ? (
                         <TextInput
                           type="hidden"
@@ -403,11 +434,6 @@ class NewLoading extends React.Component {
                           />
                         </Form.Group>
                       )}
-                      <TextInput
-                        type="hidden"
-                        name="netWeight"
-                        value={this.state.netWeight}
-                      />
                       <TextInput
                         type="hidden"
                         name="newQuantity"
