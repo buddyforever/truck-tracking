@@ -109,7 +109,6 @@ class TableView extends Component {
           deal.startUnloadingAt = formatDateTime(new Date());
           deal.status = 3;
           deal.submitted = 1;
-          console.log(deal);
           const res = await axios.post(
             this.props.apiDomain + "/deals/update",
             deal
