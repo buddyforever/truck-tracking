@@ -340,35 +340,22 @@ class UnloadingDealDetail extends React.Component {
                     <Col md="4">
                       <Form.Group>
                         <Form.Label htmlFor="driverPhone">Phone</Form.Label>
-                        <MaskWithValidation
+                        <NumberFormat
                           name="driverPhone"
                           id="driverPhone"
                           placeholder="Phone number"
-                          readOnly
+                          readOnly={
+                            this.state.status === 1 &&
+                            this.props.authUser.type === 2
+                              ? false
+                              : true
+                          }
                           required
                           className="form-control"
                           value={this.state.driverPhone}
-                          onChange={this.handleInputChange}
-                          successMessage="Looks good!"
-                          errorMessage={{
-                            validator: "Please enter (123) 456-7890",
-                          }}
-                          mask={[
-                            "(",
-                            /[1-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            ")",
-                            " ",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            "-",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                          ]}
+                          onChange={this.handlePhoneInputChange}
+                          prefix="+243 "
+                          format="+243 ### ### ###"
                           autoComplete="off"
                         />
                       </Form.Group>

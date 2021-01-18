@@ -4,11 +4,9 @@ import { withRouter } from "react-router-dom";
 import axios from "axios";
 import {
   ValidationForm,
-  BaseFormControl,
   TextInput,
   SelectGroup,
 } from "react-bootstrap4-form-validation";
-import MaskedInput from "react-text-mask";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import InputMask from "react-input-mask";
@@ -17,36 +15,6 @@ import PNotify from "pnotify/dist/es/PNotify";
 
 import Aux from "../../../../hoc/_Aux";
 import * as actionTypes from "../../../../store/actions";
-
-class MaskWithValidation extends BaseFormControl {
-  constructor(props) {
-    super(props);
-    this.inputRef = React.createRef();
-  }
-
-  getInputRef() {
-    return this.inputRef.current.inputElement;
-  }
-
-  handleInputChange = (e) => {
-    this.checkError();
-    if (this.props.onChange) this.props.onChange(e);
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        <MaskedInput
-          ref={this.inputRef}
-          {...this.filterProps()}
-          onChange={this.handleInputChange}
-        />
-        {this.displayErrorMessage()}
-        {this.displaySuccessMessage()}
-      </React.Fragment>
-    );
-  }
-}
 
 class NewLoading extends React.Component {
   state = {
@@ -267,33 +235,15 @@ class NewLoading extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="driverPhone">Phone</Form.Label>
-                        <MaskWithValidation
+                        <NumberFormat
                           name="driverPhone"
                           id="driverPhone"
                           placeholder="Phone number"
                           className="form-control"
                           value={this.state.driverPhone}
                           onChange={this.handleInputChange}
-                          successMessage="Looks good!"
-                          errorMessage={{
-                            validator: "Please enter (123) 456-7890",
-                          }}
-                          mask={[
-                            "(",
-                            /[1-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            ")",
-                            " ",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            "-",
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                            /[0-9]/,
-                          ]}
+                          prefix="+243 "
+                          format="+243 ### ### ###"
                           autoComplete="off"
                         />
                       </Form.Group>
