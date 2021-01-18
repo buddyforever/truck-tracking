@@ -4,11 +4,9 @@ import { withRouter } from "react-router-dom";
 import axios from "axios";
 import {
   ValidationForm,
-  BaseFormControl,
   TextInput,
   SelectGroup,
 } from "react-bootstrap4-form-validation";
-import MaskedInput from "react-text-mask";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 import NumberFormat from "react-number-format";
@@ -38,36 +36,6 @@ const formatDateTime = function(timestamp) {
   }
   return dformat;
 };
-class MaskWithValidation extends BaseFormControl {
-  constructor(props) {
-    super(props);
-    this.inputRef = React.createRef();
-  }
-
-  getInputRef() {
-    return this.inputRef.current.inputElement;
-  }
-
-  handleInputChange = (e) => {
-    this.checkError();
-    if (this.props.onChange) this.props.onChange(e);
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        <MaskedInput
-          ref={this.inputRef}
-          {...this.filterProps()}
-          onChange={this.handleInputChange}
-        />
-        {this.displayErrorMessage()}
-        {this.displaySuccessMessage()}
-      </React.Fragment>
-    );
-  }
-}
-
 class UnloadingDealDetail extends React.Component {
   state = {
     id: 0,
