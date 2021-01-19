@@ -4,49 +4,18 @@ import { withRouter } from "react-router-dom";
 import axios from "axios";
 import {
   ValidationForm,
-  BaseFormControl,
   TextInput,
   SelectGroup,
   Checkbox,
 } from "react-bootstrap4-form-validation";
 import PNotify from "pnotify/dist/es/PNotify";
-import MaskedInput from "react-text-mask";
+import NumberFormat from "react-number-format";
 import validator from "validator";
 import windowSize from "react-window-size";
 import { connect } from "react-redux";
 
 import Aux from "../../../../hoc/_Aux";
 import * as actionTypes from "../../../../store/actions";
-
-class MaskWithValidation extends BaseFormControl {
-  constructor(props) {
-    super(props);
-    this.inputRef = React.createRef();
-  }
-  getInputRef() {
-    return this.inputRef.current.inputElement;
-  }
-
-  handleInputChange = (e) => {
-    this.checkError();
-    if (this.props.onChange) this.props.onChange(e);
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        <MaskedInput
-          ref={this.inputRef}
-          {...this.filterProps()}
-          onChange={this.handleInputChange}
-        />
-        {this.displayErrorMessage()}
-        {this.displaySuccessMessage()}
-      </React.Fragment>
-    );
-  }
-}
-
 class AddUser extends React.Component {
   state = {
     firstname: "",
@@ -171,34 +140,15 @@ class AddUser extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="6">
                       <Form.Label htmlFor="phone">Phone</Form.Label>
-                      <MaskWithValidation
+                      <NumberFormat
                         name="phone"
                         id="phone"
-                        placeholder="Contact Number"
+                        placeholder="Phone number"
                         className="form-control"
-                        required
                         value={this.state.phone}
                         onChange={this.handleInputChange}
-                        successMessage="Looks good!"
-                        errorMessage={{
-                          validator: "Please enter (123) 456-7890",
-                        }}
-                        mask={[
-                          "(",
-                          /[1-9]/,
-                          /[0-9]/,
-                          /[0-9]/,
-                          ")",
-                          " ",
-                          /[0-9]/,
-                          /[0-9]/,
-                          /[0-9]/,
-                          "-",
-                          /[0-9]/,
-                          /[0-9]/,
-                          /[0-9]/,
-                          /[0-9]/,
-                        ]}
+                        prefix="+243 "
+                        format="+243 ### ### ###"
                         autoComplete="off"
                       />
                     </Form.Group>

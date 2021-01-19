@@ -37,6 +37,7 @@ class Users extends React.Component {
     this.mounted = true;
     if (this.mounted) {
       const response = await axios.get(this.props.apiDomain + `/users/get`);
+      console.log(response);
       if (response.data.status === 200) {
         this.props.setUsers(response.data.result);
         this.initTable();
