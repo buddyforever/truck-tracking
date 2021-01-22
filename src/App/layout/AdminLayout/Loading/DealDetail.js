@@ -379,7 +379,6 @@ class LoadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="firstWeight"
                               readOnly={
                                 this.state.status === 1 &&
@@ -407,7 +406,6 @@ class LoadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="secondWeight"
                               readOnly={
                                 this.state.status === 1 &&
@@ -435,7 +433,6 @@ class LoadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="netWeight"
                               readOnly
                               required
@@ -492,7 +489,6 @@ class LoadingDealDetail extends React.Component {
                           <Form.Label htmlFor="quantity">Quantity</Form.Label>
                           <NumberFormat
                             className="form-control"
-                            thousandSeparator={true}
                             name="quantity"
                             readOnly={
                               this.state.status === 1 &&

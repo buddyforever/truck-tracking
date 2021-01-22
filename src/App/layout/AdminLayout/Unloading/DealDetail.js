@@ -399,7 +399,6 @@ class UnloadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="newFirstWeight"
                               id="newFirstWeight"
                               placeholder="New First Weight"
@@ -424,7 +423,6 @@ class UnloadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="newSecondWeight"
                               id="newSecondWeight"
                               placeholder="New Second Weight"
@@ -449,7 +447,6 @@ class UnloadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="newNetWeight"
                               id="newNetWeight"
                               placeholder="New Net Weight"
@@ -519,7 +516,6 @@ class UnloadingDealDetail extends React.Component {
                             </Form.Label>
                             <NumberFormat
                               className="form-control"
-                              thousandSeparator={true}
                               name="newQuantity"
                               id="newQuantity"
                               placeholder="New Quantity"
