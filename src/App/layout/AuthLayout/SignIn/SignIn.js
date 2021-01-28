@@ -17,6 +17,7 @@ class SignIn extends React.Component {
     email: "",
     password: "",
     msg: "",
+    loading: false,
   };
   onEmailChange = (e) => {
     this.setState({
@@ -35,12 +36,14 @@ class SignIn extends React.Component {
   };
   handleSubmit = async (e, formData, inputs) => {
     e.preventDefault();
+    this.setState({ loading: true });
     const clientIp = await publicIp.v4();
     const response = await axios.post(this.props.apiDomain + "/auth/signin", {
       email: this.state.email,
       password: this.state.password,
       ip_address: clientIp,
     });
+    this.setState({ loading: false });
     if (response.data.status === 200) {
       this.props.setAuthUser(response.data.result[0]);
     } else {
@@ -109,7 +112,17 @@ class SignIn extends React.Component {
                       />
                     </Form.Group>
                     <Form.Group className="text-center mt-4" as={Col} md="12">
-                      <Button type="submit">Login</Button>
+                      {this.state.loading ? (
+                        <Button disabled>
+                          <span
+                            className="spinner-border spinner-border-sm mr-1"
+                            role="status"
+                          />
+                          Login
+                        </Button>
+                      ) : (
+                        <Button type="submit">Login</Button>
+                      )}
                     </Form.Group>
                   </Form.Row>
                 </ValidationForm>
