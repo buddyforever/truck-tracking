@@ -75,12 +75,12 @@ class TableView extends Component {
     });
     $("#pending-deals-table").DataTable({
       data: loading_deals,
-      order: [[1, "desc"]],
+      order: [[1, "asc"]],
       columns: [
         {
           data: "id",
-          render: function(data, type, row) {
-            return data;
+          render: function(data, type, row, meta) {
+            return meta.row + 1;
           },
         },
         {
@@ -157,7 +157,7 @@ class TableView extends Component {
     });
     $("#onroute-deals-table").DataTable({
       data: onroute_deals,
-      order: [[1, "desc"]],
+      order: [[1, "asc"]],
       columns: [
         {
           data: "id",
