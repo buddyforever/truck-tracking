@@ -424,11 +424,11 @@ class NewLoading extends React.Component {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label htmlFor="borderNumber">
-                          Ben de Livraison
+                          Bon de Livraison
                         </Form.Label>
                         <NumberFormat
                           className="form-control"
-                          placeholder="Ben de Livraison"
+                          placeholder="Bon de Livraison"
                           id="receiptNumber"
                           name="receiptNumber"
                           value={this.state.receiptNumber}
