@@ -321,7 +321,7 @@ class UnloadingDealDetail extends React.Component {
                           required
                           className="form-control"
                           value={this.state.driverPhone}
-                          onChange={this.handlePhoneInputChange}
+                          onChange={this.handleInputChange}
                           prefix="+243 "
                           format="+243 ### ### ###"
                           autoComplete="off"

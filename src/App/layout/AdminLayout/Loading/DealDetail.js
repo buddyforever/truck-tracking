@@ -335,7 +335,7 @@ class LoadingDealDetail extends React.Component {
                           required
                           className="form-control"
                           value={this.state.driverPhone}
-                          onChange={this.handlePhoneInputChange}
+                          onChange={this.handleInputChange}
                           prefix="+243 "
                           format="+243 ### ### ###"
                           autoComplete="off"
@@ -536,7 +536,7 @@ class LoadingDealDetail extends React.Component {
                         </SelectGroup>
                       </Form.Group>
                       <Form.Group>
-                        <Form.Label htmlFor="alertTime">
+                        <Form.Label htmlFor="finishLoadingAt">
                           Exit Date and Time
                         </Form.Label>
                         <TextInput
